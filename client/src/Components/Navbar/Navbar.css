@@ -1,0 +1,98 @@
+#navbar {
+
+    width: 100%;
+    height: 65px;
+    display: flex;
+    background-color: white;
+    box-shadow: 0px 4px 26.5px rgba(0, 0, 0, 0.25);
+    border-radius: 0px 0px 15px 15px;
+
+}
+
+/* Logo section */
+#logo {
+
+    width: 18%;
+    display: grid;
+    place-items: center;
+
+    p {
+
+        font-family: 'VintageMohai', sans-serif;
+        font-size: 30px;
+        color: rgba(3, 34, 33, 0.8);
+        height: 31px;
+
+    }
+
+}
+
+/* Menus section */
+#menus {
+
+    width: 66%;
+    display: grid;
+    place-items: center;
+
+    div {
+
+        display: flex;
+        align-items: center;
+        gap: 2.2rem;
+        
+        p {
+            
+            font-size: 12.5px;
+            cursor: pointer;
+
+        }
+
+    }
+
+}
+
+/* Profile and auth section */
+#profile-auth {
+
+    width: 16%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    #auth-btns {
+
+        display: flex;
+        gap: 0.3rem;
+
+        button {
+
+            padding: 5px 14px;
+            border-radius: 4px;
+            border: 0;
+            background-color: #0D2F2B;
+            color: white;
+            font-size: 0.76rem;
+
+        }
+
+    }
+
+    #profile-img {
+
+        display: grid;
+        place-items: center;
+        margin-left: auto;
+        padding-right: 15px;
+
+        img {
+    
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 50%;
+    
+        }
+
+    }
+
+}

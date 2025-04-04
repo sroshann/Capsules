@@ -1,0 +1,39 @@
+@font-face {
+    
+    font-family: 'VintageMohai';
+    src: 
+    
+        url( Fonts/VintageMohai-DemoVersion-Regular.ttf ) format('truetype'),
+        url( Fonts/VintageMohai-DemoVersion-Regular.otf ) format('opentype')
+    
+    ;
+    
+}
+
+@font-face {
+    
+    font-family: 'Nexa';
+    src: url( Fonts/Nexa-Heavy.ttf ) format('truetype');
+    
+}
+
+* {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Nexa', sans-serif;
+    cursor: default;
+
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.bx {
+
+    position: relative;
+    top: 1.3px;
+
+}
