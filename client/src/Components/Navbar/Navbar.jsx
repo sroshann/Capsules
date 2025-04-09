@@ -1,40 +1,22 @@
 import React from 'react'
-import mine from '../../Assets/my.jpg'
+import { useMediaQuery } from 'react-responsive'
 import './Navbar.css'
+import DesktopNav from './DesktopNav'
+import MobileNav from './MobileNav'
 
 function Navbar() {
 
+    const isMobile = useMediaQuery({ maxWidth : 1024 })
+    const isDesktop = useMediaQuery({ minWidth : 1025 })
+
     return (
 
-        <nav id='navbar'>
+        <>
             
-            <section id="logo"><p>CAPSULES</p></section>
-            <section id="menus">
+            { isMobile && <MobileNav /> }
+            { isDesktop && <DesktopNav /> }
 
-                <div>
-
-                    <p>Home</p>
-                    <p>Find other homes</p>
-                    <p>Medicines</p>
-                    <p>About</p>
-                    <p>Notification <i className='bx bx-bell'/></p>
-
-                </div>
-
-            </section>
-            <section id="profile-auth">
-
-                    <section id="auth-btns">
-
-                        <button>Login</button>
-                        <button>Signup</button>
-
-                    </section>
-                <section id='profile-img'><img src={ mine } alt="dp" /></section>
-
-            </section>
-
-        </nav>
+        </>
 
     )
 

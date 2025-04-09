@@ -42,9 +42,9 @@
         display: flex;
         align-items: center;
         gap: 2.2rem;
-        
+
         p {
-            
+
             font-size: 12.5px;
             cursor: pointer;
 
@@ -88,12 +88,128 @@
         padding-right: 15px;
 
         img {
-    
+
             width: 38px;
             height: 38px;
             object-fit: cover;
             border-radius: 50%;
+
+        }
+
+    }
+
+}
+
+
+/* RESPONSIVE */
+
+/* Mobile phone */
+/* Complete design change */
+
+.nav-menu-button {
+
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: 0;
+    padding: 6px 16px;
+    background-color: #0D2F2B;
+    color: white;
+    border-radius: 4px;
+
+}
+
+#display-nav-items {
+
+    height: 100dvh;
+    width: 100dvw;
+    position: absolute;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 80%);
+
+    #upper {
+
+        height: 72px;
+        display: flex;
+        align-items: center;
+
+        p {
+
+            font-family: 'VintageMohai', sans-serif;
+            padding: 0px 0px 0px 20px;
+            font-size: 1.8rem;
+            height: 31px;
+            color: white;
+            transition: 0.2s ease-in-out;
+
+        }
+        p:hover { color: gray; }
+
+        .white {
+
+            background-color: white;
+            color: #0D2F2B;
+
+        }
+
+    }
+
+    #lower {
+
+        height: 89%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        p { 
+
+            width: fit-content;
+            padding: 0px 0px 0px 23px;
+            font-size: 1.8rem;
+            margin: 0px 0px -6px 0px;
+            color: white;
+            transition: 0.2s ease-in-out;
+
+        }
+        p:hover { color: gray; }
+
+    }
+
+}
+
+/* Tablet */
+/* Only slight changes from mobile */
+@media ( min-width : 768px) and ( max-width : 1024px ) {
+
+    .nav-menu-button {
+
+        padding: 8px 23px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        top: 25px;
+        right: 25px;
     
+    }
+
+    #display-nav-items {
+
+        #upper { 
+            
+            height: 92px; 
+            p { 
+                
+                font-size: 2.5rem;
+                height: 43px; 
+                padding: 0px 0px 0px 25px;
+            
+            }
+        
+        }
+
+        #lower {
+
+            p { font-size: 2rem; }
+
         }
 
     }

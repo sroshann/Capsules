@@ -49,7 +49,6 @@
             width: 160px;
             height: 160px;
             rotate: 275deg;
-            margin: 0px 0px 0px 0px;
             right: 100px;
 
         }
@@ -75,7 +74,6 @@
         }
         
     }
-
 
 }
 
@@ -164,7 +162,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 50px 0px 0px 0px;
+    padding: 30px 0px 0px 0px;
     gap: 2rem;
 
     #security-upper {
@@ -267,6 +265,244 @@
 
         }
 
+    }
+
+}
+
+/* RESPONSIVE */
+/* Mobile phone */
+@media ( max-width : 767px ) {
+
+    #landing-root { padding: 65px 0px 30px 0px; }
+
+    /* Banner */
+    #banner {
+
+        padding: 0;
+        #banner-text {
+
+            #banner-logo {
+    
+                font-size: 4.5rem;
+                height: 68px;
+                text-align: center;
+        
+            }
+            #banner-sub-text { font-size: 0.75rem; }
+    
+        }
+        img { 
+
+            width: 100px;
+            height: 100px;
+    
+        }
+        #banner-upper {
+
+            & img:nth-child(2) {
+    
+                width: 85px;
+                height: 85px;
+                right: 15px;
+                top: 10px;
+    
+            }
+    
+        }
+        #banner-lower {
+
+            & img:nth-child(1) {
+    
+                height: 90px;
+                width: 90px;
+                left: 7px;
+    
+            } 
+            & img:nth-child(2) {
+    
+                width: 135px;
+                height: 135px;
+                bottom: 20px;
+    
+            }
+            
+        }
+
+    }
+    
+    /* Security */
+    #security {
+    
+        gap: 1rem;
+        #security-upper {
+    
+            gap: 0.5rem;
+            #security-description { 
+                
+                width: 90%; 
+                line-height: 1.2;
+            
+            }
+            div { gap: 0.1rem; }
+    
+        }
+    
+        #security-lower {
+    
+            #security-header { gap: 0.1rem; }
+            p { 
+    
+                width: 80%;
+                line-height: 1.2;
+    
+            }
+            #security-divs {
+
+                display: grid;
+                padding: 15px 0px 0px 0px;
+                gap: 6px;
+                div { padding: 8px 13px; }
+    
+            }
+    
+        }
+    
+    }
+    
+}
+
+/* Bento grid */
+/* Rendering a different componenet */
+#mobile-bento-grid {
+
+    margin: auto;
+    width: 90%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    gap: 0.655rem;
+
+    .bento-left, .bento-right {
+
+        display: grid;
+        gap: 0.655rem;
+        width: 50%;
+
+        div { 
+            
+            border-radius: 8px; 
+            padding: 0.5rem 0.8rem;
+
+            .div-heading { p { font-size: 0.9rem; } }
+            .div-description { font-size: 13px; }
+        
+        }
+        .green { 
+            
+            background-color: #0D2F2B; 
+            color: white;
+            .div-description { color: rgba(255, 255, 255, 0.6); }
+            
+        }
+        .white {
+            
+            background-color: white;
+            box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+            .div-description { color: rgba(0, 0, 0, 0.6); }
+
+        }
+
+    }
+
+}
+
+/* Tablet */
+@media ( min-width : 768px ) and ( max-width : 1024px ) {
+
+    #landing-root { padding: 65px 0px 40px 0px; }
+
+    /* Banner */
+    #banner {
+
+        padding: 0px;
+        #banner-text {
+
+            #banner-logo {
+    
+                font-size: 8.8rem;
+                height: 135px;
+        
+            }
+            #banner-sub-text { font-size: 1.1rem; }
+    
+        }
+        img { 
+
+            width: 170px;
+            height: 170px;
+    
+        }
+        #banner-upper {
+
+            & img:nth-child(2) {
+    
+                width: 135px;
+                height: 135px;
+                right: 15px;
+                top: 25px;
+    
+            }
+    
+        }
+        #banner-lower {
+
+            & img:nth-child(1) {
+    
+                height: 125px;
+                width: 125px;
+                left: 14px;
+    
+            } 
+            & img:nth-child(2) {
+    
+                width: 190px;
+                height: 190px;
+                bottom: 30px;
+    
+            }
+            
+        }
+
+    }
+
+    /* Security */
+    #security {
+    
+        gap: 1rem;
+        #security-upper {
+    
+            gap: 0.5rem;
+            #security-description { 
+                
+                width: 65%; 
+                line-height: 1.2;
+            
+            }
+            div { gap: 0.1rem; }
+    
+        }
+        #security-lower {
+    
+            #security-header { gap: 0.1rem; }
+            p { 
+    
+                width: 85%;
+                line-height: 1.2;
+    
+            }
+    
+        }
+    
     }
 
 }

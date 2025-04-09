@@ -74,3 +74,97 @@
     div p { cursor: pointer; }
 
 }
+
+/* RESPONSIVE */
+
+/* Mobile phone */
+@media ( max-width : 767px ) {
+
+    #footer-root { 
+        
+        height: 270px; 
+        gap: 0.8rem;
+    
+    }
+    #footer-logo { 
+        
+        font-size: 4.5rem;
+        height: 77px; 
+    
+    }
+    #upper-footer-section, #lower-footer-section {
+
+        width: 88%;
+        div {  
+            gap: 8px;
+            p { font-size: 12px; }
+            button {  
+    
+                padding: 8px 15px;
+                border-radius: 20px;
+                font-size: 12px;
+    
+            }
+    
+        }
+        svg{
+
+            width: 20px;
+            height: 20px;
+
+        }
+
+    }
+    #lower-footer-section {
+
+        p { font-size: 12px; }
+    
+    }
+
+}
+
+/* Tablet */
+@media ( min-width : 768px ) and ( max-width : 1024px ) {
+
+    #footer-root { 
+        
+        height: 400px; 
+        gap: 1.5rem;
+    
+    }
+    #footer-logo { 
+        
+        font-size: 8.8rem;
+        height: 150px; 
+    
+    }
+    #upper-footer-section, #lower-footer-section {
+
+        width: 85%;
+        /* div {  
+            gap: 8px;
+            p { font-size: 12px; }
+            button {  
+    
+                padding: 8px 15px;
+                border-radius: 20px;
+                font-size: 12px;
+    
+            }
+    
+        }
+        svg{
+
+            width: 20px;
+            height: 20px;
+
+        } */
+
+    }
+    /* #lower-footer-section {
+
+        p { font-size: 12px; }
+    
+    } */
+
+}
