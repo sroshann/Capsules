@@ -17,6 +17,13 @@
     
 }
 
+@font-face {
+    
+    font-family: 'Nexa Light';
+    src: url( Fonts/Nexa-ExtraLight.ttf ) format('truetype');
+    
+}
+
 * {
 
     margin: 0;
