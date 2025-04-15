@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import mine from '../../Assets/my.jpg'
+import { useGSAP } from '@gsap/react'
 import './Navbar.css'
+import { desktopNav } from './navbar.animation'
 
 function DesktopNav() {
 
+    const navRef = useRef()
+    useGSAP( () => { desktopNav( navRef ) }, [])
+
     return (
 
-        <nav id='navbar'>
+        <nav id='navbar' ref={ navRef }>
 
             <section id="logo"><p>CAPSULES</p></section>
             <section id="menus">
