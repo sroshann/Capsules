@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
-import { closeMobileNav, menuBtn, openMobileNav } from './navbar.animation'
+import { closeMobileNav, menuBtn, openMobileNav } from './navbar.animate'
 import './Navbar.css'
 
 function MobileNav() {

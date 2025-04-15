@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import mine from '../../Assets/my.jpg'
 import { useGSAP } from '@gsap/react'
 import './Navbar.css'
-import { desktopNav } from './navbar.animation'
+import { desktopNav } from './navbar.animate'
 
 function DesktopNav() {
 

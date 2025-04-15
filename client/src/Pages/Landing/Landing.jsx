@@ -1,15 +1,34 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useMediaQuery } from 'react-responsive'
 import './Landing.css'
 import DesktopBento from './DesktopBento'
 import MobileBento from './MobileBento'
+import { useGSAP } from '@gsap/react'
+import { animateImages, animateSecurity } from './landing.animate'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
 
 function Landing() {
 
     const isMobile = useMediaQuery({ maxWidth : 1024 })
     const isDesktop = useMediaQuery({ minWidth : 1025 })
+
+    const syringRef = useRef()
+    const bandAidRef = useRef()
+    const capsuleRef = useRef()
+    const bottleRef = useRef()
+    const logoTextRef = useRef()
+    const securityRef = useRef()
+
+    gsap.registerPlugin( ScrollTrigger )
+    useGSAP( () => { 
+        
+        animateImages( syringRef, bandAidRef, capsuleRef, bottleRef, logoTextRef )
+        animateSecurity( securityRef ) 
+    
+    }, [] )
 
     return (
 
@@ -23,20 +42,44 @@ function Landing() {
 
                     <section id='banner-upper'>
 
-                        <img src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744004776/odncmv8firwp9t05uldg.png" alt="" />
-                        <img src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744004947/eowdcc0tezrvcxvr8imf.png" alt="" />
+                        <img 
+                        
+                            src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744004776/odncmv8firwp9t05uldg.png" 
+                            ref={ bandAidRef }
+                            alt="Band-Aid" 
+                            
+                        />
+                        <img 
+                        
+                            src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744004947/eowdcc0tezrvcxvr8imf.png" 
+                            ref={ syringRef } 
+                            alt="Syringe" 
+                            
+                        />
 
                     </section>
-                    <section id='banner-text'>
+                    <section id='banner-text' ref={ logoTextRef }>
 
-                        <p id='banner-logo'>CAPSULES</p>
+                        <p id='banner-logo' >CAPSULES</p>
                         <p id='banner-sub-text'>Effortless Medicine Management for You and Your Family</p>
 
                     </section>
                     <section id="banner-lower">
 
-                        <img src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744005001/k8tjizzzwykihx3edcey.png" alt="" />
-                        <img src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744004668/wgsm4euw8q2ain8gkd2r.png" alt="" />
+                        <img 
+                        
+                            src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744005001/k8tjizzzwykihx3edcey.png" 
+                            ref={ capsuleRef }
+                            alt="Capsule"
+                            
+                        />
+                        <img 
+                        
+                            src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1744004668/wgsm4euw8q2ain8gkd2r.png" 
+                            ref={ bottleRef }
+                            alt="Bottle" 
+                            
+                        />
 
                     </section>
 
@@ -47,7 +90,7 @@ function Landing() {
                 { isDesktop && <DesktopBento /> }
 
                 {/* Security */}
-                <section id='security'>
+                <section id='security' ref={ securityRef }>
 
                     <section id="security-upper">
 

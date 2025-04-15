@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import './Footer.css'
+import { useGSAP } from '@gsap/react'
+import { animateFooter } from './footer.animate'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
 
 function Footer() {
 
+    const footerRef = useRef()
+    gsap.registerPlugin( ScrollTrigger )
+    useGSAP( () => animateFooter( footerRef ), [] )
+
     return (
 
-        <footer id='footer-root'>
+        <footer id='footer-root' ref={ footerRef }>
 
             <section id="upper-footer-section">
 

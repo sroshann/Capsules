@@ -1,7 +1,14 @@
 import React from 'react'
 import './Landing.css'
+import { useGSAP } from '@gsap/react'
+import { animateDesktopBento } from './landing.animate'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
 
 function DesktopBento() {
+
+    gsap.registerPlugin( ScrollTrigger )
+    useGSAP( () => { animateDesktopBento() }, [] )
 
     return (
 
@@ -9,7 +16,7 @@ function DesktopBento() {
 
             <section className="bento-upper">
 
-                <div id="management" className='green'>
+                <div id="management" className='green desktop-bento-left'>
 
                     <section className="div-heading">
 
@@ -22,7 +29,7 @@ function DesktopBento() {
                         caregivers, or healthcare professionals ensures efficient and accurate management.</p>
 
                 </div>
-                <div id="storage" className='white'>
+                <div id="storage" className='white desktop-bento-upper'>
 
                     <section className="div-heading">
 
@@ -36,7 +43,7 @@ function DesktopBento() {
                         ensuring all essential information is easily accessible at any time.</p>
 
                 </div>
-                <div id="admin" className='green'>
+                <div id="admin" className='green desktop-bento-right'>
 
                     <section className="div-heading">
 
@@ -52,7 +59,7 @@ function DesktopBento() {
             </section>
             <section className="bento-lower">
 
-                <div id="auto-remove" className='white'>
+                <div id="auto-remove" className='white desktop-bento-left'>
 
                     <section className="div-heading">
 
@@ -65,7 +72,7 @@ function DesktopBento() {
                         This keeps the medicine list accurate and up to date.</p>
 
                 </div>
-                <div id="insights" className='green'>
+                <div id="insights" className='green desktop-bento-lower'>
 
                     <section className="div-heading">
 
@@ -79,7 +86,7 @@ function DesktopBento() {
                         helping them make informed decisions about their healthcare.</p>
 
                 </div>
-                <div id="collaborate" className='white'>
+                <div id="collaborate" className='white desktop-bento-right'>
 
                     <section className="div-heading">
 
