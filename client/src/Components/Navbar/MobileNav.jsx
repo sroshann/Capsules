@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import { closeMobileNav, menuBtn, openMobileNav } from './navbar.animate'
 import './Navbar.css'
+import { useNavigateTo } from '../../Hooks/navbar.hooks'
 
 function MobileNav() {
 
@@ -11,6 +12,7 @@ function MobileNav() {
     const btnRef = useRef()
     const divRef = useRef()
     const { contextSafe } = useGSAP(() => { menuBtn(btnRef) }, [])
+    const navigate = useNavigateTo() // Hook used to navigate
 
     useEffect( () => {
 
@@ -44,12 +46,12 @@ function MobileNav() {
                     </section>
                     <section id="lower">
 
-                        <p>Home</p>
-                        <p>Find other homes</p>
-                        <p>Medicines</p>
-                        <p>About</p>
-                        <p>Profile</p>
-                        <p>Notification <i className='bx bx-bell' /></p>
+                        <p onClick={ () => navigate('landing') }>Home</p>
+                        <p onClick={ () => navigate('') }>Find other homes</p>
+                        <p onClick={ () => navigate('') }>Medicines</p>
+                        <p onClick={ () => navigate('') }>About</p>
+                        <p onClick={ () => navigate('') }>Profile</p>
+                        <p onClick={ () => navigate('') }>Notification <i className='bx bx-bell' /></p>
 
                     </section>
 

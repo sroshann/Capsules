@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
-import Landing from './Pages/Landing/Landing'
+import { lazy, Suspense } from 'react'
+const Landing = lazy( () => import('./Pages/Landing/Landing') )
+const Signup = lazy( () => import('./Pages/Signup/Signup') )
 
 function App() {
 
@@ -7,11 +9,16 @@ function App() {
 
         <>
 
-            <Routes>
+            <Suspense fallback={ <>Loading</> }>
 
-                <Route element={ <Landing /> } path='/' />
+                <Routes>
 
-            </Routes>
+                    <Route element={ <Landing /> } path='/' />
+                    <Route element={ <Signup /> } path='/signup' />
+
+                </Routes>
+
+            </Suspense>
             
         </>
 

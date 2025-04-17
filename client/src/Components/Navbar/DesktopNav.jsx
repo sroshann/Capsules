@@ -3,17 +3,19 @@ import mine from '../../Assets/my.jpg'
 import { useGSAP } from '@gsap/react'
 import './Navbar.css'
 import { desktopNav } from './navbar.animate'
+import { useNavigateTo } from '../../Hooks/navbar.hooks'
 
 function DesktopNav() {
 
     const navRef = useRef()
     useGSAP( () => { desktopNav( navRef ) }, [])
+    const navigate = useNavigateTo() // Hook used to navigate
 
     return (
 
         <nav id='navbar' ref={ navRef }>
 
-            <section id="logo"><p>CAPSULES</p></section>
+            <section id="logo"><p onClick={ () => navigate('landing') }>CAPSULES</p></section>
             <section id="menus">
 
                 <div>
@@ -32,7 +34,7 @@ function DesktopNav() {
                 <section id="auth-btns">
 
                     <button>Login</button>
-                    <button>Signup</button>
+                    <button onClick={ () => navigate('signup') }>Signup</button>
 
                 </section>
                 <section id='profile-img'><img src={mine} alt="dp" /></section>
