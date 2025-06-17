@@ -8,6 +8,7 @@ import { animateCountry, animateSignup } from './signup.animate'
 import { useGetCounrtyDetails } from '../../Hooks/common.hooks'
 import { useMediaQuery } from 'react-responsive'
 import './Signup.css'
+import { useSignup } from '../../Hooks/signup.hooks'
 
 function Signup() {
 
@@ -17,6 +18,7 @@ function Signup() {
     const [ selectedCountry, setSelectedCountry ] = useState({})
 
     const getCountries = useGetCounrtyDetails() // Get country codes and flags
+    const signupUser = useSignup() // Signup user hook
 
     // Handling password and confirm password vissibility
     const handleShowPassword = (filed) => {

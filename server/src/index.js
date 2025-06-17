@@ -2,11 +2,26 @@ import express from 'express'
 import http from 'http'
 import path from 'path' // Deployment
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import { connectDb } from './lib/db.connection.js'
+import authRouter from './routes/ath.routes.js'
 
 const app = express()
 const server = http.createServer( app )
 const __dirname = path.resolve()
 dotenv.config()
+
+app.use( express.json({ limit : '10mb' }) )
+app.use( cookieParser() )
+app.use( cors({
+
+    origin : 'http://localhost:5173',
+    credentials : true
+
+}))
+
+app.use('/authentication', authRouter)
 
 if( process.env.NODE_ENV === 'production' ) {
 
@@ -19,4 +34,9 @@ if( process.env.NODE_ENV === 'production' ) {
 
 }
 
-server.listen( 5000, () => console.log('Server is running') )
+server.listen( 5000, () => {
+
+    console.log('Server is running')
+    connectDb()
+
+})
