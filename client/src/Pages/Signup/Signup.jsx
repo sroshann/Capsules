@@ -18,13 +18,21 @@ function Signup() {
 
     const getCountries = useGetCounrtyDetails() // Get country codes and flags
 
+    // Handling password and confirm password vissibility
     const handleShowPassword = (filed) => {
 
         if (filed === 'password') setShowPassword(previous => !previous)
         else setShowCnfrmPsswrd(previous => !previous)
 
     }
-    const handleCountryDetails = async () => setCountryDetails( await getCountries() ) 
+
+    // Handling country details 
+    const handleCountryDetails = async ( option ) => {
+
+        if( option === 'close' ) setCountryDetails([])
+        else setCountryDetails( await getCountries() ) 
+
+    }
     const handleSelectedCountry = ( code, flag ) => {
 
         setSelectedCountry({ code, flag })
@@ -32,6 +40,7 @@ function Signup() {
 
     }
 
+    // GSAP
     const formRef = useRef()
     const labelRef = useRef()
     const countryRef = useRef()
@@ -39,6 +48,7 @@ function Signup() {
     useGSAP(() => { animateSignup(labelRef, formRef) }, [])
     useGSAP( () => { animateCountry( countryRef ) }, [ countryDetails ] )
 
+    // Responsiveness
     const isMobile = useMediaQuery({ maxWidth : 1024 })
     const isDesktop = useMediaQuery({ minWidth : 1025 })
 
@@ -70,9 +80,16 @@ function Signup() {
                             <div><input type="text" placeholder='Enter email address' /></div>
                             <div id='phonenumbe-input'>
 
-                                <section id='country-details' >
+                                <section id='country-details'>
 
-                                    <section onClick={ handleCountryDetails }>
+                                    <section 
+                                    
+                                        onClick={ () => handleCountryDetails('open') }
+                                        onBlur={ () => handleCountryDetails('close')} 
+                                        tabIndex={0} 
+                                        // This is used to make section tag focusable 
+                                        
+                                    >
                                          
                                         <img src={ selectedCountry?.flag ? selectedCountry?.flag
                                             : 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'} alt="" />
@@ -80,15 +97,15 @@ function Signup() {
                                             <i className='bx bx-chevron-down'/></p>
                                     
                                     </section>
-                                    { countryDetails.length > 0 && <section id='pop-up' ref={ countryRef }>
+                                    { countryDetails.length > 0 && <section id='pop-up' ref={ countryRef } >
 
                                         { countryDetails.map( ( object ) => (
 
                                             <div key={ object.code } 
-                                            onClick={ () => handleSelectedCountry( object.dial_code, object.flag ) }>
+                                            onMouseDown={ () => handleSelectedCountry( object.dial_code, object.flag ) }>
 
                                                 <img src={ object.flag } alt="" />
-                                                <p>{ object.dial_code }</p>
+                                                <p>{ object.name }</p>
 
                                             </div>
 
@@ -102,7 +119,7 @@ function Signup() {
                             </div>
                             <div className='password-input'>
 
-                                <input type="password" placeholder='Enter password' />
+                                <input type={ showPassword ? 'text' : 'password' } placeholder='Enter password' />
                                 {showPassword ?
 
                                     <svg onClick={() => handleShowPassword('password')} xmlns="http://www.w3.org/2000/svg" width={20} height={22} viewBox="0 0 24 24">
@@ -121,7 +138,7 @@ function Signup() {
                             </div>
                             <div className='password-input'>
 
-                                <input type="password" placeholder='Confirm password' />
+                                <input type={ showCnfrmPsswrd ? 'text' : 'password' } placeholder='Confirm password' />
                                 {showCnfrmPsswrd ?
 
                                     <svg onClick={() => handleShowPassword('confirm')} xmlns="http://www.w3.org/2000/svg" width={20} height={22} viewBox="0 0 24 24">

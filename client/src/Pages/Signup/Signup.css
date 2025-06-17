@@ -90,19 +90,24 @@
                     font-size: 0.8rem;
                     color: gray;
 
-                    p { display: flex; align-items: center; }
+                    p { display: flex; align-items: center; width: 56%; }
                     #pop-up {
 
                         display: flex;
                         flex-direction: column;
                         position: absolute;
-                        width: 110px;
+                        /* margin-top: 36px;
+                        margin-left: -15px; */
+                        margin: 36px 0px 0px -15px;
+                        width: 150px;
                         max-height: 300px;
                         overflow-y: scroll;
                         background-color: white;
                         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.18);
                         border-radius: 5px;
                         padding: 5px 10px 5px 10px;
+                        font-size: 11px;
+                        line-height: 1;
 
                         div {
 

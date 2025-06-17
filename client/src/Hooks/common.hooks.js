@@ -23,6 +23,7 @@ export const useGetCounrtyDetails = () => {
 
                     accumulator.push({
 
+                        name : object.name,
                         code : object.code,
                         dial_code : object.dial_code,
                         flag

@@ -23,19 +23,25 @@ export const animateSignup = (labelRef, formRef) => {
 
 }
 
-export const animateCountry = ( countryRef ) => {
+export const animateCountry = (countryRef) => {
 
-    gsap.fromTo(
+    // On initial this ref is not present on DOM
+    // It is added only after an event
+    if (countryRef.current) {
 
-        countryRef.current,
-        { opacity : 0 },
-        {
+        gsap.fromTo(
 
-            opacity : 1,
-            duration : 0.4
+            countryRef.current,
+            { opacity: 0 },
+            {
 
-        }
+                opacity: 1,
+                duration: 0.4
 
-    )
+            }
+
+        )
+
+    }
 
 }
