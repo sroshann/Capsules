@@ -2,8 +2,7 @@ export const signupController = async ( request, response ) => {
 
     try {
 
-        const { data } = request.body
-        console.log( 'Data receiving = ', data )
+        console.log( 'Data receiving = ', request.body )
         return response.status( 201 ).json({ message : 'Data received successfully' })
 
     } catch ( error ) { 

@@ -38,6 +38,14 @@ body::-webkit-scrollbar {
     display: none;
 }
 
+/* Remove derfault styles in inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+
+  -webkit-appearance: none;
+
+}
+
 .bx {
 
     position: relative;

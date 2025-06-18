@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 const Landing = lazy( () => import('./Pages/Landing/Landing') )
 const Signup = lazy( () => import('./Pages/Signup/Signup') )
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -19,6 +20,8 @@ function App() {
                 </Routes>
 
             </Suspense>
+
+            <Toaster />
             
         </>
 

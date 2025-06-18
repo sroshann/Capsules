@@ -8,22 +8,27 @@ import { animateCountry, animateSignup } from './signup.animate'
 import { useGetCounrtyDetails } from '../../Hooks/common.hooks'
 import { useMediaQuery } from 'react-responsive'
 import './Signup.css'
-import { useSignup } from '../../Hooks/signup.hooks'
+import { useSignupFromik } from '../../Hooks/signup.hooks'
 
 function Signup() {
 
     const [showPassword, setShowPassword] = useState(false)
     const [showCnfrmPsswrd, setShowCnfrmPsswrd] = useState(false)
     const [countryDetails, setCountryDetails] = useState([])
-    const [ selectedCountry, setSelectedCountry ] = useState({})
+    const [ selectedCountry, setSelectedCountry ] = useState({
+
+        code : '+91',
+        flag : 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'
+
+    })
 
     const getCountries = useGetCounrtyDetails() // Get country codes and flags
-    const signupUser = useSignup() // Signup user hook
+    const formik = useSignupFromik() // Signup formik
 
     // Handling password and confirm password vissibility
-    const handleShowPassword = (filed) => {
+    const handleShowPassword = ( field ) => {
 
-        if (filed === 'password') setShowPassword(previous => !previous)
+        if ( field === 'password' ) setShowPassword(previous => !previous)
         else setShowCnfrmPsswrd(previous => !previous)
 
     }
@@ -39,6 +44,9 @@ function Signup() {
 
         setSelectedCountry({ code, flag })
         setCountryDetails([])
+
+        // Setting the selected country code into formik value
+        formik.setFieldValue('phoneNumber.country', code)
 
     }
 
@@ -73,13 +81,28 @@ function Signup() {
                 </section>
                 <section id="signup-right">
 
-                    <form action="" ref={formRef}>
+                    <form action="" ref={formRef} onSubmit={ formik.handleSubmit }>
 
                         <div id="input-fields">
 
-                            <div><input type="text" placeholder='Enter full name' /></div>
-                            <div><input type="text" placeholder='Enter an unique username' /></div>
-                            <div><input type="text" placeholder='Enter email address' /></div>
+                            <div><input 
+                            
+                                type="text" placeholder='Enter full name'
+                                { ...formik.getFieldProps('fullName') } 
+                                
+                            /></div>
+                            <div><input 
+                            
+                                type="text" placeholder='Enter an unique username' 
+                                { ...formik.getFieldProps('userName') }
+                                
+                            /></div>
+                            <div><input 
+                            
+                                type="text" placeholder='Enter email address' 
+                                { ...formik.getFieldProps('email') }
+                                
+                            /></div>
                             <div id='phonenumbe-input'>
 
                                 <section id='country-details'>
@@ -92,11 +115,10 @@ function Signup() {
                                         // This is used to make section tag focusable 
                                         
                                     >
-                                         
-                                        <img src={ selectedCountry?.flag ? selectedCountry?.flag
-                                            : 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'} alt="" />
-                                        <p>{ selectedCountry?.code ? selectedCountry?.code : '+91' } 
-                                            <i className='bx bx-chevron-down'/></p>
+
+                                        <img src={ selectedCountry?.flag } alt="Country flag" />
+                                        <p>{ selectedCountry?.code  } 
+                                        <i className='bx bx-chevron-down'/></p>
                                     
                                     </section>
                                     { countryDetails.length > 0 && <section id='pop-up' ref={ countryRef } >
@@ -116,12 +138,23 @@ function Signup() {
                                     </section>}
 
                                 </section>
-                                <input type="text" placeholder='Enter phone number' />
+                                <input 
+                                
+                                    type="number" placeholder='Enter phone number' 
+                                    { ...formik.getFieldProps('phoneNumber.number') }
+                                    
+                                />
 
                             </div>
                             <div className='password-input'>
 
-                                <input type={ showPassword ? 'text' : 'password' } placeholder='Enter password' />
+                                <input 
+                                
+                                    type={ showPassword ? 'text' : 'password' } 
+                                    placeholder='Enter password' 
+                                    { ...formik.getFieldProps('password') }
+                                    
+                                />
                                 {showPassword ?
 
                                     <svg onClick={() => handleShowPassword('password')} xmlns="http://www.w3.org/2000/svg" width={20} height={22} viewBox="0 0 24 24">
@@ -140,7 +173,13 @@ function Signup() {
                             </div>
                             <div className='password-input'>
 
-                                <input type={ showCnfrmPsswrd ? 'text' : 'password' } placeholder='Confirm password' />
+                                <input 
+                                
+                                    type={ showCnfrmPsswrd ? 'text' : 'password' } 
+                                    placeholder='Confirm password' 
+                                    { ...formik.getFieldProps('confirmPassword') }
+                                    
+                                />
                                 {showCnfrmPsswrd ?
 
                                     <svg onClick={() => handleShowPassword('confirm')} xmlns="http://www.w3.org/2000/svg" width={20} height={22} viewBox="0 0 24 24">
