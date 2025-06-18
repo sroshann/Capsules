@@ -1,6 +1,8 @@
 import { axiosInstance } from "../lib/axios"
 import { useFormik } from 'formik'
 import { validateSignup } from "../lib/validations"
+import { toastStyle } from "../constants/common.constant"
+import toast from "react-hot-toast"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -29,7 +31,12 @@ export const useSignupFromik = () => {
         validateOnBlur : false,
         validateOnChange : false,
         validateOnMount : false,
-        onSubmit : values => signup( values ) 
+        onSubmit : ( values, { resetForm } ) => {
+
+            signup( values )
+            resetForm()
+
+        }
 
     })
 
@@ -43,9 +50,10 @@ export const useSignup = () => {
         try {
 
             const response = await axiosInstance.post('/authentication/signup', data)
-            console.log('Response = ', response )
+            const { message, user } = response?.data
+            toast.success( message, { style : toastStyle } )
 
-        } catch ( error ) { console.error(error) }
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
 
     }
 

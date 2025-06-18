@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
         },
         phoneNumber : {
 
-            type : 'Number',
+            type : 'Object',
             required : true,
             unique : true,
             minlength : 10
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
         },
         email : {
 
-            type : 'Email',
+            type : 'String',
             required : true,
             unique : true
 
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
         },
         password : {
 
-            type : 'Object',
+            type : 'String',
             required : true,
             minlength : 6
 
