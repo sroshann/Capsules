@@ -3,6 +3,8 @@ import { useFormik } from 'formik'
 import { validateSignup } from "../lib/validations"
 import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
+import { useDispatch } from 'react-redux'
+import { setIsAuthenticated, setUserData } from "../Store/Reducers/auth.reducer"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -45,12 +47,15 @@ export const useSignupFromik = () => {
 // Signup 
 export const useSignup = () => {
 
+    const dispatch = useDispatch()
     return async ( data ) => {
 
         try {
 
             const response = await axiosInstance.post('/authentication/signup', data)
             const { message, user } = response?.data
+            dispatch( setUserData( user ) ) // Setting user details to redux store
+            dispatch( setIsAuthenticated() )
             toast.success( message, { style : toastStyle } )
 
         } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
