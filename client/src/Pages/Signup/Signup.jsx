@@ -7,8 +7,9 @@ import { ScrollTrigger } from 'gsap/all'
 import { animateCountry, animateSignup } from './signup.animate'
 import { useGetCounrtyDetails } from '../../Hooks/common.hooks'
 import { useMediaQuery } from 'react-responsive'
+import { useSignupFromik } from '../../Hooks/authentication.hooks'
 import './Signup.css'
-import { useSignupFromik } from '../../Hooks/signup.hooks'
+import { useNavigate } from 'react-router-dom'
 
 function Signup() {
 
@@ -62,6 +63,9 @@ function Signup() {
     const isMobile = useMediaQuery({ maxWidth : 1024 })
     const isDesktop = useMediaQuery({ minWidth : 1025 })
 
+    // Navigation
+    const navigate = useNavigate()
+
     return (
 
         <>
@@ -74,7 +78,7 @@ function Signup() {
                     <section ref={labelRef}>
 
                         <p id='main-label'>CREATE NEW ACCOUNT</p>
-                        { isDesktop && <p>Already have an account? <span>Login here!</span></p> }
+                        { isDesktop && <p>Already have an account? <span onClick={ () => navigate('/login') }>Login here!</span></p> }
 
                     </section>
 
@@ -220,7 +224,15 @@ function Signup() {
                             </button>
 
                         </div>
-                        { isMobile && <p id='signup-mobile-lable'>Already have an account? <span>Login here!</span></p> }
+                        { isMobile && 
+                        
+                            <p id='signup-mobile-lable'>
+                                
+                                Already have an account? <span onClick={ () => navigate('/login') }>Login here!</span>
+                                
+                            </p> 
+                            
+                        }
 
                     </form>
 

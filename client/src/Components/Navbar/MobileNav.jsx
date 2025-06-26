@@ -52,6 +52,8 @@ function MobileNav() {
                         <p onClick={ () => navigate('') }>About</p>
                         <p onClick={ () => navigate('') }>Profile</p>
                         <p onClick={ () => navigate('') }>Notification <i className='bx bx-bell' /></p>
+                        <p onClick={ () => navigate('login') }>Login</p>
+                        <p onClick={ () => navigate('signup') }>Signup</p>
 
                     </section>
 

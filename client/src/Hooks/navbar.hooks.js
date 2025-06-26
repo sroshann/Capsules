@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 
-//Navigation
+// Navigation
 export const useNavigateTo = () => {
 
     const navigate = useNavigate()
@@ -8,6 +8,7 @@ export const useNavigateTo = () => {
 
         if( destination === 'landing' ) navigate('/')
         else if( destination === 'signup' ) navigate('/signup')
+        else if( destination === 'login' ) navigate('/login')
 
     }
 

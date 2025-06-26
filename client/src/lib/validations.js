@@ -84,3 +84,23 @@ export const validateSignup = values => {
     return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
 
 }
+
+export const validateLogin = values => {
+
+    let error = {}
+    const { email, password } = values
+
+    let emailError = validateEmail( email )
+    if( emailError ) error.email = emailError
+
+    let checkPassword = validatePassword({ password }, false)
+    if( checkPassword ) {
+
+        const { passwordError } = checkPassword
+        if( passwordError ) error.password = passwordError
+
+    }
+
+    return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
+
+} 

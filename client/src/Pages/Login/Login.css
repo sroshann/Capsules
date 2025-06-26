@@ -1,12 +1,13 @@
-#signup-root {
+#login-root {
 
     height: 100dvh;
     display: flex;
+    column-gap: 100px;
 
 }
 
 /* Left section with text labels */
-#signup-left {
+#login-left {
 
     display: flex;
     justify-content: end;
@@ -36,16 +37,17 @@
 }
 
 /* Right section with form */
-#signup-right {
+#login-right {
 
+    display: flex;
+    justify-content: start;
+    align-items: center;
     width: 50%;
-    display: grid;
-    place-items: center;
 
     form {
 
         display: grid;
-        row-gap: 9px;
+        div:not( :last-child ) { row-gap: 9px; }
 
         #input-fields {
 
@@ -80,52 +82,6 @@
             }
 
             .password-input { padding-right: 10px; }
-            #phonenumbe-input {  
-
-                padding-left: 15px;
-                section { 
-                    
-                    display: flex; 
-                    column-gap: 5px;
-                    font-size: 0.8rem;
-                    color: gray;
-
-                    p { display: flex; align-items: center; width: 56%; }
-                    #pop-up {
-
-                        display: flex;
-                        flex-direction: column;
-                        position: absolute;
-                        margin: 36px 0px 0px -15px;
-                        width: 150px;
-                        max-height: 300px;
-                        overflow-y: scroll;
-                        background-color: white;
-                        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.18);
-                        border-radius: 5px;
-                        padding: 5px 10px 5px 10px;
-                        font-size: 11px;
-                        line-height: 1;
-
-                        div {
-
-                            background-color: transparent;
-                            box-shadow: none;
-                            width: 100%;
-                            display: flex;
-                            justify-content: space-between;
-                            border-radius: 0px;
-
-                        }
-                        div:not( :last-child ) { border-bottom: solid 0.5px gray; }
-                        
-                    }
-                    img { width: 15px; object-fit: contain;}
-                    
-                }
-                input { padding-left: 8px; }
-
-            }
 
         }
 
@@ -153,6 +109,16 @@
 
         }
 
+        #login-forgot-password {
+
+            color: red;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-align: end;
+            margin: 2.5px 0px 9px 0px;
+
+        }
+
     }
 
 }
@@ -160,7 +126,7 @@
 /* RESPONSIVE */
 @media ( max-width : 1024px ) {
 
-    #signup-root { 
+    #login-root { 
         
         flex-direction: column;
         justify-content: center;
@@ -168,20 +134,20 @@
         row-gap: 10px;
     
     }
-    #signup-left {
+    #login-left {
 
         width: unset;
-        #main-label { font-size: 1.8rem };
+        #main-label { font-size: 2.7rem };
 
     }
-    #signup-right {
+    #login-right {
 
         width: unset;
-        #signup-mobile-lable {
+        #login-mobile-lable {
 
             text-align: center;
             font-size: 0.9rem;
-            margin: -5px 0px 0px 0px;
+            margin: 3px 0px 0px 0px;
 
             span { color: #016BF8; cursor: pointer; }
 

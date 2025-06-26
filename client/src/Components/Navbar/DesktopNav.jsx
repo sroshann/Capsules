@@ -33,7 +33,7 @@ function DesktopNav() {
 
                 <section id="auth-btns">
 
-                    <button>Login</button>
+                    <button onClick={ () => navigate('login') }>Login</button>
                     <button onClick={ () => navigate('signup') }>Signup</button>
 
                 </section>

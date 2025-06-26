@@ -1,6 +1,6 @@
 import { axiosInstance } from "../lib/axios"
 import { useFormik } from 'formik'
-import { validateSignup } from "../lib/validations"
+import { validateLogin, validateSignup } from "../lib/validations"
 import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
 import { useDispatch } from 'react-redux'
@@ -46,7 +46,7 @@ export const useSignupFromik = () => {
 
 // Signup 
 export const useSignup = () => {
-
+    
     const dispatch = useDispatch()
     return async ( data ) => {
 
@@ -59,6 +59,47 @@ export const useSignup = () => {
             toast.success( message, { style : toastStyle } )
 
         } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+
+    }
+
+}
+
+// Login formik
+export const useLoginFormik = () => {
+
+    const login = useLogin()
+    return useFormik({
+
+        initialValues : {
+
+            email : '',
+            password : '',
+
+        },
+        validate : validateLogin,
+        validateOnBlur : false,
+        validateOnMount : false,
+        validateOnChange : false,
+        onSubmit : ( values, { resetForm } ) => {
+
+            login( values )
+            resetForm()
+
+        }
+
+    })
+
+}
+
+export const useLogin = () => {
+
+    return async ( data ) => {
+
+        try {
+
+            console.log( data )
+
+        } catch ( error ) { console.log( error ) }
 
     }
 
