@@ -5,6 +5,7 @@ import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
 import { useDispatch } from 'react-redux'
 import { setIsAuthenticated, setUserData } from "../Store/Reducers/auth.reducer"
+import { useNavigate } from "react-router-dom"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -13,29 +14,29 @@ export const useSignupFromik = () => {
 
     return useFormik({
 
-        initialValues : {
+        initialValues: {
 
-            userName : '',
-            phoneNumber : {
+            userName: '',
+            phoneNumber: {
 
-                country : '+91', // Setting default value India
-                number : ''
+                country: '+91', // Setting default value India
+                number: ''
 
             },
-            email : '',
-            fullName : '',
-            password : '',
-            confirmPassword : '',
-            profilePicture : ''
-            
-        },
-        validate : validateSignup,
-        validateOnBlur : false,
-        validateOnChange : false,
-        validateOnMount : false,
-        onSubmit : ( values, { resetForm } ) => {
+            email: '',
+            fullName: '',
+            password: '',
+            confirmPassword: '',
+            profilePicture: ''
 
-            signup( values )
+        },
+        validate: validateSignup,
+        validateOnBlur: false,
+        validateOnChange: false,
+        validateOnMount: false,
+        onSubmit: (values, { resetForm }) => {
+
+            signup(values)
             resetForm()
 
         }
@@ -46,19 +47,21 @@ export const useSignupFromik = () => {
 
 // Signup 
 export const useSignup = () => {
-    
+
     const dispatch = useDispatch()
-    return async ( data ) => {
+    const navigate = useNavigate()
+    return async (data) => {
 
         try {
 
             const response = await axiosInstance.post('/authentication/signup', data)
             const { message, user } = response?.data
-            dispatch( setUserData( user ) ) // Setting user details to redux store
-            dispatch( setIsAuthenticated() )
-            toast.success( message, { style : toastStyle } )
+            dispatch(setUserData(user)) // Setting user details to redux store
+            dispatch(setIsAuthenticated())
+            toast.success(message, { style: toastStyle })
+            navigate('/')
 
-        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
 
     }
 
@@ -70,19 +73,19 @@ export const useLoginFormik = () => {
     const login = useLogin()
     return useFormik({
 
-        initialValues : {
+        initialValues: {
 
-            email : '',
-            password : '',
+            email: '',
+            password: '',
 
         },
-        validate : validateLogin,
-        validateOnBlur : false,
-        validateOnMount : false,
-        validateOnChange : false,
-        onSubmit : ( values, { resetForm } ) => {
+        validate: validateLogin,
+        validateOnBlur: false,
+        validateOnMount: false,
+        validateOnChange: false,
+        onSubmit: (values, { resetForm }) => {
 
-            login( values )
+            login(values)
             resetForm()
 
         }
@@ -91,15 +94,43 @@ export const useLoginFormik = () => {
 
 }
 
+// Login
 export const useLogin = () => {
 
-    return async ( data ) => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    return async (data) => {
 
         try {
 
-            console.log( data )
+            const response = await axiosInstance.post('/authentication/login', data)
+            const { message, user } = response?.data
+            dispatch(setUserData(user))
+            dispatch(setIsAuthenticated())
+            toast.success(message, { style: toastStyle })
+            navigate('/')
 
-        } catch ( error ) { console.log( error ) }
+        } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
+
+    }
+
+}
+
+// Logout 
+export const useLogout = () => {
+
+    const dispatch = useDispatch()
+    return async () => {
+
+        try {
+
+            const response = await axiosInstance.get('/authentication/logout')
+            const { message } = response?.data
+            dispatch(setUserData(null)) // Clearing user data
+            dispatch(setIsAuthenticated())
+            toast.success(message, { style: toastStyle })
+
+        } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
 
     }
 

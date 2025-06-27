@@ -1,15 +1,28 @@
 import React, { useRef } from 'react'
-import mine from '../../Assets/my.jpg'
 import { useGSAP } from '@gsap/react'
-import './Navbar.css'
 import { desktopNav } from './navbar.animate'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
+import { useSelector } from 'react-redux'
+import { useLogout } from '../../Hooks/authentication.hooks'
+import './Navbar.css'
 
 function DesktopNav() {
+    
+    // Redux store used to store user data
+    const { userData } = useSelector( state => state.authentication )
 
     const navRef = useRef()
     useGSAP( () => { desktopNav( navRef ) }, [])
+
     const navigate = useNavigateTo() // Hook used to navigate
+    const logout = useLogout() // Hook used to logout
+
+    const handleLogout = () => {
+
+        logout()
+        navigate('landing')
+
+    }
 
     return (
 
@@ -29,15 +42,34 @@ function DesktopNav() {
                 </div>
 
             </section>
-            <section id="profile-auth">
+            <section id="profile-auth" style={ userData ? { justifyContent : 'end' } : { justifyContent : 'center' } }>
 
                 <section id="auth-btns">
 
-                    <button onClick={ () => navigate('login') }>Login</button>
-                    <button onClick={ () => navigate('signup') }>Signup</button>
+                    { 
+                    
+                        userData ? <button onClick={ handleLogout }>Logout</button> : 
+                        
+                        <>
+                        
+                            <button onClick={ () => navigate('login') }>Login</button>
+                            <button onClick={ () => navigate('signup') }>Signup</button>
+                        
+                        </> 
+                        
+                    }
 
                 </section>
-                <section id='profile-img'><img src={mine} alt="dp" /></section>
+                { userData && 
+                
+                    <section id='profile-img'>
+
+                        {userData.profilePicture ? <img src={userData.profilePicture} alt="dp" /> 
+                        : <i className='bx  bxs-user-circle'  ></i>}
+                    
+                    </section>
+                    
+                }
 
             </section>
 

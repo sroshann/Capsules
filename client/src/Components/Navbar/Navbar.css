@@ -59,8 +59,8 @@
 
     width: 16%;
     display: flex;
-    justify-content: space-around;
     align-items: center;
+    column-gap: 5px;
 
     #auth-btns {
 
@@ -93,7 +93,6 @@
 
         display: grid;
         place-items: center;
-        margin-left: auto;
         padding-right: 15px;
 
         img {
@@ -102,6 +101,13 @@
             height: 38px;
             object-fit: cover;
             border-radius: 50%;
+
+        }
+
+        i {
+
+            color: lightgray;
+            font-size: 2.38rem;
 
         }
 

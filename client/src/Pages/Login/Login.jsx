@@ -90,7 +90,7 @@ function Login() {
                         <p id='login-forgot-password'>Forgot password ?</p>
                         <div id="form-buttons">
 
-                            <button type='submit'>Sign Up</button>
+                            <button type='submit'>Login</button>
                             <button>Continue with
 
                                 <span>

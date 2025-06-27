@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import { closeMobileNav, menuBtn, openMobileNav } from './navbar.animate'
-import './Navbar.css'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
+import { useSelector } from 'react-redux'
+import './Navbar.css'
+import { useLogout } from '../../Hooks/authentication.hooks'
 
 function MobileNav() {
 
@@ -12,7 +14,11 @@ function MobileNav() {
     const btnRef = useRef()
     const divRef = useRef()
     const { contextSafe } = useGSAP(() => { menuBtn(btnRef) }, [])
+
     const navigate = useNavigateTo() // Hook used to navigate
+    const logout = useLogout()
+    // Redux store used to store user data
+    const { userData } = useSelector( state => state.authentication )
 
     useEffect( () => {
 
@@ -23,6 +29,14 @@ function MobileNav() {
         if( openMenu ) contextSafe( () => openMobileNav( divRef ) )()
 
     }, [ openMenu ] )
+
+    const handleLogout = () => {
+
+        logout()
+        handleCloseDiv()
+        navigate('landing')
+
+    }
 
     // In here, the menu div is removed from DOM so I cant animate an element which is not in DOM
     // So perform the closing animation first then remove it from DOM
@@ -52,8 +66,17 @@ function MobileNav() {
                         <p onClick={ () => navigate('') }>About</p>
                         <p onClick={ () => navigate('') }>Profile</p>
                         <p onClick={ () => navigate('') }>Notification <i className='bx bx-bell' /></p>
-                        <p onClick={ () => navigate('login') }>Login</p>
-                        <p onClick={ () => navigate('signup') }>Signup</p>
+                        {
+
+                            userData ? <p onClick={ handleLogout }>Logout</p> 
+                            : <>
+                            
+                                <p onClick={ () => navigate('login') }>Login</p>
+                                <p onClick={ () => navigate('signup') }>Signup</p>
+                            
+                            </>
+
+                        }
 
                     </section>
 
