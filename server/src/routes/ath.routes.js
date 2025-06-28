@@ -1,5 +1,6 @@
 import express from 'express'
-import { loginController, logoutController, signupController } from '../controller/auth.controller.js'
+import { getUserDataController, loginController, logoutController, signupController } 
+    from '../controller/auth.controller.js'
 const router = express()
 
 // Signup
@@ -10,5 +11,8 @@ router.post('/login', loginController)
 
 // Logout
 router.get('/logout', logoutController)
+
+// Get user data on data loss
+router.get('/getUserData', getUserDataController)
 
 export default router

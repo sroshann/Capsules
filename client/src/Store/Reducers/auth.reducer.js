@@ -14,7 +14,7 @@ const authSlice = createSlice({
     reducers : {
 
         setUserData : ( state, action ) => { state.userData = action.payload },
-        setIsAuthenticated : ( state ) => { state.isAuthenticated != state.isAuthenticated }
+        setIsAuthenticated : ( state ) => { state.isAuthenticated = !state.isAuthenticated }
 
     }
 

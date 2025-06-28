@@ -1,6 +1,7 @@
 import { generateToken } from "../lib/utils.js"
 import UserModel from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 // Signup
 export const signupController = async ( request, response ) => {
@@ -90,5 +91,27 @@ export const logoutController = async ( request, response ) => {
         return response.status( 200 ).json({ message : 'Loged out successfully' })
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error ocuured while logging out' }) }
+
+}
+
+// Get user data on data loss
+export const getUserDataController = async ( request, response ) => {
+
+    try {
+
+        const token = request.cookies.credential
+        if( token ) {
+
+            const decode = jwt.verify( token, process.env.JWTSECRET )
+            if( decode ) {
+
+                const user = await UserModel.findById( decode.userId ).select('-password')
+                return response.status( 200 ).json({ user })
+
+            }
+
+        } else return
+
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting user data' }) }
 
 }

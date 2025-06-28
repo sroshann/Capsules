@@ -3,7 +3,7 @@ import { useFormik } from 'formik'
 import { validateLogin, validateSignup } from "../lib/validations"
 import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setIsAuthenticated, setUserData } from "../Store/Reducers/auth.reducer"
 import { useNavigate } from "react-router-dom"
 
@@ -131,6 +131,30 @@ export const useLogout = () => {
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
+
+    }
+
+}
+
+// Get user details on data loss on checking whether the token is still exist in backend or not
+export const useGetUserData = () => {
+
+    const { userData } = useSelector( state => state.authentication )
+    const dispatch = useDispatch()
+    return async () => {
+
+        try {
+
+            if( userData === null ) {
+
+                const response = await axiosInstance.get('/authentication/getUserData')
+                const { user } = response?.data
+                dispatch( setUserData( user ) )
+                dispatch( setIsAuthenticated() )
+
+            }
+
+        } catch( error ) { toast.error( error?.response?.data?.erro, { style : toastStyle } ) }
 
     }
 
