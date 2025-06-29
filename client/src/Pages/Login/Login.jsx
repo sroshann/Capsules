@@ -6,9 +6,9 @@ import { useMediaQuery } from 'react-responsive'
 import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
-import './Login.css'
 import { useGSAP } from '@gsap/react'
 import { animateSignup } from '../Signup/signup.animate'
+import './Login.css'
 
 function Login() {
 
@@ -87,7 +87,7 @@ function Login() {
                             </div>
 
                         </div>
-                        <p id='login-forgot-password'>Forgot password ?</p>
+                        <p id='login-forgot-password' onClick={ () => navigate('/forgot') }>Forgot password ?</p>
                         <div id="form-buttons">
 
                             <button type='submit'>Login</button>

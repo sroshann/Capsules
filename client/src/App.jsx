@@ -1,12 +1,14 @@
 import { Route, Routes } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
-const Landing = lazy( () => import('./Pages/Landing/Landing') )
-const Signup = lazy( () => import('./Pages/Signup/Signup') )
-const Login = lazy( () => import('./Pages/Login/Login') )
 import { ProtectAuth } from './Middlewares/ProtectRoutes' 
 import { useSelector } from 'react-redux'
 import { Toaster } from 'react-hot-toast'
 import { useGetUserData } from './Hooks/authentication.hooks'
+
+const Landing = lazy( () => import('./Pages/Landing/Landing') )
+const Signup = lazy( () => import('./Pages/Signup/Signup') )
+const Login = lazy( () => import('./Pages/Login/Login') )
+const ForgotPassword = lazy( () => import('./Pages/Forgot/ForgotPassword') )
 
 function App() {
 
@@ -34,6 +36,7 @@ function App() {
                     <Route element={ <Landing /> } path='/' />
                     <Route element={ <ProtectAuth><Signup /></ProtectAuth> } path='/signup' />
                     <Route element={ <ProtectAuth><Login /></ProtectAuth> } path='/login' />
+                    <Route element={ <ProtectAuth><ForgotPassword /></ProtectAuth> } path='/forgot' />
 
                 </Routes>
 

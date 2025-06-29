@@ -8,8 +8,8 @@ import { animateCountry, animateSignup } from './signup.animate'
 import { useGetCounrtyDetails } from '../../Hooks/common.hooks'
 import { useMediaQuery } from 'react-responsive'
 import { useSignupFromik } from '../../Hooks/authentication.hooks'
-import './Signup.css'
 import { useNavigate } from 'react-router-dom'
+import './Signup.css'
 
 function Signup() {
 
