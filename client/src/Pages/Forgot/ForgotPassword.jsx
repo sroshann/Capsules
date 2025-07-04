@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
 import { animateSignup } from '../Signup/signup.animate'
 import './ForgotPassword.css'
+import OTP from '../../Components/OTP input/OTP'
 
 function ForgotPassword() {
 
@@ -46,6 +47,7 @@ function ForgotPassword() {
                 <section id="forgot-right" ref={ forgotFrmRf }>
 
                     {/* onSubmit={ formik.handleSubmit } */}
+                    {/* Email */}
                     <form action=""  >
 
                         <div className="input-fields">
@@ -66,56 +68,10 @@ function ForgotPassword() {
 
                     </form>
 
-                    <form action="">
+                    {/* OTP input */}
+                    <OTP />
 
-                        <div className="input-fields" id='entering-OTP'>
-
-                            <div className='OTP'><input 
-                            
-                                type="number" placeholder='_' 
-                                // { ...formik.getFieldProps('email') }
-                                
-                            /></div>
-                            <div className='OTP'><input 
-                            
-                                type="number" placeholder='_' 
-                                // { ...formik.getFieldProps('email') }
-                                
-                            /></div>
-                            <div className='OTP'><input 
-                            
-                                type="number" placeholder='_' 
-                                // { ...formik.getFieldProps('email') }
-                                
-                            /></div>
-                            <div className='OTP'><input 
-                            
-                                type="number" placeholder='_' 
-                                // { ...formik.getFieldProps('email') }
-                                
-                            /></div>
-                            <div className='OTP'><input 
-                            
-                                type="number" placeholder='_' 
-                                // { ...formik.getFieldProps('email') }
-                                
-                            /></div>
-                            <div className='OTP'><input 
-                            
-                                type="number" placeholder='_' 
-                                // { ...formik.getFieldProps('email') }
-                                
-                            /></div>
-
-                        </div>
-                        <div className="form-buttons">
-
-                            <button type='submit'>Submit OTP</button>
-
-                        </div>
-
-                    </form>
-
+                    {/* Change password */}
                     <form action="" >
 
                         <div className="input-fields">
