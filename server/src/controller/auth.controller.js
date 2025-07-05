@@ -115,3 +115,39 @@ export const getUserDataController = async ( request, response ) => {
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting user data' }) }
 
 }
+
+// Email OTP
+export const mailOTPController = async ( request, response ) => {
+
+    try {
+
+        const { email } = request.body
+        console.log( email )
+
+    } catch( error ) {  }
+
+}
+
+// Validate OTP
+export const validateOTPController = async ( request, response ) => {
+
+    try {
+
+        const { otp } = request.body
+        console.log( otp )
+
+    } catch ( error ) {}
+
+}
+
+// Change password
+export const changePasswordController = async ( request, response ) => {
+
+    try {
+
+        const { password } = request.body
+        console.log( password )
+
+    } catch( error ) {}
+
+}

@@ -5,85 +5,86 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
 import { animateSignup } from '../Signup/signup.animate'
-import './ForgotPassword.css'
 import OTP from '../../Components/OTP input/OTP'
+import { useSelector } from 'react-redux'
+import { useForgotFormik } from '../../Hooks/authentication.hooks'
+import './ForgotPassword.css'
 
 function ForgotPassword() {
 
-    const [ showPassword, setShowPassword ] = useState( false )
-    const [ showCnfrmPsswrd, setShowCnfrmPsswrd ] = useState( false )
+    const [showPassword, setShowPassword] = useState(false)
+    const [showCnfrmPsswrd, setShowCnfrmPsswrd] = useState(false)
+
+    // Authentication redux states
+    const { mailOTP, changePassword } = useSelector(state => state.authentication)
+    const { forgotEmailFormik, passwordFormik } = useForgotFormik()
 
     // GSAP
     const forgotLblRf = useRef()
     const forgotFrmRf = useRef()
-    gsap.registerPlugin( ScrollTrigger )
+    gsap.registerPlugin(ScrollTrigger)
     // I need the same animation used in signup page 
-    useGSAP( () => { animateSignup( forgotLblRf, forgotFrmRf ) }, [] )
+    useGSAP(() => { animateSignup(forgotLblRf, forgotFrmRf) }, [])
 
     // Function used to visible entered password
-    const handleShowPassword = ( option ) => {
+    const handleShowPassword = (option) => {
 
-        if( option === 'password' ) setShowPassword( previous => !previous )
-        else setShowCnfrmPsswrd( previous => !previous )
+        if (option === 'password') setShowPassword(previous => !previous)
+        else setShowCnfrmPsswrd(previous => !previous)
 
     }
 
     return (
 
         <>
-        
+
             <Navbar />
             <section id="forgot-root">
 
                 <section id="forgot-left">
 
-                    <section ref={ forgotLblRf }>
+                    <section ref={forgotLblRf}>
 
                         <p id='main-label'>FORGOT PASSWORD ?</p>
 
                     </section>
 
                 </section>
-                <section id="forgot-right" ref={ forgotFrmRf }>
-
-                    {/* onSubmit={ formik.handleSubmit } */}
+                <section id="forgot-right" ref={forgotFrmRf}>
+                    
                     {/* Email */}
-                    <form action=""  >
+                    <form action="" onSubmit={ forgotEmailFormik.handleSubmit } >
 
                         <div className="input-fields">
 
-                            <div><input 
-                            
-                                type="text" placeholder='Enter registered email address' 
-                                // { ...formik.getFieldProps('email') }
-                                
+                            <div><input
+
+                                type="text" placeholder='Enter registered email address'
+                                { ...forgotEmailFormik.getFieldProps('email') }
+
                             /></div>
 
                         </div>
-                        <div className="form-buttons">
-
-                            <button type='submit'>Get OTP</button>
-
-                        </div>
+                        <div className="form-buttons"><button type='submit'>Get OTP</button></div>
 
                     </form>
 
                     {/* OTP input */}
-                    <OTP />
+                    {mailOTP && <OTP />}
 
                     {/* Change password */}
-                    <form action="" >
+                    { <form action="" onSubmit={ passwordFormik.handleSubmit } >
 
                         <div className="input-fields">
 
                             <div className='password-input'>
 
-                                <input 
-                                
-                                    type={ showPassword ? 'text' : 'password' } 
-                                    placeholder='Enter a strong password' 
-                                    // { ...formik.getFieldProps('password') }
-                                    
+                                <input
+
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder='Enter a strong password'
+                                    { ...passwordFormik.getFieldProps('password') }
+
                                 />
                                 {showPassword ?
 
@@ -103,12 +104,12 @@ function ForgotPassword() {
                             </div>
                             <div className='password-input'>
 
-                                <input 
-                                
-                                    type={ showCnfrmPsswrd ? 'text' : 'password' } 
-                                    placeholder='Confirm password' 
-                                    // { ...formik.getFieldProps('confirmPassword') }
-                                    
+                                <input
+
+                                    type={showCnfrmPsswrd ? 'text' : 'password'}
+                                    placeholder='Confirm password'
+                                    { ...passwordFormik.getFieldProps('confirmPassword') }
+
                                 />
                                 {showCnfrmPsswrd ?
 
@@ -135,13 +136,13 @@ function ForgotPassword() {
 
                         </div>
 
-                    </form>
+                    </form>}
 
                 </section>
 
             </section>
             <Footer />
-        
+
         </>
 
     )

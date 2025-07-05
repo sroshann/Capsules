@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useValidateOTP } from '../../Hooks/authentication.hooks'
 import './OTP.css'
 
 const OTP_size = 6
@@ -8,6 +9,8 @@ function OTP() {
     const [ otpValue, setOtpValue ] = useState( [] )
     const [ finalValue, setFinalValue ] = useState( 0 )
 
+    const validateOTP = useValidateOTP() // Hook used to validate OTP
+
     useEffect( () => { refArray.current[0]?.focus() }, [] )
 
     const refArray = useRef([]) // Reference array for each input
@@ -16,9 +19,9 @@ function OTP() {
     const handleInputClick = ( value, index ) => {
 
         const newArray = [ ...otpValue ]
-        newArray[ index ] = Number( value )
+        newArray[ index ] = value
         setOtpValue( newArray )
-        setFinalValue( newArray.reduce( ( accumulator, current ) => accumulator * 10 + current, 0 ) )
+        setFinalValue( newArray.reduce( ( acc, curr ) => acc + curr ) )
         value && refArray.current[ index + 1 ]?.focus()
 
     }
@@ -31,6 +34,14 @@ function OTP() {
             refArray.current[ index - 1 ]?.focus()
 
         }
+
+    }
+
+    // Handling form submission
+    const handleSubmitForm = ( event ) => {
+
+        event.preventDefault()
+        validateOTP( finalValue )
 
     }
 
@@ -59,7 +70,11 @@ function OTP() {
                 }
 
             </div>
-            <div className="form-buttons"><button type='submit'>Submit OTP</button></div>
+            <div className="form-buttons">
+                
+                <button type='submit' onClick={ (e) => handleSubmitForm(e) }>Submit OTP</button>
+                
+            </div>
 
         </form>
 

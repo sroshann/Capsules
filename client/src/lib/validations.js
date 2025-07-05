@@ -12,7 +12,7 @@ const validateEmail = (email) => {
 
 }
 
-const validatePhoneNumber = ( phoneNumber ) => {
+const validatePhoneNumber = (phoneNumber) => {
 
     let { number } = phoneNumber
     number = number.toString()
@@ -54,8 +54,8 @@ export const validateSignup = values => {
     const { userName, phoneNumber, email, fullName, password, confirmPassword } = values
 
     // Full name
-    if( !fullName ) error.fullName = 'Full name cannot be empty'
-    else if( /\d/.test( fullName ) ) error.fullName = 'Full contains a number'
+    if (!fullName) error.fullName = 'Full name cannot be empty'
+    else if (/\d/.test(fullName)) error.fullName = 'Full contains a number'
 
     // User name
     if (!userName) error.userName = 'Username cannot be empty'
@@ -67,8 +67,8 @@ export const validateSignup = values => {
     if (emailError) error.email = emailError
 
     // Phone number
-    let phoneNumberError = validatePhoneNumber( phoneNumber )
-    if( phoneNumberError ) error.phoneNumber = phoneNumberError
+    let phoneNumberError = validatePhoneNumber(phoneNumber)
+    if (phoneNumberError) error.phoneNumber = phoneNumberError
 
     // Password
     let checkingPasswords = validatePassword({ password, confirmPassword }, true)
@@ -81,7 +81,7 @@ export const validateSignup = values => {
 
     }
 
-    return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
+    return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
 
 }
 
@@ -90,17 +90,43 @@ export const validateLogin = values => {
     let error = {}
     const { email, password } = values
 
-    let emailError = validateEmail( email )
-    if( emailError ) error.email = emailError
+    let emailError = validateEmail(email)
+    if (emailError) error.email = emailError
 
     let checkPassword = validatePassword({ password }, false)
-    if( checkPassword ) {
+    if (checkPassword) {
 
         const { passwordError } = checkPassword
-        if( passwordError ) error.password = passwordError
+        if (passwordError) error.password = passwordError
 
     }
 
-    return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
+    return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
 
-} 
+}
+
+export const validateForgot = {
+
+    validateForgotEmail: ({ email }) => {
+
+        const emailError = validateEmail(email)
+        if( emailError ) return toast.error( emailError, { style : toastStyle } )
+
+    },
+    validateForgotChange: (data) => {
+
+        const error = validatePassword(data, true)
+        if( error ) {
+
+            let message = {}
+            const { passwordError, confirmError, missmatch } = error
+            if (passwordError) message.password = passwordError
+            else if (confirmError) message.confirmPassword = confirmError
+            else if (missmatch) message.missmatch = missmatch
+            return Object.keys(message).length ? toast.error(Object.values(message)[0], { style: toastStyle }) : null
+
+        } 
+
+    }
+
+}
