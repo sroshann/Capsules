@@ -3,6 +3,7 @@ import { generateToken } from "../lib/utils.js"
 import UserModel from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import otpGenerator from 'otp-generator'
 
 // Signup
 export const signupController = async ( request, response ) => {
@@ -123,12 +124,25 @@ export const mailOTPController = async ( request, response ) => {
     try {
 
         const { email } = request.body
+        // Checks whehter the mail is exist in database or not
+        const user = await UserModel.findOne({ email })
+        if( !user ) return response.status( 500 ).json({ error : 'This mail not exist in user data' })
+
+        // Generating otp
+        const generatedOTP = otpGenerator.generate(6, {
+
+            lowerCaseAlphabets : false,
+            upperCaseAlphabets : false,
+            specialChars : false
+
+        })
+        
         const subject = 'Change password'
-        const description = 'Change the password by typing this OTP'
+        const description = `Change the password by typing this OTP ${ generatedOTP }`
         sendMailTo( email, subject, description )
         return response.status( 200 ).json({ message : 'OTP mailed' })
 
-    } catch( error ) {  }
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on sending email' }) }
 
 }
 
