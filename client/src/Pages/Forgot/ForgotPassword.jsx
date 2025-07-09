@@ -73,7 +73,7 @@ function ForgotPassword() {
                     {mailOTP && <OTP />}
 
                     {/* Change password */}
-                    { <form action="" onSubmit={ passwordFormik.handleSubmit } >
+                    { changePassword && <form action="" onSubmit={ passwordFormik.handleSubmit } >
 
                         <div className="input-fields">
 

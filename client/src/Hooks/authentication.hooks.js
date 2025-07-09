@@ -4,7 +4,7 @@ import { validateForgot, validateLogin, validateSignup } from "../lib/validation
 import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsAuthenticated, setUserData } from "../Store/Reducers/auth.reducer"
+import { setIsAuthenticated, setMailOTP, setUserData } from "../Store/Reducers/auth.reducer"
 import { useNavigate } from "react-router-dom"
 
 // Signup formik
@@ -202,14 +202,17 @@ export const useForgotFormik = () => {
 // Send mail
 export const useSendMail = () => {
 
+    const dispatch = useDispatch()
     return async ( data ) => {
 
         try {
 
             const response = await axiosInstance.post('/authentication/mailOTP', data)
-            console.log( response )
+            dispatch( setMailOTP() )
+            const { message } = response?.data
+            toast.success( message, { style : toastStyle } ) 
 
-        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } )}
 
     }
     

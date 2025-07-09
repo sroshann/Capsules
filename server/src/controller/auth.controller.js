@@ -1,3 +1,4 @@
+import { sendMailTo } from "../lib/email.lib.js"
 import { generateToken } from "../lib/utils.js"
 import UserModel from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
@@ -122,7 +123,10 @@ export const mailOTPController = async ( request, response ) => {
     try {
 
         const { email } = request.body
-        console.log( email )
+        const subject = 'Change password'
+        const description = 'Change the password by typing this OTP'
+        sendMailTo( email, subject, description )
+        return response.status( 200 ).json({ message : 'OTP mailed' })
 
     } catch( error ) {  }
 
