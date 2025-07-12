@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import { connectDb } from './lib/db.connection.js'
 import authRouter from './routes/ath.routes.js'
+import { connectRedis } from './lib/redis.connection.js'
 
 const app = express()
 const server = http.createServer( app )
@@ -38,5 +39,6 @@ server.listen( 5000, () => {
 
     console.log('Server is running')
     connectDb()
+    connectRedis()
 
 })
