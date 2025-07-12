@@ -41,4 +41,18 @@ form {
         column-gap: 8px;
 
     }
+
+    #forgot-from-buttons{ 
+        
+        row-gap: 1px; 
+        p {
+
+            text-align: center;
+            color: rgba(3, 34, 33, 0.8);
+            font-size: 0.7rem;
+
+        }
+    
+    }
+
 }

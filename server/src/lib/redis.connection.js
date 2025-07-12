@@ -2,11 +2,12 @@ import { createClient } from 'redis'
 import dotenv from 'dotenv'
 dotenv.config()
 
+export let redisClient
 export const connectRedis = async () => {
 
     try {
 
-        const client = createClient({
+        redisClient = createClient({
 
             username : 'default',
             password : process.env.REDIS_PASSWORD,
@@ -19,10 +20,10 @@ export const connectRedis = async () => {
 
         })
 
-        client.on( 'ready', () => console.log('Redis connected successfully') )
-        client.on( 'error', error => console.log('Error occured on connecting redis ', error) )
-        
-        await client.connect()
+        redisClient.on( 'ready', () => console.log('Redis connected successfully') )
+        redisClient.on( 'error', error => console.log('Error occured on connecting redis ', error) )
+
+        await redisClient.connect()
         
     } catch ( error ) { console.log("Error occured on connecting Redis ", error) }
 

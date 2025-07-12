@@ -1,4 +1,5 @@
 import { sendMailTo } from "../lib/email.lib.js"
+import { redisClient } from "../lib/redis.connection.js"
 import { generateToken } from "../lib/utils.js"
 import UserModel from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
@@ -139,7 +140,11 @@ export const mailOTPController = async ( request, response ) => {
         
         const subject = 'Change password'
         const description = `Change the password by typing this OTP ${ generatedOTP }`
-        sendMailTo( email, subject, description )
+
+        // Storing the otp in redis with key value 'otp' and it will expire in 5 minutes( 300 seconds )
+        await redisClient.setEx( 'otp', 300, generatedOTP )
+        sendMailTo( email, subject, description ) // Sending email
+
         return response.status( 200 ).json({ message : 'OTP mailed' })
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on sending email' }) }
@@ -152,9 +157,15 @@ export const validateOTPController = async ( request, response ) => {
     try {
 
         const { otp } = request.body
-        console.log( otp )
+        const redisOtp = await redisClient.get('otp')
 
-    } catch ( error ) {}
+        // Return error if the otp is expired after 5 minutes
+        if( !redisOtp ) return response.status( 500 ).json({ error : 'OTP expired, please request again', expired : true })
+        else if( otp !== redisOtp ) return response.status( 500 ).json({ error : 'OTP missmatches' })
+        
+        return response.status( 200 ).json({ message : 'OTP validated', validate : true })
+
+    } catch ( error ) { response.status( 500 ).json({ error : 'Error occured while validating OTP' }) }
 
 }
 

@@ -70,9 +70,10 @@ function OTP() {
                 }
 
             </div>
-            <div className="form-buttons">
+            <div className="form-buttons" id='forgot-from-buttons'>
                 
                 <button type='submit' onClick={ (e) => handleSubmitForm(e) }>Submit OTP</button>
+                <p>OTP will be expired after 5 minutes</p>
                 
             </div>
 

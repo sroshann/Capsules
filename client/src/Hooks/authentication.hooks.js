@@ -4,7 +4,7 @@ import { validateForgot, validateLogin, validateSignup } from "../lib/validation
 import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsAuthenticated, setMailOTP, setUserData } from "../Store/Reducers/auth.reducer"
+import { setChangePassword, setIsAuthenticated, setMailOTP, setUserData } from "../Store/Reducers/auth.reducer"
 import { useNavigate } from "react-router-dom"
 
 // Signup formik
@@ -208,7 +208,7 @@ export const useSendMail = () => {
         try {
 
             const response = await axiosInstance.post('/authentication/mailOTP', data)
-            dispatch( setMailOTP() )
+            dispatch( setMailOTP() ) // To visible OTP entering section
             const { message } = response?.data
             toast.success( message, { style : toastStyle } ) 
 
@@ -221,18 +221,31 @@ export const useSendMail = () => {
 // Validate OTP
 export const useValidateOTP = () => {
 
+    const dispatch = useDispatch()
     return async ( otp ) => {
 
         try {
 
+            // Validating the entered OTP
             if (!otp) return toast.error('OTP cannot be empty', { style: toastStyle })
             else if (otp.split(" ").join("") != otp || otp.length !== 6 || isNaN(otp))
                 return toast.error('Invalid OTP', { style: toastStyle })
         
             const response = await axiosInstance.post('/authentication/validateOTP', { otp })
-            console.log( response )
 
-        } catch( error ) {  }
+            // If validation become true show the change password section
+            const { validate, message } = response?.data
+            toast.success( message, { style : toastStyle } )
+            if( validate ) dispatch( setChangePassword() )
+
+        } catch( responseError ) {  
+
+            const { error, expired } = responseError?.response?.data
+            // To hide OTP entering section if the OTP is expired after 5 minutes
+            if( expired ) dispatch( setMailOTP() )
+            toast.error( error, { style : toastStyle } )
+
+        }
 
     }
 
