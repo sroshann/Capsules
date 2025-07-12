@@ -143,6 +143,8 @@ export const mailOTPController = async ( request, response ) => {
 
         // Storing the otp in redis with key value 'otp' and it will expire in 5 minutes( 300 seconds )
         await redisClient.setEx( 'otp', 300, generatedOTP )
+        // Storing email of user in redis inorder use while changing password
+        await redisClient.setEx( 'email', 300, email )
         sendMailTo( email, subject, description ) // Sending email
 
         return response.status( 200 ).json({ message : 'OTP mailed' })
@@ -163,6 +165,7 @@ export const validateOTPController = async ( request, response ) => {
         if( !redisOtp ) return response.status( 500 ).json({ error : 'OTP expired, please request again', expired : true })
         else if( otp !== redisOtp ) return response.status( 500 ).json({ error : 'OTP missmatches' })
         
+        await redisClient.del('otp') // Deleting the otp from redis after its usage
         return response.status( 200 ).json({ message : 'OTP validated', validate : true })
 
     } catch ( error ) { response.status( 500 ).json({ error : 'Error occured while validating OTP' }) }
@@ -175,8 +178,24 @@ export const changePasswordController = async ( request, response ) => {
     try {
 
         const { password } = request.body
-        console.log( password )
+        if( !password ) return response.status( 500 ).json({ error : 'Password cannot be empty' })
+        
+        // Hashing password
+        const salt = await bcrypt.genSalt( 10 )
+        const hashedPassword = bcrypt.hashSync( password, salt )
 
-    } catch( error ) {}
+        // Retreiving the email of user in the password should be changed, from redis
+        const email = await redisClient.get('email')
+        const result = await UserModel.updateOne({ email }, { $set : { password : hashedPassword } })
+
+        if( result.acknowledged && result.modifiedCount > 0 ) {
+
+            // Mongo db accepted and updated the document
+            await redisClient.del('email') // Deleting the value of email from redis after its usage
+            return response.status( 200 ).json({ message : 'Password changed successfully' })
+
+        }
+
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured while changing the password' }) }
 
 }

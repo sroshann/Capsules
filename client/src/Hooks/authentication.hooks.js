@@ -254,15 +254,23 @@ export const useValidateOTP = () => {
 // Change password
 export const useChangePassword = () => {
 
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     return async ( data ) => {
 
         try {
 
             const { password } = data
             const response = await axiosInstance.post('/authentication/changePassword', { password })
-            console.log( response )
+            const { message } = response?.data
+            toast.success( message, { style : toastStyle } )
 
-        } catch( error ) {  }
+            navigate('/login')
+            // Hiding OTP input and password input after completing the process
+            dispatch( setMailOTP() )
+            dispatch( setChangePassword() )
+
+        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
 
     }
 
