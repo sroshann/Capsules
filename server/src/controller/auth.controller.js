@@ -102,6 +102,7 @@ export const getUserDataController = async ( request, response ) => {
 
     try {
 
+        console.log('Getting user data')
         const token = request.cookies.credential
         if( token ) {
 
@@ -109,6 +110,7 @@ export const getUserDataController = async ( request, response ) => {
             if( decode ) {
 
                 const user = await UserModel.findById( decode.userId ).select('-password')
+                console.log('Got token and user = ', user)
                 return response.status( 200 ).json({ user })
 
             }

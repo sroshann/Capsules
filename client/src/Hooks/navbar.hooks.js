@@ -9,6 +9,7 @@ export const useNavigateTo = () => {
         if( destination === 'landing' ) navigate('/')
         else if( destination === 'signup' ) navigate('/signup')
         else if( destination === 'login' ) navigate('/login')
+        else if( destination === 'profile' ) navigate('/profile')
 
     }
 

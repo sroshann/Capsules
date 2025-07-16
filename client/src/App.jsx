@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
-import { ProtectAuth } from './Middlewares/ProtectRoutes' 
+import { ProtectAuth, ProtectFeatures } from './Middlewares/ProtectRoutes' 
 import { useSelector } from 'react-redux'
 import { Toaster } from 'react-hot-toast'
 import { useGetUserData } from './Hooks/authentication.hooks'
@@ -9,6 +9,7 @@ const Landing = lazy( () => import('./Pages/Landing/Landing') )
 const Signup = lazy( () => import('./Pages/Signup/Signup') )
 const Login = lazy( () => import('./Pages/Login/Login') )
 const ForgotPassword = lazy( () => import('./Pages/Forgot/ForgotPassword') )
+const Profile = lazy( () => import('./Pages/Profile/Profile') )
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
         // is still exist in cookies of backend
         // If token is still exist the user is authenticated,
         // so we can fetch user data from token and then from database
+        // console.log('User data changes')
         getUserData()
 
     }, [ userData ] )
@@ -37,6 +39,7 @@ function App() {
                     <Route element={ <ProtectAuth><Signup /></ProtectAuth> } path='/signup' />
                     <Route element={ <ProtectAuth><Login /></ProtectAuth> } path='/login' />
                     <Route element={ <ProtectAuth><ForgotPassword /></ProtectAuth> } path='/forgot' />
+                    <Route element={ <ProtectFeatures><Profile /></ProtectFeatures> } path='/profile' />
 
                 </Routes>
 

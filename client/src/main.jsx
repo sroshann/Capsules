@@ -8,7 +8,7 @@ import './main.css'
 
 createRoot(document.getElementById('root')).render(
 
-    <StrictMode>
+    <>
 
         <Provider store={ store }>
 
@@ -20,6 +20,6 @@ createRoot(document.getElementById('root')).render(
 
         </Provider>
 
-    </StrictMode>,
+    </>
 
 )

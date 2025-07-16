@@ -34,7 +34,7 @@ function MobileNav() {
 
         logout()
         handleCloseDiv()
-        navigate('landing')
+        navigate('login')
 
     }
 
@@ -54,17 +54,17 @@ function MobileNav() {
 
                     <section id="upper">
 
-                        <p>CAPSULES</p>
+                        <p onClick={ () => navigate('landing') }>CAPSULES</p>
                         <button onClick={ handleCloseDiv } className='nav-menu-button white'>Close</button>
 
                     </section>
                     <section id="lower">
 
-                        <p onClick={ () => navigate('landing') }>Home</p>
+                        <p onClick={ () => navigate('') }>Home</p>
                         <p onClick={ () => navigate('') }>Find other homes</p>
                         <p onClick={ () => navigate('') }>Medicines</p>
                         <p onClick={ () => navigate('') }>About</p>
-                        <p onClick={ () => navigate('') }>Profile</p>
+                        <p onClick={ () => navigate('profile') }>Profile</p>
                         <p onClick={ () => navigate('') }>Notification <i className='bx bx-bell' /></p>
                         {
 

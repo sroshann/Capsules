@@ -146,13 +146,13 @@ export const useGetUserData = () => {
         try {
 
             if( userData === null ) {
-
+                
                 const response = await axiosInstance.get('/authentication/getUserData')
                 const { user } = response?.data
                 dispatch( setUserData( user ) )
                 dispatch( setIsAuthenticated() )
-
-            }
+                
+            } else return
 
         } catch( error ) { toast.error( error?.response?.data?.erro, { style : toastStyle } ) }
 

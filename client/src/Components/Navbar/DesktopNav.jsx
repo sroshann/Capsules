@@ -64,8 +64,16 @@ function DesktopNav() {
                 
                     <section id='profile-img'>
 
-                        {userData.profilePicture ? <img src={userData.profilePicture} alt="dp" /> 
-                        : <i className='bx  bxs-user-circle'  ></i>}
+                        {userData.profilePicture ? 
+                        
+                            <img 
+                        
+                                src={userData.profilePicture} 
+                                alt="dp" 
+                                onClick={ () => navigate('profile') }
+                            
+                            /> 
+                        : <i className='bx  bxs-user-circle' onClick={ () => navigate('profile') }></i>}
                     
                     </section>
                     
