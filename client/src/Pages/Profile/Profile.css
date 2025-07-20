@@ -8,12 +8,12 @@
 
 #user-data-display {
 
-    height: 580px;
+    height: fit-content;
     width: 40%;
     box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
     margin: 70px 0px 0px 0px;
     border-radius: 18px;
-    padding: 10px;
+    padding: 10px 10px 30px 10px;
     display: flex;
     flex-direction: column;
     row-gap: 11px;
@@ -25,13 +25,13 @@
             display: flex;
             justify-content: end;
 
-
             p {
 
                 color: #016BF8;
                 position: relative;
                 right: 1.3%;
                 top: 5px;
+                cursor: pointer;
 
             }
 
@@ -51,7 +51,6 @@
                 height: 148px;
                 border-radius: 50%;
                 background-color: rgba(3, 34, 33, 0.8);
-                display: grid;
                 place-items: center;
                 justify-content: center;
 
@@ -90,7 +89,6 @@
 
             #user-names {
 
-                margin: -28px 0px 0px 0px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -100,6 +98,12 @@
 
             }
 
+            i {
+
+                font-size: 155px;
+                color: lightgray;
+
+            }
 
         }
 
@@ -112,7 +116,6 @@
         column-gap: 6px;
 
         section {
-
             
             border-radius: 8px;
             p { font-size: 0.8rem; color: white; }
@@ -121,6 +124,52 @@
 
         #member { padding: 13px 35px; background-color: #0D2F2B; }
         #joined { padding: 13px 15px; background-color: red; }
+
+    }
+
+    #input-section {
+
+        width: 90%;
+        margin: 8px auto 0px auto;
+        display: grid;
+        row-gap: 10px;
+
+        div {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            input {
+
+                width: 78%;
+                outline: none;
+                border: solid 1px lightgray;
+                padding: 10px 0px 10px 13px;
+                border-radius: 6px;
+
+            }
+
+        }
+
+    }
+
+    #save-button {
+
+        display: grid;
+        place-items: center;
+        margin: 5px 0px -10px 0px;
+
+        button {
+
+            padding: 10px 25px;
+            background-color: #016BF8;
+            color: white;
+            border-radius: 6px;
+            border: 0;
+            font-size: 0.95rem;
+
+        }
 
     }
 
@@ -133,4 +182,4 @@
 
     }
 
-}  
+}   

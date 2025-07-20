@@ -54,10 +54,12 @@ export const useSignup = () => {
 
         try {
 
+            const loading = toast.loading('Signing in', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/signup', data)
             const { message, user } = response?.data
             dispatch(setUserData(user)) // Setting user details to redux store
             dispatch(setIsAuthenticated())
+            toast.remove( loading )
             toast.success(message, { style: toastStyle })
             navigate('/')
 
@@ -103,10 +105,12 @@ export const useLogin = () => {
 
         try {
 
+            const loading = toast.loading('Logging in', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/login', data)
             const { message, user } = response?.data
             dispatch(setUserData(user))
             dispatch(setIsAuthenticated())
+            toast.remove( loading )
             toast.success(message, { style: toastStyle })
             navigate('/')
 
@@ -124,10 +128,12 @@ export const useLogout = () => {
 
         try {
 
+            const loading = toast.loading('Logging out', { style : toastStyle })
             const response = await axiosInstance.get('/authentication/logout')
             const { message } = response?.data
             dispatch(setUserData(null)) // Clearing user data
             dispatch(setIsAuthenticated())
+            toast.remove( loading )
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
@@ -207,9 +213,11 @@ export const useSendMail = () => {
 
         try {
 
+            const loading = toast.loading('Mailing OTP', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/mailOTP', data)
             dispatch( setMailOTP() ) // To visible OTP entering section
             const { message } = response?.data
+            toast.remove( loading )
             toast.success( message, { style : toastStyle } ) 
 
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } )}
@@ -260,9 +268,11 @@ export const useChangePassword = () => {
 
         try {
 
+            const loading = toast.loading('Changing password', { style : toastStyle })
             const { password } = data
             const response = await axiosInstance.post('/authentication/changePassword', { password })
             const { message } = response?.data
+            toast.remove( loading )
             toast.success( message, { style : toastStyle } )
 
             navigate('/login')

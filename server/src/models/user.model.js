@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema(
             type : 'String',
             default : ""
 
+        },
+        memberOf : {
+
+            type : 'Number',
+            default : 0
+
         }
 
     },
