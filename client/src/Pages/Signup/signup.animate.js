@@ -23,6 +23,29 @@ export const animateSignup = (labelRef, formRef) => {
 
 }
 
+export const animateProfile = ( profileRef ) => {
+
+    gsap.fromTo(
+
+        profileRef?.current,
+        { opacity: 0 },
+        {
+
+            opacity: 1,
+            duration: 0.8,
+            scrollTrigger: {
+
+                trigger: profileRef?.current,
+                toggleActions: 'play none none none'
+
+            }
+
+        }
+
+    )
+
+}
+
 export const animateCountry = (countryRef) => {
 
     // On initial this ref is not present on DOM

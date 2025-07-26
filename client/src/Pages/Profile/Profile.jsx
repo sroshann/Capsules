@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
-import  mine from '../../Assets/my.jpg'
 import { useSelector } from 'react-redux'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
+import { useGSAP } from '@gsap/react'
+import { animateProfile } from '../Signup/signup.animate'
 import './Profile.css'
 
 function Profile() {
@@ -10,16 +13,20 @@ function Profile() {
     const { userData } = useSelector( state => state.authentication )
     const [ selectedImage, setSelectedImage ] = useState( null )
     const [ edit, setEdit ] = useState( false )
-    console.log( userData )
 
     const handleEdit = () => setEdit( previous => !previous )
+
+    // GSAP
+    const profileRef = useRef()
+    gsap.registerPlugin( ScrollTrigger )
+    useGSAP( () => animateProfile( profileRef ) , [] )
 
     return (
 
         <>
         
             <Navbar />
-            <section id='profile-root'>
+            <section id='profile-root' ref={ profileRef }>
 
                 <section id="user-data-display">
 
@@ -84,7 +91,7 @@ function Profile() {
                     <section id='member-and-joined'>
                         
                         <section id='member'><p>Member of : { userData?.memberOf }</p></section>    
-                        <section id='joined'><p>Joined on : 16/07/2025</p></section>    
+                        <section id='joined'><p>Joined on : { userData?.createdAt }</p></section>    
                     
                     </section>                    
                     <section id='input-section'>

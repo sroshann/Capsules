@@ -5,7 +5,8 @@ import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
 import { setChangePassword, setIsAuthenticated, setMailOTP, setUserData } from "../Store/Reducers/auth.reducer"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { changeDateFormat } from "../lib/utils"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -57,6 +58,7 @@ export const useSignup = () => {
             const loading = toast.loading('Signing in', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/signup', data)
             const { message, user } = response?.data
+            user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
             dispatch(setUserData(user)) // Setting user details to redux store
             dispatch(setIsAuthenticated())
             toast.remove( loading )
@@ -108,6 +110,7 @@ export const useLogin = () => {
             const loading = toast.loading('Logging in', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/login', data)
             const { message, user } = response?.data
+            user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
             dispatch(setUserData(user))
             dispatch(setIsAuthenticated())
             toast.remove( loading )
@@ -147,6 +150,8 @@ export const useGetUserData = () => {
 
     const { userData } = useSelector( state => state.authentication )
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const location = useLocation()
     return async () => {
 
         try {
@@ -155,8 +160,10 @@ export const useGetUserData = () => {
                 
                 const response = await axiosInstance.get('/authentication/getUserData')
                 const { user } = response?.data
+                user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
                 dispatch( setUserData( user ) )
                 dispatch( setIsAuthenticated() )
+                navigate( location?.pathname || '/', { replace : true } )
                 
             } else return
 
