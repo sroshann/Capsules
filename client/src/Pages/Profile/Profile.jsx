@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useSelector } from 'react-redux'
@@ -6,6 +6,8 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../Signup/signup.animate'
+import FlagandCode from '../../Components/Country popup/FlagandCode'
+import { useGetParticularFlag } from '../../Hooks/common.hooks'
 import './Profile.css'
 
 function Profile() {
@@ -13,13 +15,26 @@ function Profile() {
     const { userData } = useSelector( state => state.authentication )
     const [ selectedImage, setSelectedImage ] = useState( null )
     const [ edit, setEdit ] = useState( false )
+    const [ selectCountry, setSelectCountry ] = useState( false )
+    const [ userFlag, setUserFlag ] = useState( null )
+
+    const getParticularFlag = useGetParticularFlag() // Hook used to get the flag of user
 
     const handleEdit = () => setEdit( previous => !previous )
+    const handleSelectCountry = () => setSelectCountry( previous => !previous )
+    const handleGetUserFlag = async () => {
+
+        const particularFlag = await getParticularFlag( userData?.phoneNumber?.countryCode )
+        setUserFlag( particularFlag )
+
+    }
 
     // GSAP
     const profileRef = useRef()
     gsap.registerPlugin( ScrollTrigger )
     useGSAP( () => animateProfile( profileRef ) , [] )
+
+    useEffect( () => { handleGetUserFlag() }, [ userData ] )
 
     return (
 
@@ -117,9 +132,20 @@ function Profile() {
                         <div>
 
                             <p>Phone</p>
-                            <input type="text" placeholder={ userData?.phoneNumber?.number } readOnly={ !edit } />
+                            <section id='profile-phone-number-input'>
+
+                                <div onClick={ handleSelectCountry } onBlur={ handleSelectCountry } tabIndex={0}>
+
+                                    <img src={ userFlag } alt="" />
+                                    <p>{ userData?.phoneNumber?.dailCode }</p>
+
+                                </div>
+                                <input type="text" placeholder={ userData?.phoneNumber?.number } readOnly={ !edit } />
+
+                            </section>
 
                         </div>  
+                        { selectCountry && <FlagandCode /> }
                         
                     </section>                    
                     { edit && <section id='save-button'><button>Save changes</button></section> }                 

@@ -20,8 +20,9 @@ export const useSignupFromik = () => {
             userName: '',
             phoneNumber: {
 
-                country: '+91', // Setting default value India
-                number: ''
+                dailCode: '+91', // Setting default value India
+                number: '',
+                countryCode : 'IN'
 
             },
             email: '',

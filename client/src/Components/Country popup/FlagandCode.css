@@ -1,0 +1,38 @@
+#flag-and-code-popup {
+
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    margin: 36px 0px 0px -15px;
+    width: 150px;
+    max-height: 300px;
+    overflow-y: scroll;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.18);
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+    font-size: 11px;
+    line-height: 1;
+
+    div {
+
+        padding: 10px;
+        img { 
+            
+            width: 15px; 
+            height: 15px; 
+            border-radius: 0; 
+            object-fit: contain;
+        
+        }
+
+        p { color: gray; text-align: end; }
+
+    }
+
+
+    div:not( :last-child) {
+        border-bottom: solid 0.5px gray;
+    }
+
+}

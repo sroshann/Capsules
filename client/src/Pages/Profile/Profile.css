@@ -152,6 +152,47 @@
 
         }
 
+        #profile-phone-number-input {
+
+            display: flex;
+            column-gap: 5px;
+            padding: 10px 0px 10px 13px;
+            border-radius: 6px;
+            border: solid 1px lightgray;
+            width: 78%;
+
+            div {
+
+                display: flex;
+                column-gap: 3px;
+
+                p {
+
+                    color: gray;
+                    font-size: 0.85rem;
+
+                }
+
+                img {
+
+                    border-radius: 0;
+                    height: 15px;
+                    width: 15px;
+                    object-fit: contain;
+
+                }
+
+            }
+
+            input { 
+                
+                border: none; 
+                padding: 0; 
+            
+            }
+
+        }
+
     }
 
     #save-button {

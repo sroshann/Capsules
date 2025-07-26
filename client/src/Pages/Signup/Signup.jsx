@@ -19,7 +19,8 @@ function Signup() {
     const [ selectedCountry, setSelectedCountry ] = useState({
 
         code : '+91',
-        flag : 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'
+        flag : 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg',
+        countryCode : 'IN'
 
     })
 
@@ -41,13 +42,14 @@ function Signup() {
         else setCountryDetails( await getCountries() ) 
 
     }
-    const handleSelectedCountry = ( code, flag ) => {
+    const handleSelectedCountry = ( dialCode, flag, countryCode ) => {
 
-        setSelectedCountry({ code, flag })
+        setSelectedCountry({ dialCode, flag, countryCode })
         setCountryDetails([])
 
         // Setting the selected country code into formik value
-        formik.setFieldValue('phoneNumber.country', code)
+        formik.setFieldValue('phoneNumber.dialCode', dialCode)
+        formik.setFieldValue('phoneNumber.country', countryCode)
 
     }
 
@@ -130,7 +132,7 @@ function Signup() {
                                         { countryDetails.map( ( object ) => (
 
                                             <div key={ object.code } 
-                                            onMouseDown={ () => handleSelectedCountry( object.dial_code, object.flag ) }>
+                                            onMouseDown={ () => handleSelectedCountry( object.dial_code, object.flag, object.code ) }>
 
                                                 <img src={ object.flag } alt="" />
                                                 <p>{ object.name }</p>

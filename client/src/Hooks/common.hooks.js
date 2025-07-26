@@ -1,5 +1,8 @@
 import axios from 'axios'
+import { toastStyle } from '../constants/common.constant'
+import toast from 'react-hot-toast'
 
+// Hook used to get country code and flags
 export const useGetCounrtyDetails = () => {
 
     return async () => {
@@ -37,6 +40,23 @@ export const useGetCounrtyDetails = () => {
             }, [])
 
         } catch( error ) { console.log( error ) }
+
+    }
+
+}
+
+export const useGetParticularFlag = () => {
+
+    return async ( countryCode ) => {
+
+        try {
+
+            const response = await axios.get('https://countriesnow.space/api/v0.1/countries/flag/images')
+            const data = response?.data?.data
+            const particlularFlag = data.filter( value => value.iso2 === countryCode )
+            return particlularFlag[0].flag
+
+        } catch ( error ) { toast.error('Country flag error', { style : toastStyle }) }
 
     }
 
