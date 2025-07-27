@@ -1,6 +1,6 @@
 import { axiosInstance } from "../lib/axios"
 import { useFormik } from 'formik'
-import { validateForgot, validateLogin, validateSignup } from "../lib/validations"
+import { validateForgot, validateLogin, validateProfile, validateSignup } from "../lib/validations"
 import { toastStyle } from "../constants/common.constant"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
@@ -291,5 +291,36 @@ export const useChangePassword = () => {
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
 
     }
+
+}
+
+// User profile formik
+export const useProfileFormik = () => {
+
+    const { userData } = useSelector( state => state.authentication )
+    return useFormik({
+
+        initialValues : {
+
+            fullName : userData?.fullName,
+            email : userData?.email,
+            userName : userData?.userName,
+            phoneNumber: {
+
+                dialCode: userData?.phoneNumber?.dialCode, // Setting default value India
+                number: userData?.phoneNumber?.number,
+                countryCode : userData?.phoneNumber?.countryCode
+
+            },
+            profilePicture : userData?.profilePicture
+
+        },
+        validate : validateProfile,
+        validateOnBlur : false,
+        validateOnChange : false,
+        validateOnMount : false,
+        onSubmit : values => console.log( values )
+
+    })
 
 }

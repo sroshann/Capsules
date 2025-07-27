@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useGetCounrtyDetails } from '../../Hooks/common.hooks'
 import './FlagandCode.css'
 
-function FlagandCode() {
+// Pass a state function as props inorder to store the selected coutry
+function FlagandCode({ select, formik }) {
 
     const [countryDetails, setCountryDetails] = useState([])
     const getCountry = useGetCounrtyDetails()
+
     const handleGettingData = async (option) => {
 
         if (option === 'open') setCountryDetails(await getCountry())
@@ -20,6 +22,15 @@ function FlagandCode() {
 
     }, [])
 
+    // Storing the selected country details in props function state
+    const handleSelected = ( countryCode, dialCode, flag ) => {
+
+        select({ countryCode, dialCode, flag })
+        formik.setFieldValue('phoneNumber.dialCode', dialCode)
+        formik.setFieldValue('phoneNumber.countryCode', countryCode)
+
+    }
+
     return (
 
         <>
@@ -29,7 +40,8 @@ function FlagandCode() {
 
                     {countryDetails.map((object) => (
 
-                        <div key={object.code}>
+                        <div key={object.code}
+                        onMouseDown={ () => handleSelected( object.code, object.dial_code, object.flag ) }>
 
                             <img src={object.flag} alt="" />
                             <p>{object.name}</p>

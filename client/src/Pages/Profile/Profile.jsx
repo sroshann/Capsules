@@ -7,7 +7,8 @@ import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../Signup/signup.animate'
 import FlagandCode from '../../Components/Country popup/FlagandCode'
-import { useGetParticularFlag } from '../../Hooks/common.hooks'
+import { useConvertToBS6, useGetParticularFlag } from '../../Hooks/common.hooks'
+import { useProfileFormik } from '../../Hooks/authentication.hooks'
 import './Profile.css'
 
 function Profile() {
@@ -15,26 +16,36 @@ function Profile() {
     const { userData } = useSelector( state => state.authentication )
     const [ selectedImage, setSelectedImage ] = useState( null )
     const [ edit, setEdit ] = useState( false )
-    const [ selectCountry, setSelectCountry ] = useState( false )
-    const [ userFlag, setUserFlag ] = useState( null )
+    const [ showCountry, setShowCountry ] = useState( false )
 
-    const getParticularFlag = useGetParticularFlag() // Hook used to get the flag of user
+    // This state function is passed to flag component inorder to store the selected country data
+    const [ selectedCountry, setSelectedCountry ] = useState({})
+
+    // Hook used to get user flag, a state variable is returned from the hook so 
+    // there is no need another state here
+    const flag = useGetParticularFlag( userData?.phoneNumber?.countryCode )
+    const imageBS6 = useConvertToBS6( selectedImage ) // Hook used to convert image into its BS6 format
+    const formik = useProfileFormik()
 
     const handleEdit = () => setEdit( previous => !previous )
-    const handleSelectCountry = () => setSelectCountry( previous => !previous )
-    const handleGetUserFlag = async () => {
+    const handleShowCountry = () => {
 
-        const particularFlag = await getParticularFlag( userData?.phoneNumber?.countryCode )
-        setUserFlag( particularFlag )
+        // Show the country details only when editing
+        if ( edit ) setShowCountry( previous => !previous )
 
     }
 
     // GSAP
     const profileRef = useRef()
-    gsap.registerPlugin( ScrollTrigger )
+    gsap.registerPlugin( ScrollTrigger ) 
     useGSAP( () => animateProfile( profileRef ) , [] )
 
-    useEffect( () => { handleGetUserFlag() }, [ userData ] )
+    useEffect( () => { 
+        
+        // This is used to add the selected image BS6 code to formik values
+        formik.setFieldValue('profilePicture', imageBS6)
+    
+    } , [ imageBS6 ] )
 
     return (
 
@@ -43,7 +54,7 @@ function Profile() {
             <Navbar />
             <section id='profile-root' ref={ profileRef }>
 
-                <section id="user-data-display">
+                <form id="user-data-display" onSubmit={ formik.handleSubmit }>
 
                     <section id='photo-and-name'>
 
@@ -56,7 +67,7 @@ function Profile() {
                                     
                                     { 
                                     
-                                        selectedImage ? <img src={ URL.createObjectURL( selectedImage ) } /> : 
+                                        imageBS6 ? <img src={ imageBS6 } /> : 
                                         ( 
                                             
                                             userData?.profilePicture ? <img src={ userData?.profilePicture } alt="" />  : 
@@ -85,7 +96,9 @@ function Profile() {
                                     
                                         onClick={ () => document.querySelector('#fileInput').click() }
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" >
-                                        <path class="b" d="m18.71,5.29c-.39-.39-1.02-.39-1.41,0l-11,11c-.19.19-.29.44-.29.71v3c0,.55.45,1,1,1h3c.27,0,.52-.11.71-.29l11-11c.39-.39.39-1.02,0-1.41l-3-3Zm-9.12,13.71h-1.59v-1.59l7.5-7.5,1.59,1.59-7.5,7.5Zm8.91-8.91l-1.59-1.59,1.09-1.09,1.59,1.59-1.09,1.09Z"></path><path class="b" d="m7,12c.26,0,.5-.15.61-.4l1.23-2.77,2.77-1.23c.24-.11.4-.35.4-.61s-.16-.5-.4-.61l-2.77-1.23-1.23-2.77c-.11-.24-.34-.39-.6-.4-.27-.02-.5.15-.61.39l-1.23,2.67-2.78,1.34c-.23.11-.38.35-.38.61,0,.26.16.49.4.6l2.77,1.23,1.23,2.77c.11.24.35.4.61.4Z"></path><path class="b" d="m21.76,18.63l-1.66-.74-.74-1.66c-.06-.14-.21-.24-.36-.24-.16-.01-.3.09-.37.23l-.74,1.6-1.67.8c-.14.07-.23.21-.23.37,0,.16.1.3.24.36l1.66.74.74,1.66c.06.14.21.24.37.24s.3-.09.37-.24l.74-1.66,1.66-.74c.14-.06.24-.21.24-.37s-.09-.3-.24-.37Z"></path>
+                                        <path className="b" d="m18.71,5.29c-.39-.39-1.02-.39-1.41,0l-11,11c-.19.19-.29.44-.29.71v3c0,.55.45,1,1,1h3c.27,0,.52-.11.71-.29l11-11c.39-.39.39-1.02,0-1.41l-3-3Zm-9.12,13.71h-1.59v-1.59l7.5-7.5,1.59,1.59-7.5,7.5Zm8.91-8.91l-1.59-1.59,1.09-1.09,1.59,1.59-1.09,1.09Z"></path>
+                                        <path className="b" d="m7,12c.26,0,.5-.15.61-.4l1.23-2.77,2.77-1.23c.24-.11.4-.35.4-.61s-.16-.5-.4-.61l-2.77-1.23-1.23-2.77c-.11-.24-.34-.39-.6-.4-.27-.02-.5.15-.61.39l-1.23,2.67-2.78,1.34c-.23.11-.38.35-.38.61,0,.26.16.49.4.6l2.77,1.23,1.23,2.77c.11.24.35.4.61.4Z"></path>
+                                        <path className="b" d="m21.76,18.63l-1.66-.74-.74-1.66c-.06-.14-.21-.24-.36-.24-.16-.01-.3.09-.37.23l-.74,1.6-1.67.8c-.14.07-.23.21-.23.37,0,.16.1.3.24.36l1.66.74.74,1.66c.06.14.21.24.37.24s.3-.09.37-.24l.74-1.66,1.66-.74c.14-.06.24-.21.24-.37s-.09-.3-.24-.37Z"></path>
                                     
                                     </svg>
                                         
@@ -114,19 +127,37 @@ function Profile() {
                         <div>
 
                             <p>Fullname</p>
-                            <input type="text" placeholder={ userData?.fullName } readOnly={ !edit } />
+                            <input 
+                            
+                                type="text" 
+                                readOnly={ !edit } 
+                                { ...formik.getFieldProps('fullName') }
+                                
+                            />
 
                         </div>
                         <div>
 
                             <p>Username</p>
-                            <input type="text" placeholder={ userData?.userName } readOnly={ !edit } />
+                            <input 
+
+                                type="text" 
+                                readOnly={ !edit } 
+                                { ...formik.getFieldProps('userName') }
+                                
+                            />
 
                         </div>
                         <div>
 
                             <p>Email</p>
-                            <input type="text" placeholder={ userData?.email } readOnly={ !edit } />
+                            <input 
+                            
+                                type="text" 
+                                readOnly={ !edit } 
+                                { ...formik.getFieldProps('email') }
+                                
+                            />
 
                         </div>
                         <div>
@@ -134,23 +165,29 @@ function Profile() {
                             <p>Phone</p>
                             <section id='profile-phone-number-input'>
 
-                                <div onClick={ handleSelectCountry } onBlur={ handleSelectCountry } tabIndex={0}>
+                                <div onClick={ handleShowCountry } onBlur={ handleShowCountry } tabIndex={0}>
 
-                                    <img src={ userFlag } alt="" />
-                                    <p>{ userData?.phoneNumber?.dailCode }</p>
+                                    <img src={ selectedCountry?.flag ? selectedCountry.flag : flag } alt="" />
+                                    <p>{ selectedCountry?.dialCode ? selectedCountry.dialCode : userData?.phoneNumber?.dialCode }</p>
 
                                 </div>
-                                <input type="text" placeholder={ userData?.phoneNumber?.number } readOnly={ !edit } />
+                                <input 
+                                
+                                    type="number"  
+                                    readOnly={ !edit } 
+                                    { ...formik.getFieldProps('phoneNumber.number') }
+                                    
+                                />
 
                             </section>
 
                         </div>  
-                        { selectCountry && <FlagandCode /> }
+                        { showCountry && <FlagandCode select={ setSelectedCountry } formik={ formik }/> }
                         
                     </section>                    
-                    { edit && <section id='save-button'><button>Save changes</button></section> }                 
+                    { edit && <section id='save-button'><button type='submit'>Save changes</button></section> }                 
 
-                </section>
+                </form>
 
             </section>
             <Footer />

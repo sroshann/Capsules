@@ -130,3 +130,29 @@ export const validateForgot = {
     }
 
 }
+
+export const validateProfile = values => {
+
+    let error = {}
+    const { fullName, userName, email, phoneNumber } = values
+
+    // Full name
+    if (!fullName) error.fullName = 'Full name cannot be empty'
+    else if (/\d/.test(fullName)) error.fullName = 'Full contains a number'
+
+    // User name
+    if (!userName) error.userName = 'Username cannot be empty'
+    else if (userName.split(" ").join("") != userName) error.userName = 'User name should not contain spaces'
+    else if (userName.length <= 3) error.userName = 'Create a longer username'
+
+    // Email
+    let emailError = validateEmail(email)
+    if (emailError) error.email = emailError
+
+    // Phone number
+    let phoneNumberError = validatePhoneNumber(phoneNumber)
+    if (phoneNumberError) error.phoneNumber = phoneNumberError
+
+    return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
+
+}

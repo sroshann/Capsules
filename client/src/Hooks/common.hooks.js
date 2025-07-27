@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { toastStyle } from '../constants/common.constant'
 import toast from 'react-hot-toast'
+import { useEffect, useState } from 'react'
 
 // Hook used to get country code and flags
 export const useGetCounrtyDetails = () => {
@@ -45,19 +46,40 @@ export const useGetCounrtyDetails = () => {
 
 }
 
-export const useGetParticularFlag = () => {
+// Hook used to get user particular flag
+export const useGetParticularFlag = ( countryCode ) => {
 
-    return async ( countryCode ) => {
+    const [ flag, setFlag ] = useState( null )
 
-        try {
+    useEffect( () => {
 
-            const response = await axios.get('https://countriesnow.space/api/v0.1/countries/flag/images')
-            const data = response?.data?.data
-            const particlularFlag = data.filter( value => value.iso2 === countryCode )
-            return particlularFlag[0].flag
+        ( async () => {
 
-        } catch ( error ) { toast.error('Country flag error', { style : toastStyle }) }
+            try {
 
-    }
+                const response = await axios.get('https://countriesnow.space/api/v0.1/countries/flag/images')
+                const flags = response?.data?.data
+                const particular = flags.find( value => value.iso2 === countryCode )
+                setFlag( particular?.flag )
+
+            } catch ( error ) { toast.error('Flag error', { style : toastStyle }) }
+
+        } ) ()
+
+    }, [ countryCode ])
+
+    return flag
+
+}
+
+// Converting image into its BS6 format
+export const useConvertToBS6 = ( file ) => {
+
+    const [ image, setImage ] = useState( null )
+    if( !file ) return 
+    const reader = new FileReader()
+    reader.readAsDataURL( file )
+    reader.onload = () => setImage( reader.result )
+    return image
 
 }
