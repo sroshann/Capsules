@@ -25,7 +25,7 @@ function Profile() {
     // there is no need another state here
     const flag = useGetParticularFlag( userData?.phoneNumber?.countryCode )
     const imageBS6 = useConvertToBS6( selectedImage ) // Hook used to convert image into its BS6 format
-    const formik = useProfileFormik()
+    const formik = useProfileFormik( setEdit )
 
     const handleEdit = () => setEdit( previous => !previous )
     const handleShowCountry = () => {
@@ -89,7 +89,7 @@ function Profile() {
                                         type="file" 
                                         id="fileInput" 
                                         style={{ display : 'none' }}
-                                        onChange={ ( event ) => setSelectedImage( event.target.files[0] ) } 
+                                        onChange={ ( event ) => setSelectedImage( event.target.files[0] ) }
                                         
                                     />
                                     <svg  

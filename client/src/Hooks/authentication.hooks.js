@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setChangePassword, setIsAuthenticated, setMailOTP, setUserData } from "../Store/Reducers/auth.reducer"
 import { useLocation, useNavigate } from "react-router-dom"
 import { changeDateFormat } from "../lib/utils"
+import { isEqual } from 'lodash'
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -295,32 +296,74 @@ export const useChangePassword = () => {
 }
 
 // User profile formik
-export const useProfileFormik = () => {
+export const useProfileFormik = ( setEdit ) => {
 
     const { userData } = useSelector( state => state.authentication )
+    const updateProfile = useUpdateProfile()
     return useFormik({
 
         initialValues : {
 
-            fullName : userData?.fullName,
-            email : userData?.email,
-            userName : userData?.userName,
+            fullName : userData?.fullName || '',
+            email : userData?.email || '',
+            userName : userData?.userName || '',
             phoneNumber: {
 
-                dialCode: userData?.phoneNumber?.dialCode, // Setting default value India
-                number: userData?.phoneNumber?.number,
-                countryCode : userData?.phoneNumber?.countryCode
+                dialCode: userData?.phoneNumber?.dialCode || '', // Setting default value India
+                number: userData?.phoneNumber?.number || '',
+                countryCode : userData?.phoneNumber?.countryCode || ''
 
             },
-            profilePicture : userData?.profilePicture
+            profilePicture : userData?.profilePicture || ''
 
         },
         validate : validateProfile,
         validateOnBlur : false,
         validateOnChange : false,
         validateOnMount : false,
-        onSubmit : values => console.log( values )
+        onSubmit : values => {
+
+            if( !values.profilePicture ) values.profilePicture = userData.profilePicture || ''
+            updateProfile( values )
+            setEdit( previous => !previous )
+            
+        }
 
     })
+
+}
+
+export const useUpdateProfile = () => {
+
+    const { userData } = useSelector( state => state.authentication )
+    const dispatch = useDispatch()
+    return async ( data ) => {
+
+        const loading = toast.loading('Updating user data', { style : toastStyle })
+        try {
+
+            const { createdAt, memberOf, updatedAt, _id, __v, ...rest } = userData
+            let changedData = {}
+            
+            // Checking for only the changed values
+            for( const key in rest ) {
+                
+                if( !isEqual( rest[ key ], data[ key ] ) ) changedData[ key ] = data[ key ]
+                
+            }
+            
+            // Retrun if no fields were changed
+            if( Object.keys( changedData ).length === 0 ) return toast.error('No fields are changed', { style : toastStyle })
+
+            const response = await axiosInstance.put('/authentication/updateProfile', changedData)
+            const { message, updatedUser } = response?.data
+            updatedUser.createdAt = changeDateFormat( updatedUser?.createdAt ) // Changing Mongo DB default date format
+            dispatch(setUserData(updatedUser)) // Setting updated user data to redux store
+            toast.success( message, { style : toastStyle } )
+            
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        toast.remove( loading )
+
+    }
 
 }

@@ -1,7 +1,9 @@
 import express from 'express'
 import { changePasswordController, getUserDataController, loginController, 
-    logoutController, mailOTPController, signupController, validateOTPController } 
+    logoutController, mailOTPController, signupController, 
+    updateProfileController, validateOTPController } 
     from '../controller/auth.controller.js'
+import { protectUserRoutes } from '../middleware/auth.middleware.js'
 const router = express()
 
 // Signup
@@ -24,5 +26,8 @@ router.post('/validateOTP', validateOTPController)
 
 // Change password
 router.post('/changePassword', changePasswordController)
+
+// Update profile
+router.put('/updateProfile', protectUserRoutes, updateProfileController)
 
 export default router

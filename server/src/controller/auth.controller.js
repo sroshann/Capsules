@@ -1,3 +1,4 @@
+import cloudinary from "../lib/cloudinary.js"
 import { sendMailTo } from "../lib/email.lib.js"
 import { redisClient } from "../lib/redis.connection.js"
 import { generateToken } from "../lib/utils.js"
@@ -49,6 +50,8 @@ export const signupController = async ( request, response ) => {
             generateToken( newUser._id, response )
             await newUser.save()
             const { password, __v, ...rest } = newUser.toObject()
+            // Storing the user details in redis for 1 hour
+            await redisClient.setEx('user', 3600, JSON.stringify( rest ))
             return response.status( 201 ).json({ message : 'User created successfully', user : rest })
 
         } else return response.status( 400 ).json({ error : 'Invalid userd data' })
@@ -73,14 +76,17 @@ export const loginController = async ( request, response ) => {
 
                 generateToken( user._id, response )
                 const { password, __v, ...rest } = user.toObject()
+                // Storing the user details in redis for 1 hour
+                await redisClient.setEx('user', 3600, JSON.stringify( rest ))
                 return response.status( 200 ).json({ message : 'User authenticated', user : rest })
-
 
             } else return response.status( 400 ).json({ error : 'Invalid credentials' })
 
         } else return response.status( 400 ).json({ error : 'Invalid credentials' })
 
-    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on loging in' }) }
+    } catch( error ) { 
+        console.log( error )
+        return response.status( 500 ).json({ error : 'Error occured on loging in' }) }
 
 }
 
@@ -89,6 +95,8 @@ export const logoutController = async ( request, response ) => {
 
     try {
 
+        // Delete user data from redis
+        await redisClient.del('user')
         // Deleting cookie
         response.cookie('credential', '', { maxAge : 0 })
         return response.status( 200 ).json({ message : 'Loged out successfully' })
@@ -102,7 +110,6 @@ export const getUserDataController = async ( request, response ) => {
 
     try {
 
-        console.log('Getting user data')
         const token = request.cookies.credential
         if( token ) {
 
@@ -110,7 +117,6 @@ export const getUserDataController = async ( request, response ) => {
             if( decode ) {
 
                 const user = await UserModel.findById( decode.userId ).select('-password')
-                console.log('Got token and user = ', user)
                 return response.status( 200 ).json({ user })
 
             }
@@ -199,5 +205,56 @@ export const changePasswordController = async ( request, response ) => {
         }
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured while changing the password' }) }
+
+}
+
+// Update profile
+export const updateProfileController = async ( request, response ) => {
+
+    try {
+
+        const { profilePicture, userName, email, phoneNumber } = request.body
+
+        if( userName || email || phoneNumber?.number ) {
+
+            // Checking whether the new provided data are already present or not
+            const user = await UserModel.findOne({
+
+                $or : [ { email }, { userName }, { 'phoneNumber.number' : phoneNumber?.number } ]
+
+            })
+
+            if( user ) {
+
+                if( user?.userName === userName ) 
+                    return response.status( 400 ).json({ error : "Username is already taken" })
+                else if( user?.email === email ) return response.status( 400 ).json({ error : "Email is already taken" }) 
+                else if( user?.phoneNumber?.number === phoneNumber?.number ) 
+                    return response.status( 400 ).json({ error : "Phonenumber is already taken" })
+
+            }
+
+        }
+
+        if( profilePicture ) {
+
+            const uploadResponse = await cloudinary.uploader.upload( profilePicture )
+            request.body.profilePicture = uploadResponse?.secure_url
+
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+
+            request.user._id,
+            { $set : request.body },
+            { new : true } // Returns the updated document
+
+        )
+
+        const { updatedAt, __v, password, ...rest } = updatedUser.toObject()
+        await redisClient.setEx('user', 3600, JSON.stringify( rest )) // Also update in redis
+        return response.status( 200 ).json({ message : 'User data updated', updatedUser : rest })
+
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating profile' }) }
 
 }
