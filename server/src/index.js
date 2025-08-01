@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import { connectDb } from './lib/db.connection.js'
 import authRouter from './routes/ath.routes.js'
+import homeRouter from './routes/home.routes.js'
 import { connectRedis } from './lib/redis.connection.js'
 
 const app = express()
@@ -23,6 +24,7 @@ app.use( cors({
 }))
 
 app.use('/authentication', authRouter)
+app.use('/home', homeRouter)
 
 if( process.env.NODE_ENV === 'production' ) {
 

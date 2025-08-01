@@ -3,6 +3,7 @@ import { validateCreateHome } from "../lib/validations"
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
+import { useNavigate } from "react-router-dom"
 
 // Create home formik
 export const homeFormik = () => {
@@ -27,12 +28,7 @@ export const homeFormik = () => {
         validateOnBlur : false,
         validateOnMount : false,
         validateOnChange : false,
-        onSubmit : ( values, { resetForm } ) => {
-
-            createHome( values )
-            resetForm()
-
-        }
+        onSubmit : ( values ) => createHome( values )
 
     })
 
@@ -41,14 +37,20 @@ export const homeFormik = () => {
 // Create home
 export const useCreateHome = () => {
 
+    const navigate = useNavigate()
+
     return async ( data ) => {
 
+        const loading = toast.loading('Creating your home', { style : toastStyle })
         try {
 
-            console.log( data )
-            // const response = await axiosInstance.post('', data)
+            const response = await axiosInstance.post('/home/createHome', data)
+            const { message } = response?.data
+            navigate('/home')
+            toast.success( message, { style : toastStyle } )
 
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        toast.remove( loading )
 
     }
 
