@@ -9,6 +9,7 @@ import { animateProfile } from '../Signup/signup.animate'
 import FlagandCode from '../../Components/Country popup/FlagandCode'
 import { useConvertToBS6, useGetParticularFlag } from '../../Hooks/common.hooks'
 import { useProfileFormik } from '../../Hooks/authentication.hooks'
+import { useMediaQuery } from 'react-responsive'
 import './Profile.css'
 
 function Profile() {
@@ -47,6 +48,8 @@ function Profile() {
     
     } , [ imageBS6 ] )
 
+    const isMobile = useMediaQuery({ maxWidth : 767 })
+
     return (
 
         <>
@@ -58,7 +61,7 @@ function Profile() {
 
                     <section id='photo-and-name'>
 
-                        <section id='edit-option'><p onClick={ handleEdit }>Edit ?</p></section>  
+                        <section id='edit-option'>{ !isMobile && <p onClick={ handleEdit }>Edit ?</p> } </section>
                         <section>
 
                             <section id="outer-green-circle">
@@ -80,6 +83,7 @@ function Profile() {
                                 </section>    
                                 
                             </section>   
+                            <section id='user-names' style={ edit ? { margin : '-25px 0px 0px 0px' } : { margin: '5px 0px 0px 0px' } }>
                             {   edit &&
 
                                 <section id="edit-image">
@@ -105,7 +109,6 @@ function Profile() {
                                 </section> 
 
                             }
-                            <section id='user-names' style={ edit ? { margin : '-25px 0px 0px 0px' } : { margin: '5px 0px 0px 0px' } }>
 
                                 <p id='username'>{ userData?.userName }</p>
                                 <p id='fullname'>{ userData?.fullName }</p>
@@ -115,7 +118,16 @@ function Profile() {
                             
                         </section>  
 
-                    </section>                    
+                    </section>          
+                    {
+
+                        isMobile && <section id="edit-button">
+                            
+                            <button type='button' onClick={ handleEdit }>Edit ?</button>
+                            
+                        </section>  
+
+                    }        
                     <section id='member-and-joined'>
                         
                         <section id='member'><p>Member of : { userData?.memberOf }</p></section>    
@@ -126,7 +138,7 @@ function Profile() {
 
                         <div>
 
-                            <p>Fullname</p>
+                            { !isMobile && <p>Fullname</p> }
                             <input 
                             
                                 type="text" 
@@ -138,7 +150,7 @@ function Profile() {
                         </div>
                         <div>
 
-                            <p>Username</p>
+                            { !isMobile && <p>Username</p> }
                             <input 
 
                                 type="text" 
@@ -150,7 +162,7 @@ function Profile() {
                         </div>
                         <div>
 
-                            <p>Email</p>
+                            { !isMobile && <p>Email</p> }
                             <input 
                             
                                 type="text" 
@@ -162,7 +174,7 @@ function Profile() {
                         </div>
                         <div>
 
-                            <p>Phone</p>
+                            { !isMobile && <p>Phone</p> }
                             <section id='profile-phone-number-input'>
 
                                 <div onClick={ handleShowCountry } onBlur={ handleShowCountry } tabIndex={0}>
