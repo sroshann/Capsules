@@ -33,7 +33,7 @@ function DesktopNav() {
 
                 <div>
 
-                    <p>Home</p>
+                    <p onClick={ () => navigate('home') }>Home</p>
                     <p>Find other homes</p>
                     <p>Medicines</p>
                     <p>About</p>

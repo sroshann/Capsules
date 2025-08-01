@@ -60,7 +60,7 @@ function MobileNav() {
                     </section>
                     <section id="lower">
 
-                        <p onClick={ () => navigate('') }>Home</p>
+                        <p onClick={ () => navigate('home') }>Home</p>
                         <p onClick={ () => navigate('') }>Find other homes</p>
                         <p onClick={ () => navigate('') }>Medicines</p>
                         <p onClick={ () => navigate('') }>About</p>
