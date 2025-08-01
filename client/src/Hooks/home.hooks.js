@@ -4,6 +4,8 @@ import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
 import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { setHomes } from "../Store/Reducers/home.reducer"
 
 // Create home formik
 export const homeFormik = () => {
@@ -55,3 +57,22 @@ export const useCreateHome = () => {
     }
 
 }
+
+// Get created homes
+export const useGetHomes = () => {
+
+    const dispatch = useDispatch()
+
+    return async () => {
+
+        try {
+
+            const response = await axiosInstance.get('/home/getCreatedHomes')
+            const { homes } = response?.data
+            dispatch( setHomes( homes ) ) // Home data are store in 'redux'
+
+        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+
+    }
+
+}   

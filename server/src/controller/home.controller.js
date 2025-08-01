@@ -1,3 +1,4 @@
+import { redisClient } from "../lib/redis.connection.js"
 import HomeModel from "../models/home.model.js"
 import UserModel from "../models/user.model.js"
 
@@ -35,5 +36,32 @@ export const createHomeController = async ( request, response ) => {
         }
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on creating home' }) }
+
+}
+
+// Get created homes
+export const getCHController = async ( request, response ) => {
+
+    try {
+
+        // Inorder to make the execution fast the data is fetched form 'redis'
+        // If data is not present in 'redis', then it fetched from database
+        // and then stored in 'redis'
+
+        let homes = JSON.parse( await redisClient.get('Homes') )
+        if( homes && homes.length > 0 ) return response.status( 200 ).json({ homes })
+        else {
+    
+            homes = await HomeModel.find().select('-__v')
+            if( homes && homes.length > 0 ) {
+
+                await redisClient.setEx('Homes', 6400, JSON.stringify( homes ))
+                return response.status( 200 ).json({ homes })
+
+            } 
+    
+        }
+
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting homes' }) }
 
 }

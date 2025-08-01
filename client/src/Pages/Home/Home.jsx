@@ -1,19 +1,27 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../Signup/signup.animate'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
+import { useGetHomes } from '../../Hooks/home.hooks'
+import { useSelector } from 'react-redux'
 import './Home.css'
 
 function Home() {
 
-    const navigate = useNavigateTo()
+    // This home data is stored in this store
+    const { homesData } = useSelector( state => state.homes )
+
+    const navigate = useNavigateTo() // Hook used for navigation
+    const getHomes = useGetHomes() // Hook used to get all homes
 
     // GSAP
     const homeRef = useRef()
     // Using the same animation of profile page
     useGSAP( () => { animateProfile( homeRef ) }, [] )
+
+    useEffect( () => { getHomes() }, [] )
 
     return (
 
