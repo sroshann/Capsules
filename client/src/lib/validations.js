@@ -138,7 +138,7 @@ export const validateProfile = values => {
 
     // Full name
     if (!fullName) error.fullName = 'Full name cannot be empty'
-    else if (/\d/.test(fullName)) error.fullName = 'Full contains a number'
+    else if (/\d/.test(fullName)) error.fullName = 'Full name contains a number'
 
     // User name
     if (!userName) error.userName = 'Username cannot be empty'
@@ -154,5 +154,34 @@ export const validateProfile = values => {
     if (phoneNumberError) error.phoneNumber = phoneNumberError
 
     return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
+
+}
+
+export const validateCreateHome = values => {
+
+    let error = {}
+    const { nickName, homeName, country, state, district, pincode } = values
+
+    // Nickname
+    if (!nickName) error.nickName = 'Home nick name cannot be empty'
+
+    // Home name
+    if (!homeName) error.homeName = 'Home name cannot be empty'
+    else if (homeName.split(" ").join("") != homeName) error.homeName = 'Home name should not contain spaces'
+    else if (homeName.length <= 3) error.homeName = 'Create a longer homeName'
+
+    // Country
+    if( !country ) error.country = 'Country cannot be empty'
+
+    // State
+    if( !state ) error.state = 'State cannot be empty'
+
+    // District
+    if( !district ) error.district = 'District cannot be empty'
+
+    // Pincode
+    if( !pincode ) error.pincode = 'Pincode cannot be empty'
+
+    return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
 
 }

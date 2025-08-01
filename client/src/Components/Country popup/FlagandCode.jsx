@@ -3,7 +3,8 @@ import { useGetCounrtyDetails } from '../../Hooks/common.hooks'
 import './FlagandCode.css'
 
 // Pass a state function as props inorder to store the selected coutry
-function FlagandCode({ select, formik }) {
+// Pass formik to set value and also define where from it called
+function FlagandCode({ select, formik, from }) {
 
     const [countryDetails, setCountryDetails] = useState([])
     const getCountry = useGetCounrtyDetails()
@@ -23,11 +24,21 @@ function FlagandCode({ select, formik }) {
     }, [])
 
     // Storing the selected country details in props function state
-    const handleSelected = ( countryCode, dialCode, flag ) => {
+    const handleSelected = ( countryCode, dialCode, flag, countryName ) => {
 
-        select({ countryCode, dialCode, flag })
-        formik.setFieldValue('phoneNumber.dialCode', dialCode)
-        formik.setFieldValue('phoneNumber.countryCode', countryCode)
+        
+        if( from === 'profile' ) {
+            
+            select({ countryCode, dialCode, flag })
+            formik.setFieldValue('phoneNumber.dialCode', dialCode)
+            formik.setFieldValue('phoneNumber.countryCode', countryCode)
+
+        } else if( from === 'createHome' ) {
+
+            select({ flag, countryName })
+            formik.setFieldValue('country', countryName)
+
+        }
 
     }
 
@@ -41,7 +52,7 @@ function FlagandCode({ select, formik }) {
                     {countryDetails.map((object) => (
 
                         <div key={object.code}
-                        onMouseDown={ () => handleSelected( object.code, object.dial_code, object.flag ) }>
+                        onMouseDown={ () => handleSelected( object.code, object.dial_code, object.flag, object.name ) }>
 
                             <img src={object.flag} alt="" />
                             <p>{object.name}</p>

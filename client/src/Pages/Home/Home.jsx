@@ -3,9 +3,12 @@ import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../Signup/signup.animate'
+import { useNavigateTo } from '../../Hooks/navbar.hooks'
 import './Home.css'
 
 function Home() {
+
+    const navigate = useNavigateTo()
 
     // GSAP
     const homeRef = useRef()
@@ -28,7 +31,12 @@ function Home() {
                         <i className='bx  bx-x'  ></i> 
 
                     </div>
-                    <button id='create'><i className='bx  bx-plus'  ></i> Create a new home</button>
+                    <button id='create' onClick={ () => navigate('createHome') }>
+                        
+                        <i className='bx  bx-plus'  ></i> 
+                        Create a new home
+                        
+                    </button>
 
                 </section>
 

@@ -177,7 +177,13 @@ function Profile() {
                             { !isMobile && <p>Phone</p> }
                             <section id='profile-phone-number-input'>
 
-                                <div onClick={ handleShowCountry } onBlur={ handleShowCountry } tabIndex={0}>
+                                <div 
+                                
+                                    onClick={ handleShowCountry } 
+                                    onBlur={ handleShowCountry } 
+                                    tabIndex={0}
+                                    
+                                >
 
                                     <img src={ selectedCountry?.flag ? selectedCountry.flag : flag } alt="" />
                                     <p>{ selectedCountry?.dialCode ? selectedCountry.dialCode : userData?.phoneNumber?.dialCode }</p>
@@ -194,7 +200,7 @@ function Profile() {
                             </section>
 
                         </div>  
-                        { showCountry && <FlagandCode select={ setSelectedCountry } formik={ formik }/> }
+                        { showCountry && <FlagandCode select={ setSelectedCountry } formik={ formik } from={ 'profile' }/> }
                         
                     </section>                    
                     { edit && <section id='save-button'><button type='submit'>Save changes</button></section> }                 

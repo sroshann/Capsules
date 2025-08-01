@@ -1,0 +1,139 @@
+#createHome-root {
+
+    height: 100dvh;
+    display: flex;
+
+}
+
+/* Left section */
+#createHome-left {
+
+    display: grid;
+    place-items: center;
+    justify-content: end;
+    width: 50%;
+    text-align: center;
+
+    & p:nth-child(1) {
+
+        font-family: 'VintageMohai', sans-serif;
+        font-size: 3rem;
+        color: rgba(3, 34, 33, 0.8);
+
+    }
+
+    & p:nth-child(2) {
+
+        font-size: 13.5px;
+        margin: -11px 0px 0px 0px;
+
+    }
+
+}
+
+/* Right section */
+#createHome-right {
+
+    display: grid;
+    place-items: center;
+    width: 50%;
+    /* place-items: start;
+    align-items: center; */
+
+    form {
+
+        width: 57%;
+        display: grid;
+        row-gap: 15px;
+        position: relative;
+        right: 20px;
+
+    }
+
+    #CHome-input-fields {
+
+        display: flex;
+        flex-direction: column;
+        row-gap: 11px;
+
+        div {
+
+            width: 22.8rem;
+            padding: 11px 0px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            input,
+            textarea {
+
+                width: 100%;
+                height: 100%;
+                outline: none;
+                border: 0;
+                padding: 0px 0px 0px 13px;
+                border-radius: 6px;
+                color: rgba(0, 0, 0, 0.70);
+
+            }
+
+            textarea {
+                height: 70px;
+            }
+
+        }
+
+        section {
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 11px;
+
+            div {
+
+                width: 11.055rem;
+
+                
+                
+            }
+            
+            #country-input {
+
+                padding: 0px 0px 0px 11px;
+
+                input { padding: 0px 0px 0px 6px; }
+
+                img {
+
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 0;
+                    object-fit: contain;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    button {
+
+        display: flex;
+        column-gap: 3px;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 10px 0px;
+        border: 0;
+        border-radius: 6px;
+        color: white;
+        background-color: #0D2F2B;
+
+    }
+
+}
