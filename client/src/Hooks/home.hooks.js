@@ -6,6 +6,7 @@ import { axiosInstance } from "../lib/axios"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { setHomes } from "../Store/Reducers/home.reducer"
+import { changeDateFormat } from "../lib/utils"
 
 // Create home formik
 export const homeFormik = () => {
@@ -68,7 +69,14 @@ export const useGetHomes = () => {
         try {
 
             const response = await axiosInstance.get('/home/getCreatedHomes')
-            const { homes } = response?.data
+            let { homes } = response?.data
+            homes = homes.map( ( value ) => ({
+                
+                // Changing the date format of each home
+                ...value,
+                createdAt : changeDateFormat( value?.createdAt )
+                
+            }))
             dispatch( setHomes( homes ) ) // Home data are store in 'redux'
 
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }

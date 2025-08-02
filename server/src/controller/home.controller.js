@@ -52,7 +52,7 @@ export const getCHController = async ( request, response ) => {
         if( homes && homes.length > 0 ) return response.status( 200 ).json({ homes })
         else {
     
-            homes = await HomeModel.find().select('-__v')
+            homes = await HomeModel.find().select('-__v -updatedAt')
             if( homes && homes.length > 0 ) {
 
                 await redisClient.setEx('Homes', 6400, JSON.stringify( homes ))
