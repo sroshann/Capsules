@@ -50,7 +50,7 @@ function Home() {
                 </section>
 
                 {/* Home data listing */}
-                <section id="listing-homes">
+                {/* <section id="listing-homes">
 
                     { homesData.length > 0 && 
                     
@@ -60,7 +60,6 @@ function Home() {
 
                                 <section>
 
-                                    {/* Lables */}
                                     <section>
 
                                         <section>
@@ -74,7 +73,6 @@ function Home() {
 
                                     </section>
 
-                                    {/* Members */}
                                     <section>
 
                                         <p>Members</p>
@@ -100,7 +98,7 @@ function Home() {
 
                     }
 
-                </section>
+                </section> */}
 
             </section>
             <Footer />
