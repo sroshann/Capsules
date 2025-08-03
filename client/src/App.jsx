@@ -16,6 +16,8 @@ const CreateHome = lazy( () => import('./Pages/Create new home/CreateHome') )
 function App() {
 
     const { userData } = useSelector( state => state.authentication )
+    // const { homesData } = useSelector( state => state.homes )
+    // console.log( homesData )
     const getUserData = useGetUserData() // Hook use to get user data on data loss
 
     useEffect( () => {

@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
 import { useNavigate } from "react-router-dom"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setHomes } from "../Store/Reducers/home.reducer"
 import { changeDateFormat } from "../lib/utils"
 
@@ -41,6 +41,8 @@ export const homeFormik = () => {
 export const useCreateHome = () => {
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { homesData } = useSelector( state => state.homes )
 
     return async ( data ) => {
 
@@ -48,8 +50,9 @@ export const useCreateHome = () => {
         try {
 
             const response = await axiosInstance.post('/home/createHome', data)
-            const { message } = response?.data
-            navigate('/home')
+            const { message, home } = response?.data
+            dispatch( setHomes( [ ...homesData, home ] )) // Adding newly created home to redux
+            // navigate('/home')
             toast.success( message, { style : toastStyle } )
 
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
@@ -70,6 +73,7 @@ export const useGetHomes = () => {
 
             const response = await axiosInstance.get('/home/getCreatedHomes')
             let { homes } = response?.data
+            console.log( homes )
             homes = homes.map( ( value ) => ({
                 
                 // Changing the date format of each home

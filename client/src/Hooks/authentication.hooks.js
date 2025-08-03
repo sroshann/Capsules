@@ -52,7 +52,7 @@ export const useSignupFromik = () => {
 export const useSignup = () => {
 
     const dispatch = useDispatch()
-    const navigate = useNavigate()
+
     return async (data) => {
 
         try {
@@ -65,7 +65,6 @@ export const useSignup = () => {
             dispatch(setIsAuthenticated())
             toast.remove( loading )
             toast.success(message, { style: toastStyle })
-            navigate('/')
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
 
@@ -104,7 +103,7 @@ export const useLoginFormik = () => {
 export const useLogin = () => {
 
     const dispatch = useDispatch()
-    const navigate = useNavigate()
+
     return async (data) => {
 
         try {
@@ -117,7 +116,6 @@ export const useLogin = () => {
             dispatch(setIsAuthenticated())
             toast.remove( loading )
             toast.success(message, { style: toastStyle })
-            navigate('/')
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
 
@@ -129,6 +127,7 @@ export const useLogin = () => {
 export const useLogout = () => {
 
     const dispatch = useDispatch()
+
     return async () => {
 
         try {
