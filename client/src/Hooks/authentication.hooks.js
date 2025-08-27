@@ -106,18 +106,18 @@ export const useLogin = () => {
 
     return async (data) => {
 
+        const loading = toast.loading('Logging in', { style : toastStyle })
         try {
 
-            const loading = toast.loading('Logging in', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/login', data)
             const { message, user } = response?.data
             user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
             dispatch(setUserData(user))
             dispatch(setIsAuthenticated())
-            toast.remove( loading )
             toast.success(message, { style: toastStyle })
-
+            
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
+        toast.remove( loading )
 
     }
 

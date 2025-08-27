@@ -36,15 +36,20 @@ export const createHomeController = async ( request, response ) => {
             // Newly created home is also added to already stored data in REDIS
             let homesInRedis = JSON.parse( await redisClient.get('Homes') )
             if( homesInRedis ) await redisClient.setEx('Homes', 6400, JSON.stringify( [ ...homesInRedis, rest ] ))
-            else await redisClient.setEx('Homes', 6400, JSON.stringify([ rest ]))
+            else {
+        
+                // If some times redis data becomes empty, so adding only newly created home into redis 
+                // is not a good idea, then we should fetch all the details from db and then add to redis
+                let dbHomes = await HomeModel.find().select('-__v -updatedAt')
+                await redisClient.setEx('Homes', 6400, JSON.stringify([ dbHomes ]))
+        
+            }
 
             return response.status( 200 ).json({ message : 'Home created successfully', home : rest })
 
         }
 
-    } catch( error ) { 
-        console.log( error )
-        return response.status( 500 ).json({ error : 'Error occured on creating home' }) }
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on creating home' }) }
 
 }
 
@@ -58,11 +63,9 @@ export const getCHController = async ( request, response ) => {
         // and then stored in 'redis'
 
         let homes = JSON.parse( await redisClient.get('Homes') )
-        console.log( homes )
         if( homes && homes.length > 0 ) return response.status( 200 ).json({ homes })
         else {
     
-            console.log('Database')
             homes = await HomeModel.find().select('-__v -updatedAt')
             if( homes && homes.length > 0 ) {
 

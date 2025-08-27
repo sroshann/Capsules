@@ -3,6 +3,11 @@ import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import FlagandCode from '../../Components/Country popup/FlagandCode'
 import { homeFormik } from '../../Hooks/home.hooks'
+import { useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
+import { useGSAP } from '@gsap/react'
+import { animateSignup } from '../Signup/signup.animate'
 import './CreateHome.css'
 
 function CreateHome() {
@@ -19,6 +24,12 @@ function CreateHome() {
 
     const formik = homeFormik()
 
+    // GSAP
+    const labelRef = useRef()
+    const formRef = useRef()
+    gsap.registerPlugin( ScrollTrigger )
+    useGSAP( () => { animateSignup( labelRef, formRef ) }, [] )
+
     return (
 
         <>
@@ -27,7 +38,7 @@ function CreateHome() {
             <section id="createHome-root">
 
                 {/* Left section */}
-                <section id="createHome-left">
+                <section id="createHome-left" ref={ labelRef }>
 
                     <section>
 
@@ -41,8 +52,8 @@ function CreateHome() {
                     </section>
 
                 </section>
-                 {/* Right section */}
-                <section id="createHome-right">
+                {/* Right section */}
+                <section id="createHome-right" ref={ formRef }>
 
                     <form onSubmit={ formik.handleSubmit }>
 

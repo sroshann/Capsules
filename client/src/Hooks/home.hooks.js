@@ -66,7 +66,6 @@ export const useCreateHome = () => {
 export const useGetHomes = () => {
 
     const dispatch = useDispatch()
-
     return async () => {
 
         try {
