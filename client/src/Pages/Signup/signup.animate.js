@@ -68,3 +68,30 @@ export const animateCountry = (countryRef) => {
     }
 
 }
+
+export const animateMedicineData = ( medicineRef, isNull ) => {
+
+    // This is used to animate medicine details
+    // The opacity of ref during rendering animation is based on data present in the redux state
+    // This is handled only during rendering animation and rest case is handled by CSS
+
+    gsap.fromTo(
+
+        medicineRef?.current,
+        { opacity: 0 },
+        {
+
+            opacity: isNull ? 0.4 : 1,
+            duration: 0.8,
+            scrollTrigger: {
+
+                trigger: medicineRef?.current,
+                toggleActions: 'play none none none'
+
+            }
+
+        }
+
+    )
+
+}

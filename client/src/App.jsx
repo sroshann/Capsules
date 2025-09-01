@@ -12,6 +12,7 @@ const ForgotPassword = lazy( () => import('./Pages/Forgot/ForgotPassword') )
 const Profile = lazy( () => import('./Pages/Profile/Profile') )
 const Home = lazy( () => import('./Pages/Home/Home') )
 const CreateHome = lazy( () => import('./Pages/Create new home/CreateHome') )
+const Medicines = lazy( () => import('./Pages/Medicines/Medicines') )
 
 function App() {
 
@@ -45,7 +46,8 @@ function App() {
                     <Route element={ <ProtectAuth><ForgotPassword /></ProtectAuth> } path='/forgot' />
                     <Route element={ <ProtectFeatures><Profile /></ProtectFeatures> } path='/profile' />
                     <Route element={ <ProtectFeatures><Home /></ProtectFeatures> } path='/home' />
-                    <Route element={ <ProtectFeatures><CreateHome /></ProtectFeatures> } path='createHome' />
+                    <Route element={ <ProtectFeatures><CreateHome /></ProtectFeatures> } path='/createHome' />
+                    <Route element={ <Medicines /> } path='/medicines' />
 
                 </Routes>
 

@@ -185,3 +185,15 @@ export const validateCreateHome = values => {
     return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
 
 }
+
+export const validateMedicineName = ({ medicine }) => {
+
+    let error = {}
+    
+    // Check whether the medicine name contains only numbers
+    if( ( /^\d+$/ ).test( medicine ) ) error.medicine = "Invalid medicine name"
+    else if( medicine.trim().length === 0 ) error.medicine = "Invalid medicine name"
+
+    return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
+
+}

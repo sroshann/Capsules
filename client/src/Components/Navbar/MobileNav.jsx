@@ -62,7 +62,7 @@ function MobileNav() {
 
                         <p onClick={ () => navigate('home') }>Home</p>
                         <p onClick={ () => navigate('') }>Find other homes</p>
-                        <p onClick={ () => navigate('') }>Medicines</p>
+                        <p onClick={ () => navigate('medicines') }>Medicines</p>
                         <p onClick={ () => navigate('') }>About</p>
                         <p onClick={ () => navigate('profile') }>Profile</p>
                         <p onClick={ () => navigate('') }>Notification <i className='bx bx-bell' /></p>
