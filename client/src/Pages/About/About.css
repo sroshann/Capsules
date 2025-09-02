@@ -1,0 +1,93 @@
+#about-root {
+
+    height: fit-content;
+    min-height: 100dvh;
+    padding: 110px 0px 40px 0px;
+    display: flex;
+    justify-content: center;
+
+}
+
+#about-contents {
+
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+
+    #about-heading {  
+
+        font-family: 'VintageMohai', sans-serif;
+        font-size: 2.5rem;
+        color: rgba(3, 34, 33, 0.8);
+
+    }
+
+    #about-description {
+
+        display: grid;
+        row-gap: 20px;
+
+        p { opacity: 0.7; }
+
+    }
+
+}
+
+/* Mobile phones */
+@media ( max-width : 767px ) {
+
+    #about-root { 
+        
+        padding: 53px 0px 40px 0px; 
+        min-height: unset;
+    
+    }
+    #about-contents {
+
+        row-gap: 5px;
+        #about-heading { font-size: 2.3rem; }
+        #about-description {
+
+            row-gap: 10px;
+            p { 
+            
+                font-size: 0.8rem; 
+                line-height: 1.3;
+            
+            }
+
+        }
+
+    }
+
+}
+
+/* Tablet */
+@media ( min-width : 768px ) and ( max-width : 1024px ) {
+
+    #about-root { 
+        
+        padding: 69px 0px 40px 0px; 
+        min-height: unset;
+    
+    }
+    #about-contents {
+
+        row-gap: 5px;
+        #about-heading { font-size: 2.4rem; }
+        #about-description {
+
+            row-gap: 15px;
+            p { 
+            
+                font-size: 0.9rem; 
+                line-height: 1.5;
+            
+            }
+
+        }
+
+    }
+
+}
