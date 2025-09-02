@@ -4,6 +4,7 @@ import { ProtectAuth, ProtectFeatures } from './Middlewares/ProtectRoutes'
 import { useSelector } from 'react-redux'
 import { Toaster } from 'react-hot-toast'
 import { useGetUserData } from './Hooks/authentication.hooks'
+import Loading from './Components/Loading/Loading'
 
 const Landing = lazy( () => import('./Pages/Landing/Landing') )
 const Signup = lazy( () => import('./Pages/Signup/Signup') )
@@ -37,7 +38,7 @@ function App() {
 
         <>
 
-            <Suspense fallback={ <>Loading</> }>
+            <Suspense fallback={ <Loading /> } >
 
                 <Routes>
 

@@ -1,0 +1,16 @@
+#loading-root {
+
+    height: 100dvh;
+    display: grid;
+    place-items: center;
+
+}
+
+#loading-text {
+
+    font-family: 'VintageMohai', sans-serif;
+    font-size: 13rem;
+    height: 200px;
+    color: rgba(3, 34, 33, 0.8);
+
+}
