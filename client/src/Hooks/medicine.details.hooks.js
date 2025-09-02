@@ -34,7 +34,7 @@ export const useGetMedDetails = () => {
         try {
 
             const response = await axios.get(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:${ medicine }`)
-            toast.success( 'Got medicine details', { style : toastStyle } )
+            toast.success( 'Revceived medicine details', { style : toastStyle } )
             let medData = response?.data?.results[0]
 
             // Changing the format of medicine name
@@ -43,14 +43,14 @@ export const useGetMedDetails = () => {
             // And convert first letter into upper case and append the remaining letters with it
             genericName = genericName.charAt(0).toUpperCase() + genericName.slice(1) 
             medData = { ...medData, name : genericName }
-
+            
             // Removing the 'Purpose' word from purpose
             let purpose = medData?.purpose?.[0]
-            medData = { ...medData, purpose : purpose.slice( 8 ) }
+            medData = { ...medData, purpose : purpose?.slice( 8 ) }
 
             dispatch( setSearchedMed( medData ) ) // Storing searched medicine details to redux
 
-        } catch ( error ) { toast.error( error?.response?.data?.error?.message, { style : toastStyle } ) }
+        } catch ( error ) { toast.error( "No medicine found, check spelling", { style : toastStyle } ) }
         toast.remove( loading )
 
     }

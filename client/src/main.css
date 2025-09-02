@@ -52,3 +52,5 @@ input::-webkit-inner-spin-button {
     top: 1.3px;
 
 }
+
+a { text-decoration: none; }

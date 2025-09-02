@@ -7,6 +7,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
 import { animateMedicineData, animateProfile } from '../Signup/signup.animate'
+import { defaultData } from './default.data.medicine'
 import './Medicines.css'
 
 function Medicines() {
@@ -49,10 +50,15 @@ function Medicines() {
                     </form>
                     <p id='medicine-search-label'>
 
-                        When searching for a medicine, use its <span>chemical name</span>. For example,
-                        the chemical name of <span>'Paracetamol'</span> is <span>'Acetaminophen</span>.'
+                        When searching for a medicine, use the name recognized 
+                        by <a href='https://www.fda.gov/' target='_blank' rel="noopener noreferrer">
+                        
+                            <span style={{ color : "#0125f8", cursor : "pointer" }}>FDA</span>
+                            
+                        </a>.
+                        For example, <span>'Paracetamol'</span> is also known as <span>'Acetaminophen</span>.'
                         Therefore, you should <span>search</span> using 'Acetaminophen' to obtain the relevant details. 
-                        An example data is provided.
+                        An example is provided.
 
                     </p>
 
@@ -69,160 +75,254 @@ function Medicines() {
 
                     <section id='medicine-data-heading'>
                         
-                        <p id='medicine-name'>{ searchedMed ? searchedMed?.name : "Acetaminophen" }</p>
-                        <p className="medicine-sub-headings">
-                            
-                            { searchedMed ? searchedMed?.purpose : "Pain reliever/fever reducer" }
-                            
-                        </p>
+                        <p id='medicine-name'>{ searchedMed ? searchedMed?.name : defaultData?.name }</p>
+                        <p className="medicine-sub-headings"> { searchedMed ? searchedMed?.purpose : defaultData?.purpose } </p>
 
                     </section>
 
-                    <section>
+                    {
 
-                        <p className="medicine-sub-headings">Indication and usage</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.indications_and_usage?.[0] :
-                            
-                                <>Uses • temporarily relieves minor aches and pains due to: • headache • muscular aches • backache 
-                                • minor pain of arthritis • the common cold • toothache • premenstrual and menstrual cramps 
-                                • temporarily reduces fever.</>
+                        // Indication and usage
+                        searchedMed ? <>
+                        
+                            {
+
+                                searchedMed?.indications_and_usage && <section>
+
+                                    <p className="medicine-sub-headings">Indication and usage</p>
+                                    <p className="medicine-desc">{ searchedMed?.indications_and_usage?.[0] }</p>
+
+                                </section>
 
                             }
-                            
-                        </p>
+                        
+                        </> : <section>
 
-                    </section>
+                            <p className="medicine-sub-headings">Indication and usage</p>
+                            <p className="medicine-desc">{ defaultData?.indications_and_usage }</p>
+                            
+                        </section>
 
-                    <section>
+                    }
 
-                        <p className="medicine-sub-headings">Dosage and administration</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.dosage_and_administration?.[0] :
-                            
-                                <>Directions • do not take more than directed (see overdose warning) adults and children 
-                                12 years and over • take 2 caplets every 6 hours while symptoms last • do not take 
-                                more than 6 caplets in 24 hours, unless directed by a doctor • do not use for more than 
-                                10 days unless directed by a doctor children under 12 years ask a doctor</>
-                            
+                    {
+
+                        // Dosage and administration
+                        searchedMed ? <>
+                        
+                            {
+
+                                searchedMed?.dosage_and_administration && <section>
+
+                                    <p className="medicine-sub-headings">Dosage and administration</p>
+                                    <p className="medicine-desc">{ searchedMed?.dosage_and_administration?.[0] }</p>
+
+                                </section>
+
                             }
-                            
-                        </p>
+                        
+                        </> : <section>
 
-                    </section>
+                            <p className="medicine-sub-headings">Dosage and administration</p>
+                            <p className="medicine-desc">{ defaultData?.dosage_and_administration }</p>
 
-                    <section>
+                        </section>
 
-                        <p className="medicine-desc-red medicine-sub-headings">Warnings</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.warnings?.[0] :
-                            
-                                <>Warnings Liver warning: This product contains acetaminophen. Severe liver damage may occur 
-                                if you take • more than 4,000 mg of acetaminophen in 24 hours • with other drugs containing 
-                                acetaminophen • 3 or more alcoholic drinks every day while using this product Allergy alert: 
-                                Acetaminophen may cause severe skin reactions. Symptoms may include: • skin reddening • blisters 
-                                • rash If a skin reaction occurs, stop use and seek medical help right away. Do not use 
-                                • with any other drug containing acetaminophen (prescription or nonprescription). If you are 
-                                not sure whether a drug contains acetaminophen, ask a doctor or pharmacist. • if you have ever 
-                                had an allergic reaction to this product or any of its ingredients Ask a doctor before use if 
-                                you have liver disease Ask a doctor or pharmacist before use if you are taking the blood thinning 
-                                drug warfarin Stop use and ask a doctor if • pain gets worse or lasts more than 10 days • fever 
-                                gets worse or lasts more than 3 days • new symptoms occur • redness or swelling is present These 
-                                could be signs of a serious condition. If pregnant or breast-feeding, ask a health professional 
-                                before use. Keep out of reach of children. Overdose warning: In case of overdose, get medical help 
-                                or contact a Poison Control Center right away (1-800-222-1222). Quick medical attention is 
-                                critical for adults as well as for children even if you do not notice any signs or symptoms.</>
-                            
+                    }
+
+                    {
+
+                        // Warnings
+                        searchedMed ? <>
+                        
+                            {
+
+                                ( searchedMed?.warnings || searchedMed?.warnings_and_cautions ) && <section>
+
+                                    <p className="medicine-desc-red medicine-sub-headings">Warnings</p>
+                                    <p className="medicine-desc">
+                                        
+                                        { searchedMed?.warnings?.[0] || searchedMed?.warnings_and_cautions?.[0] }
+                                        
+                                    </p>
+
+                                </section>
+
                             }
-                            
-                        </p>
+                        
+                        </> : <section>
 
-                    </section>
+                            <p className="medicine-desc-red medicine-sub-headings">Warnings</p>
+                            <p className="medicine-desc">{ defaultData?.warning }</p>
 
-                    <section>
+                        </section>
 
-                        <p className="medicine-sub-headings">Ask doctor</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.ask_doctor?.[0] :
-                            
-                                <>Ask a doctor before use if you have liver disease 
-                                and if you are taking the blood thinning drug warfarin.</>
-                            
+                    }
+
+                    {
+
+                        // Ask doctor
+                        searchedMed ? <>
+                        
+                            {
+
+                                searchedMed?.ask_doctor && <section>
+
+                                    <p className="medicine-sub-headings">Ask doctor</p>
+                                    <p className="medicine-desc">{ searchedMed?.ask_doctor?.[0] }</p>
+
+                                </section>
+
                             }
-                            
-                        </p>
+                        
+                        </> : <section>
 
-                    </section>
+                            <p className="medicine-sub-headings">Ask doctor</p>
+                            <p className="medicine-desc">{ defaultData?.ask_doctor }</p>
 
-                    <section>     
+                        </section>
 
-                        <p className="medicine-sub-headings">Pregnancy or breast feeding</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.pregnancy_or_breast_feeding?.[0] :
-                            
-                                <>If pregnant or breast-feeding, ask a health professional before use.</>
-                            
+                    }
+
+                    {
+
+                        // Information to patients
+                        ( searchedMed && searchedMed?.information_for_patients ) && <section>
+
+                            <p className="medicine-sub-headings">Information for patients</p>
+                            <p className="medicine-desc">{ searchedMed?.information_for_patients?.[0] }</p>
+
+                        </section>
+
+                    }
+
+                    {
+
+                        // Pregnancy
+                        searchedMed ? <>
+                        
+                            {
+
+                                ( searchedMed?.pregnancy_or_breast_feeding || searchedMed?.pregnancy ) && <section>
+
+                                    <p className="medicine-sub-headings">Pregnancy or breast feeding</p>
+                                    <p className="medicine-desc">
+                                        
+                                        { searchedMed?.pregnancy_or_breast_feeding?.[0] || searchedMed?.pregnancy?.[0] }
+                                        
+                                    </p>
+
+                                </section>
+
                             }
-                            
-                        </p>
+                        
+                        </> : <section>
+
+                            <p className="medicine-sub-headings">Pregnancy or breast feeding</p>
+                            <p className="medicine-desc">{ defaultData?.pregnancy }</p>
+
+                        </section>
+
+                    }
+
+                    {
+
+                        // Pediatric use
+                        ( searchedMed && searchedMed?.pediatric_use ) && <section>
+
+                            <p className="medicine-sub-headings">Pediatric use</p>
+                            <p className="medicine-desc">{ searchedMed?.pediatric_use?.[0] }</p>
+
+                        </section>
+
+                    }
+
+                    {
+
+                        // Keep out of children
+                        searchedMed ? <>
+
+                            {
+
+                                searchedMed?.keep_out_of_reach_of_children && <section>
+
+                                    <p className="medicine-sub-headings">Keep out of reach of children</p>
+                                    <p className="medicine-desc">{ searchedMed?.keep_out_of_reach_of_children?.[0] }</p>
+
+                                </section>
+
+                            }
+                        
+                        </> : <section>
+
+                            <p className="medicine-sub-headings">Keep out of reach of children</p>
+                            <p className="medicine-desc">{ defaultData?.children }</p>
+
+                        </section>
+
+                    }
+
+                    {
+
+                        // Over dosage
+                        ( searchedMed && searchedMed?.overdosage ) && <section>
+
+                            <p className="medicine-desc-red medicine-sub-headings">Over dosage</p>
+                            <p className="medicine-desc">{ searchedMed?.overdosage?.[0] }</p>
+
+                        </section>
+
+                    }
+
+                    {
+
+                        // Stop use
+                        searchedMed ? <>
+                        
+                            {
+
+                                searchedMed?.stop_use && <section>
+
+                                    <p className="medicine-desc-red medicine-sub-headings">Stop use</p>
+                                    <p className="medicine-desc">{ searchedMed?.stop_use?.[0] }</p>
+
+                                </section>
+
+                            }
+                        
+                        </> : <section>
+
+                            <p className="medicine-desc-red medicine-sub-headings">Stop use</p>
+                            <p className="medicine-desc">{ defaultData?.stop_use }</p>
+
+                        </section>
+
+                    }
                     
-                    </section>
+                    { 
+
+                        // Do not use
+                        searchedMed ? <>
                     
-                    <section>
+                            {
 
-                        <p className="medicine-sub-headings">Keep out of reach of children</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.keep_out_of_reach_of_children?.[0] :
-                            
-                                <>Keep out of reach of children. Overdose warning: In case of overdose, get medical help 
-                                or contact a Poison Control Center right away. Quick medical attention is critical for 
-                                adults as well as for children even if you do not notice any signs or symptoms.</>
-                            
+                                searchedMed?.do_not_use && <section>
+
+                                    <p className="medicine-desc-red medicine-sub-headings">Do not use</p>
+                                    <p className="medicine-desc">{ searchedMed?.do_not_use?.[0] }</p>
+
+                                </section>
+
                             }
-                            
-                        </p>
-
-                    </section>
                     
-                    <section>
+                        </> : <section>
 
-                        <p className="medicine-desc-red medicine-sub-headings">Stop use</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.stop_use?.[0] :
-                            
-                                <>Stop use and ask a doctor if • pain gets worse or lasts more than 10 days • fever gets 
-                                worse or lasts more than 3 days • new symptoms occur • redness or swelling is present 
-                                These could be signs of a serious condition.</>
-                            
-                            }
-                            
-                        </p>
+                            <p className="medicine-desc-red medicine-sub-headings">Do not use</p>
+                            <p className="medicine-desc">{ defaultData?.do_not_use }</p>
 
-                    </section>
-                    
-                    <section>
+                        </section>
 
-                        <p className="medicine-desc-red medicine-sub-headings">Do not use</p>
-                        <p className="medicine-desc">
-                            
-                            { searchedMed ? searchedMed?.do_not_use?.[0] :
-                            
-                                <>Do not use • with any other drug containing acetaminophen (prescription or nonprescription). 
-                                If you are not sure whether a drug contains acetaminophen, ask a doctor or pharmacist. 
-                                • if you have ever had an allergic reaction to this product or any of its ingredients</>
-                            
-                            }
-                            
-                        </p>
-
-                    </section>
+                    }
 
                 </section>
 

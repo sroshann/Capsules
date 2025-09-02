@@ -82,7 +82,7 @@
     #medicine-data-heading {
 
         display: flex;
-        column-gap: 20px;  
+        column-gap: 12px;  
         align-items: baseline; 
         margin: 0px 0px 10px 0px;
 
@@ -135,7 +135,7 @@
             place-items: center;
             margin: 0px 0px 8px 0px;
 
-            #medicine-name { margin: 0px 0px -10px 0px; }
+            #medicine-name { font-size: 1.3rem; margin: 0px 0px -7px 0px; }
 
         }
         .medicine-sub-headings { font-size: 0.9rem; }
@@ -170,6 +170,8 @@
             
             column-gap: 13px; 
             margin: 0px 0px 8px 0px;
+
+            #medicine-name { font-size: 1.8rem; }
         
         }
         .medicine-sub-headings { font-size: 1rem; }
