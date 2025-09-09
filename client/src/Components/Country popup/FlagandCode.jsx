@@ -47,7 +47,7 @@ function FlagandCode({ select, formik, from }) {
         <>
 
             {
-                countryDetails.length > 0 && <section id='flag-and-code-popup' >
+                ( countryDetails && countryDetails.length > 0 ) && <section id='flag-and-code-popup' >
 
                     {countryDetails.map((object) => (
 

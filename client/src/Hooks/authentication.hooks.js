@@ -8,6 +8,7 @@ import { setChangePassword, setIsAuthenticated, setMailOTP, setUserData } from "
 import { useLocation, useNavigate } from "react-router-dom"
 import { changeDateFormat } from "../lib/utils"
 import { isEqual } from 'lodash'
+import { setHomes } from "../Store/Reducers/home.reducer"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -137,6 +138,7 @@ export const useLogout = () => {
             const { message } = response?.data
             dispatch(setUserData(null)) // Clearing user data
             dispatch(setIsAuthenticated())
+            dispatch( setHomes( null ) )
             toast.remove( loading )
             toast.success(message, { style: toastStyle })
 
@@ -153,6 +155,7 @@ export const useGetUserData = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const location = useLocation()
+    
     return async () => {
 
         try {

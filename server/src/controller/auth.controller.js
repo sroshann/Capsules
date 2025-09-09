@@ -95,10 +95,9 @@ export const logoutController = async ( request, response ) => {
 
     try {
 
-        // Delete user data from redis
-        await redisClient.del('user')
-        // Deleting cookie
-        response.cookie('credential', '', { maxAge : 0 })
+        await redisClient.del('user') // Delete user data from redis
+        await redisClient.del('Homes') // Delete home data from redis
+        response.cookie('credential', '', { maxAge : 0 }) // Deleting cookie
         return response.status( 200 ).json({ message : 'Loged out successfully' })
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error ocuured while logging out' }) }

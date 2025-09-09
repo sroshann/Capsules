@@ -1,3 +1,4 @@
+import { getAdminDeatils } from "../helper/database.helper.js"
 import { redisClient } from "../lib/redis.connection.js"
 import HomeModel from "../models/home.model.js"
 import UserModel from "../models/user.model.js"
@@ -7,7 +8,7 @@ export const createHomeController = async ( request, response ) => {
 
     try {
 
-        const { nickName, homeName, country, state, district, pincode, description } = request.body
+        const { nickName, homeName, country, state, district, pincode, description, userId } = request.body
 
         // Checking whether home name is already exist or not
         const existingHome = await HomeModel.findOne({ homeName })
@@ -40,7 +41,18 @@ export const createHomeController = async ( request, response ) => {
         
                 // If some times redis data becomes empty, so adding only newly created home into redis 
                 // is not a good idea, then we should fetch all the details from db and then add to redis
-                let dbHomes = await HomeModel.find().select('-__v -updatedAt')
+                let dbHomes = await HomeModel.find({
+
+                    // Fetching the homes in which the accessed user is 'admin'
+                    // or the homes in which user have the access
+                    $or : [
+
+                        { admin : userId },
+                        { accessedUsers : userId }
+
+                    ]
+
+                }).select('-__v -updatedAt')
                 await redisClient.setEx('Homes', 6400, JSON.stringify([ dbHomes ]))
         
             }
@@ -61,18 +73,44 @@ export const getCHController = async ( request, response ) => {
         // Inorder to make the execution fast the data is fetched form 'redis'
         // If data is not present in 'redis', then it fetched from database
         // and then stored in 'redis'
-
+        
         let homes = JSON.parse( await redisClient.get('Homes') )
         if( homes && homes.length > 0 ) return response.status( 200 ).json({ homes })
         else {
-    
-            homes = await HomeModel.find().select('-__v -updatedAt')
+        
+            // Fetching the homes in which the accessed user is 'admin'
+            // or the homes in which user have the access
+            const { _id } = request.params
+            homes = await HomeModel.find({
+
+                $or : [
+
+                    { admin : _id },
+                    { accessedUsers : _id }
+
+                ]
+
+            }).select('-__v -updatedAt')
             if( homes && homes.length > 0 ) {
+
+                // Setting admin details for each homes
+                // We use await in 'getAdminDetails' function, but map doesnt wait for it
+                // so we need to put it in 'Promise.all' inorder to wait for each home execution
+                homes = await Promise.all(
+
+                    homes.map( async object => ({
+                    
+                        ...object.toObject(),
+                        admin : await getAdminDeatils( object.admin )
+
+                    }))
+
+                )
 
                 await redisClient.setEx('Homes', 6400, JSON.stringify( homes ))
                 return response.status( 200 ).json({ homes })
 
-            } 
+            } else return response.status( 401 ).json({ error : 'No homes were created' })
     
         }
 

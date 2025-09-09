@@ -14,3 +14,17 @@
     color: rgba(3, 34, 33, 0.8);
 
 }
+
+/* Mobile phone */
+@media ( max-width : 767px ) {
+
+    #loading-text { font-size: 4.5rem; height: 68px; }
+
+}
+
+/* Tablet */
+@media ( min-width : 768px ) and ( max-width : 1024px ) {
+
+    #loading-text { font-size: 8.8rem; height: 135px; }
+
+}

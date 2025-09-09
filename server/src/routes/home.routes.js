@@ -7,6 +7,6 @@ const router = express()
 router.post('/createHome', protectUserRoutes, createHomeController)
 
 // Get created homes
-router.get('/getCreatedHomes', protectUserRoutes, getCHController)
+router.get('/getCreatedHomes/:_id', protectUserRoutes, getCHController)
 
 export default router

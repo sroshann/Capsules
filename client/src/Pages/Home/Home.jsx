@@ -12,6 +12,7 @@ function Home() {
 
     // This home data is stored in this store
     const { homesData } = useSelector( state => state.homes )
+    const { userData } = useSelector( state => state.authentication )
 
     const navigate = useNavigateTo() // Hook used for navigation
     const getHomes = useGetHomes() // Hook used to get all homes
@@ -50,45 +51,81 @@ function Home() {
                 </section>
 
                 {/* Home data listing */}
-                {/* <section id="listing-homes">
+                <section id="listing-homes">
 
-                    { homesData.length > 0 && 
+                    { homesData && homesData.length > 0 && 
                     
                         homesData.map(( object, index ) => (
 
-                            <div key={ index }>
+                            <div key={ index } className='home'>
 
-                                <section>
+                                <section className='home-upper-section'>
 
                                     <section>
 
-                                        <section>
+                                        <section className='home-names'>
                                             
-                                            <p>{ object?.nickName }</p>
-                                            <p>{ object?.homeName }</p>
+                                            <p className='home-nickname'>{ object?.nickName }</p>
+                                            <p className='home-homename'>{ object?.homeName }</p>
                                             
                                         </section>
 
-                                        <p>Total number of medicines = { object?.availableMedicines?.length }</p>
+                                        { 
+                                        
+                                            object?.availableMedicines?.length === 0 ? 
+                                            <p className='medicine-number no-medicine'>No medicines were added</p> : 
+                                            <p className='medicine-number'>
+                                                
+                                                Number of medicines added = { object?.availableMedicines?.length }
+                                                
+                                            </p> 
+                                        
+                                        }
 
                                     </section>
 
-                                    <section>
+                                    <section className='home-member-section'>
 
-                                        <p>Members</p>
-                                        
+                                        <p className='home-member-headline'>Members</p>
+                                        <section className='home-admin'>
+
+                                            {
+
+                                                userData?.email === object?.admin?.email ? 
+                                                <section className='home-you'>
+
+                                                    <p className='home-you-text'>You</p>
+                                                    <p className='home-admin-text'>admin</p>
+
+                                                </section> : 
+                                                <section className='home-display-admin'> 
+
+                                                    <img src={ object?.admin?.profilePicture } alt="" />
+                                                    <section>
+
+                                                        <section className='home-admin-name'>
+
+                                                            <p>{ object?.admin?.fullName }</p>
+                                                            <p className='home-admin-text'>admin</p>
+
+                                                        </section>
+                                                        <p className='home-admin-email'>{ object?.admin?.email }</p>
+
+                                                    </section>
+
+                                                </section>
+
+                                            }
+
+                                        </section>
 
                                     </section>
 
                                 </section>
-                                <section>
+                                <section className='home-lower-section'>
 
-                                    <p>Click to see more details 
-                                        
-                                        <img src="https://res.cloudinary.com/dle6cdwdb/image/upload/v1754089292/long-arrow-icon-1337191-512_iaro2i.png" alt="" />
-                                    
-                                    </p>
-                                    <p>Created on : { object?.createdAt }</p>
+                                    <p>Click to see more details</p>
+                                    <p><span>Created on : </span>{ object?.createdAt }</p>
 
                                 </section>
 
@@ -98,7 +135,7 @@ function Home() {
 
                     }
 
-                </section> */}
+                </section>
 
             </section>
             <Footer />
