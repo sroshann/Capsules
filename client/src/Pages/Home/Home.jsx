@@ -1,14 +1,19 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../Signup/signup.animate'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
-import { useGetHomes } from '../../Hooks/home.hooks'
+import { useGetHomes, useSearchYourHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import './Home.css'
 
 function Home() {
+
+    const [ search, setSearch ] = useState('') // Used to store the searching home
+    // Used to check status of searching whether data found or not
+    const [ searchStatus, setSearchStatus ] = useState( false )
+    const [ filteredHome, setFilteredHome ] = useState( null ) // Used to render the searched homes too
 
     // This home data is stored in this store
     const { homesData } = useSelector( state => state.homes )
@@ -16,13 +21,48 @@ function Home() {
 
     const navigate = useNavigateTo() // Hook used for navigation
     const getHomes = useGetHomes() // Hook used to get all homes
+    const searchHome = useSearchYourHome() // Hook used to filter out accessed homes
 
     // GSAP
     const homeRef = useRef()
-    // Using the same animation of profile page
-    useGSAP( () => { animateProfile( homeRef ) }, [] )
+    useGSAP( () => { animateProfile( homeRef ) }, [] ) // Using the same animation of profile page
+
+    // Handling search features
+    const handleSearch = ( event = null, searching = false ) => {
+
+        // Function works both for searching and clearing search input
+
+        if( searching ) { 
+
+            // Passing the search string and result setting state into state function
+            // if the value is found, then status retured as 'true' otherwise 'false'.
+            
+            event.preventDefault()
+            const status = searchHome( search, setFilteredHome )
+            setSearchStatus( status )
+            
+        } else {
+            
+            // On clearing the search input, we should reset the 'filtered' state with the whole home data
+            // But if data is not found the search state become false, and also we need to just
+            // clear the search input no need to reassing the 'filtered' state, because the data
+            // in the state is not changed
+
+            setSearch('')
+            if( searchStatus ) setFilteredHome( homesData )
+
+        }
+
+    }
 
     useEffect( () => { getHomes() }, [] )
+    useEffect( () => { 
+        
+        // Setting the homes data in home store into filtered list
+        // the filtered array is maped down ( displayed )
+        setFilteredHome( homesData ) 
+    
+    }, [ homesData ] )
 
     return (
 
@@ -34,13 +74,24 @@ function Home() {
                 {/* Search and create */}
                 <section id="search-and-create">
 
-                    <div id='search'>
+                    <form onSubmit={ ( event ) => handleSearch( event, true ) }>
 
-                        <i className='bx  bx-search'  ></i> 
-                        <input type="text" placeholder='Search your home' />
-                        <i className='bx  bx-x'  ></i> 
+                        <div id='search'>
 
-                    </div>
+                            <i className='bx  bx-search'  ></i> 
+                            <input 
+                            
+                                type="text" 
+                                placeholder='Search your home using home name or home nickname' 
+                                value = { search }
+                                onChange={ ( event ) => setSearch( event.target.value ) }
+                                
+                            />
+                            <i className='bx  bx-x' onClick={ () => handleSearch( null, false ) }  ></i> 
+
+                        </div>
+
+                    </form>
                     <button id='create' onClick={ () => navigate('createHome') }>
                         
                         <i className='bx  bx-plus'  ></i> 
@@ -53,9 +104,9 @@ function Home() {
                 {/* Home data listing */}
                 <section id="listing-homes">
 
-                    { homesData && homesData.length > 0 && 
+                    { filteredHome && filteredHome.length > 0 && 
                     
-                        homesData.map(( object, index ) => (
+                        filteredHome.map(( object, index ) => (
 
                             <div key={ index } className='home'>
 

@@ -95,3 +95,42 @@ export const useGetHomes = () => {
     }
 
 }   
+
+// Filter out homes whether you are admin or you have access to
+export const useSearchYourHome = () => {
+
+    const { homesData } = useSelector( state => state.homes )
+
+    // Getting search string and resut setting state as parameters
+    return ( searchingHome, setFilteredHome ) => {
+
+        try {
+
+            // Filtering out data according to homeName and home nick name
+            const filtered = homesData.filter( 
+                
+                object => object?.homeName === searchingHome || 
+                object?.nickName.toLowerCase() === searchingHome.toLowerCase()
+            
+            )
+            
+            // Booleans are returned inorder to set the search status
+            // to make the cleatring search input process proper 
+            if( filtered.length === 0 ) {
+
+                toast.error('No home found', { style : toastStyle })
+                return false
+
+            }
+            else {
+
+                setFilteredHome( filtered ) // Setting filtered data
+                return true
+
+            }
+
+        } catch ( error ) { toast.error("Could'nt search home", { style : toastStyle }) }
+
+    }
+
+}
