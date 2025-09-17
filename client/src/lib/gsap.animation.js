@@ -95,3 +95,9 @@ export const animateMedicineData = ( medicineRef, isNull ) => {
     )
 
 }
+
+export const animateHomesHover = () => {
+
+    
+
+}

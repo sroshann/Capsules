@@ -15,6 +15,7 @@ const Home = lazy( () => import('./Pages/Home/Home') )
 const CreateHome = lazy( () => import('./Pages/Create new home/CreateHome') )
 const Medicines = lazy( () => import('./Pages/Medicines/Medicines') )
 const About = lazy( () => import('./Pages/About/About') )
+const SingleHome = lazy( () => import('./Pages/Single Home/SingleHome') )
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
                     <Route element={ <ProtectFeatures><CreateHome /></ProtectFeatures> } path='/createHome' />
                     <Route element={ <Medicines /> } path='/medicines' />
                     <Route element={ <About /> } path='/about' />
+                    <Route element={ <ProtectFeatures>< SingleHome /></ProtectFeatures> } path='/homeDetail/:homeId' />
 
                 </Routes>
 

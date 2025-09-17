@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
-import { animateMedicineData, animateProfile } from '../Signup/signup.animate'
+import { animateMedicineData, animateProfile } from '../../lib/gsap.animation'
 import { defaultData } from './default.data.medicine'
 import './Medicines.css'
 

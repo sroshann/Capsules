@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 export const useNavigateTo = () => {
 
     const navigate = useNavigate()
-    return ( destination ) => {
+    return ( destination, params = null ) => {
 
         if( destination === 'landing' ) navigate('/')
         else if( destination === 'signup' ) navigate('/signup')
@@ -14,6 +14,7 @@ export const useNavigateTo = () => {
         else if( destination === 'createHome' ) navigate('/createHome')
         else if( destination === 'medicines' ) navigate('/medicines')
         else if( destination === 'about' ) navigate('/about')
+        else if( destination === 'homeDetail' ) navigate(`/homeDetail/${ params }`)
 
     }
 

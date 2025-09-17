@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
-import { animateSignup } from '../Signup/signup.animate'
+import { animateSignup } from '../../lib/gsap.animation'
 import './Login.css'
 
 function Login() {

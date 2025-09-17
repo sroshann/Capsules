@@ -134,3 +134,40 @@ export const useSearchYourHome = () => {
     }
 
 }
+
+// Get details of a particular home
+export const useGetParticularHome = () => {
+
+    const { homesData } = useSelector( state => state.homes )
+
+    return async ( homeId, setHomeData ) => {
+
+        try {
+
+            if( homesData === null ) {
+
+                // Get data from database
+                const response = await axiosInstance(`home/getParticularHome/${ homeId }`)
+                let { home } = response?.data
+                home = {
+
+                    ...home,
+                    createdAt : changeDateFormat( home?.createdAt ) // Changing the data format
+
+                }
+                setHomeData( home )
+
+            } else {
+
+                // Filter out the home redux data
+                const particular = homesData.filter( object => object._id === homeId )
+                if( particular.length > 0 ) setHomeData( particular[0] ) // Got data
+                else toast.error( 'Home not found', { style : toastStyle } )
+
+            }
+
+        } catch( error ) { toast.error( error?.response?.data?.error , { style : toastStyle }) }
+
+    }
+
+}

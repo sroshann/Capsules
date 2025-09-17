@@ -117,3 +117,29 @@ export const getCHController = async ( request, response ) => {
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting homes' }) }
 
 }
+
+// Get data of partcular home
+export const getPHController = async ( request, response ) => {
+
+    try {
+
+        const { homeId } = request.params
+        let homeData = await HomeModel.findById( homeId ).select('-__v -updatedAt')
+
+        if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
+        else {
+    
+            // Getting the admin details and setting to the home data
+            homeData = {
+
+                ...homeData.toObject(),
+                admin : await getAdminDeatils( homeData.admin )
+
+            }
+            return response.status( 200 ).json({ home : homeData })
+    
+        }
+         
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error on getting home data' }) }
+
+}

@@ -4,7 +4,7 @@ import Footer from '../../Components/Footer/Footer'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
-import { animateProfile } from '../Signup/signup.animate'
+import { animateProfile } from '../../lib/gsap.animation'
 import './About.css'
 
 function About() {

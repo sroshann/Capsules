@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useGSAP } from '@gsap/react'
-import { animateProfile } from '../Signup/signup.animate'
+import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
 import { useGetHomes, useSearchYourHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
+import { motion } from 'framer-motion'
 import './Home.css'
 
 function Home() {
@@ -108,7 +109,15 @@ function Home() {
                     
                         filteredHome.map(( object, index ) => (
 
-                            <div key={ index } className='home'>
+                            <motion.div 
+                            
+                                key={ index } 
+                                className='home' 
+                                onClick={ () => navigate('homeDetail', object?._id) } 
+                                whileHover={{ scale : 1.06 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                
+                            >
 
                                 <section className='home-upper-section'>
 
@@ -180,7 +189,7 @@ function Home() {
 
                                 </section>
 
-                            </div>
+                            </motion.div>
 
                         )) 
 

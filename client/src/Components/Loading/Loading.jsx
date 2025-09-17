@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
-import { animateProfile } from '../../Pages/Signup/signup.animate'
+import { animateProfile } from '../../lib/gsap.animation'
 import './Loading.css'
 
 function Loading() {
