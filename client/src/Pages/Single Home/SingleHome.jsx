@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
@@ -6,6 +6,9 @@ import { useGetParticularHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import './SingleHome.css'
+import { useGSAP } from '@gsap/react'
+import { animateProfile } from '../../lib/gsap.animation'
+import { useNavigateTo } from '../../Hooks/navbar.hooks'
 
 function SingleHome() {
 
@@ -13,17 +16,21 @@ function SingleHome() {
 
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
+    const navigate = useNavigateTo()
 
     const { userData } = useSelector(state => state.authentication)
 
     useEffect(() => { getParticularHome(homeId, setHomeData) }, [])
+
+    const HSref = useRef()
+    useGSAP( () => { animateProfile( HSref ) }, [] )
 
     return (
 
         <>
 
             <Navbar />
-            <section id='homeDetails-root'>
+            <section id='homeDetails-root' ref={ HSref }>
 
                 <section id='homeDetails'>
 
@@ -51,7 +58,16 @@ function SingleHome() {
                                     </div>
 
                                 </form>
-                                <button id='home-left-create'>
+                                <button 
+                                
+                                    id='home-left-create' 
+                                    onClick={ () => 
+                                        
+                                        navigate('addMedicine', { homeId : homeData?._id, nickName : homeData?.nickName }) 
+                                    
+                                    }
+                                    
+                                >
 
                                     <i className='bx  bx-plus'  ></i>
                                     Add new medicine

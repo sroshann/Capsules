@@ -113,7 +113,7 @@ function Home() {
                             
                                 key={ index } 
                                 className='home' 
-                                onClick={ () => navigate('homeDetail', object?._id) } 
+                                onClick={ () => navigate('homeDetail', { homeId : object?._id }) } 
                                 whileHover={{ scale : 1.06 }}
                                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
                                 

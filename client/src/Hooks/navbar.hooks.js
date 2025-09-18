@@ -14,7 +14,8 @@ export const useNavigateTo = () => {
         else if( destination === 'createHome' ) navigate('/createHome')
         else if( destination === 'medicines' ) navigate('/medicines')
         else if( destination === 'about' ) navigate('/about')
-        else if( destination === 'homeDetail' ) navigate(`/homeDetail/${ params }`)
+        else if( destination === 'homeDetail' ) navigate(`/homeDetail/${ params?.homeId }`)
+        else if( destination === 'addMedicine' ) navigate(`/addMedicine/${ params?.homeId }/${ params?.nickName }`)
 
     }
 

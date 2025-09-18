@@ -38,8 +38,6 @@
     display: grid;
     place-items: center;
     width: 50%;
-    /* place-items: start;
-    align-items: center; */
 
     form {
 
@@ -93,20 +91,12 @@
             flex-wrap: wrap;
             gap: 11px;
 
-            div {
-
-                width: 11.055rem;
-
-                
-                
-            }
+            div { width: 11.055rem; }
             
             #country-input {
 
                 padding: 0px 0px 0px 11px;
-
                 input { padding: 0px 0px 0px 6px; }
-
                 img {
 
                     width: 15px;

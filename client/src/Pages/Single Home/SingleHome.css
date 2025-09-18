@@ -15,11 +15,10 @@
     min-height: 570px;
     height: fit-content;
 
+    /* Left section */
     #homeDetails-left {
 
         width: 70%;
-        /* background-color: red; */
-
         #home-left-top {
 
             #home-left-search-and-create {
