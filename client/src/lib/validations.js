@@ -197,3 +197,22 @@ export const validateMedicineName = ({ medicine }) => {
     return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
 
 }
+
+export const validateMedicineNameComponent = ({ medicine, disease, quantity, expiryDate }) => {
+
+    let error = {}
+    
+    // Check whether the medicine name contains only numbers
+    if( ( /^\d+$/ ).test( medicine ) ) error.medicine = "Invalid medicine name"
+    else if( medicine.trim().length === 0 ) error.medicine = "Invalid medicine name"
+
+    if( !disease ) error.disease = "Provide proper disease"
+    else if( ( /^\d+$/ ).test( disease ) ) error.disease = "Provide proper disease"
+
+    if( !quantity ) error.quantity = "Invalid quantity"
+
+    if( !expiryDate ) error.expiryDate = "Invalid expiry date"
+
+    return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
+
+}

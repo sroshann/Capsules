@@ -1,0 +1,37 @@
+#select-med-root {
+
+    height: fit-content;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.18);
+    border-radius: 8px;
+    position: absolute;
+    margin: 54px 0px 0px 0px;
+    overflow: scroll;
+    overflow-x: hidden;
+
+    section {
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 10px 1px 15px;
+        line-height: 1.1;
+
+    }
+
+    & p {
+
+        font-size: 12px;
+        width: 80%;
+
+    }
+
+    & svg {
+
+        height: 15px;
+        width: 15px;
+        color: gray;
+
+    }
+
+}
