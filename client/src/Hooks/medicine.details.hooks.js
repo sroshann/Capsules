@@ -1,5 +1,5 @@
 import { useFormik } from "formik"
-import { validateMedicineName, validateMedicineNameComponent } from "../lib/validations"
+import { validateMedicineName } from "../lib/validations"
 import axios from "axios"
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
@@ -79,28 +79,5 @@ export const useGetMedicineNames = () => {
         finally { toast.remove( loading ) }
 
     }
-
-}
-
-// Add medicine formik
-export const useAddMedFormik = () => {
-
-    return useFormik({
-
-        initialValues : {
-
-            medicine : '',
-            disease : '',
-            quantity : '',
-            expiryDate : ''
-
-        },
-        validate : validateMedicineNameComponent,
-        validateOnChange : false,
-        validateOnBlur : false,
-        validateOnChange : false,
-        onSubmit : values => console.log( values )
-
-    })
 
 }

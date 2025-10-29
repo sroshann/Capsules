@@ -6,7 +6,8 @@ import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import SelectMedicine from '../../Components/Select medicine/SelectMedicine'
 import { AnimatePresence } from 'framer-motion'
-import { useAddMedFormik, useGetMedicineNames } from '../../Hooks/medicine.details.hooks'
+import { useGetMedicineNames } from '../../Hooks/medicine.details.hooks'
+import { useAddMedFormik } from '../../Hooks/home.hooks'
 import './AddMedicine.css'
 
 function AddMedicine() {
@@ -47,6 +48,7 @@ function AddMedicine() {
         
         // The medicine data is fetched when 'selectMed' is true and name array is empty
         if ( selectMed && medicineName.length === 0 ) handleMedAync()
+        formik.setValues({ ...formik.values, homeId, nickName })
 
     }, [ selectMed ] )
 

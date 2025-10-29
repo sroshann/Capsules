@@ -143,3 +143,58 @@ export const getPHController = async ( request, response ) => {
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error on getting home data' }) }
 
 }
+
+// Add medicine to home
+export const addMedController = async ( request, response ) => {
+
+    try {
+
+        const { homeId, medicine, disease, quantity, expiryDate } = request?.body
+
+        const update = await HomeModel.findByIdAndUpdate( 
+            
+            homeId, 
+            { $push : { availableMedicines : { medicine, disease, quantity, expiryDate } } },
+            { new : true }
+        
+        )
+
+        if ( !update ) return response.status( 401 ).json({ error : "Could'nt add medicine" })
+        else {
+    
+            // If updation is successfull then also update in redis
+            let homesInRedis = JSON.parse( await redisClient.get('Homes') )
+            if ( homesInRedis.length > 0 ) {
+
+                homesInRedis = homesInRedis.map( home => {
+
+                    if( home._id === homeId ) {
+
+                        return {
+
+                            ...home,
+                            availableMedicines : [
+
+                                ...home.availableMedicines,
+                                { medicine, disease, quantity, expiryDate }
+
+                            ]
+
+                        }
+
+                    }
+
+                    return home
+
+                } )
+
+            }
+
+            await redisClient.setEx('Homes', 6400, JSON.stringify( homesInRedis ))
+            return response.status( 200 ).json({ message : 'Medicine added to ' })
+    
+        }     
+
+    } catch ( error ) { response.status( 500 ).json({ error : 'Error occured on adding medicine' }) }
+
+}

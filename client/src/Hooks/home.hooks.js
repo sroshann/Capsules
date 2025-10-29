@@ -1,5 +1,5 @@
 import { useFormik } from "formik"
-import { validateCreateHome } from "../lib/validations"
+import { validateCreateHome, validateMedicineNameComponent } from "../lib/validations"
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
@@ -147,7 +147,7 @@ export const useGetParticularHome = () => {
             if( homesData === null ) {
 
                 // Get data from database
-                const response = await axiosInstance(`home/getParticularHome/${ homeId }`)
+                const response = await axiosInstance.get(`home/getParticularHome/${ homeId }`)
                 let { home } = response?.data
                 home = {
 
@@ -167,6 +167,83 @@ export const useGetParticularHome = () => {
             }
 
         } catch( error ) { toast.error( error?.response?.data?.error , { style : toastStyle }) }
+
+    }
+
+}
+
+// Add medicine formik
+export const useAddMedFormik = () => {
+
+    const addMedicine = useAddMedicine()
+    return useFormik({
+
+        initialValues : {
+
+            homeId : '',
+            nickName : '',
+            medicine : '',
+            disease : '',
+            quantity : '',
+            expiryDate : ''
+
+        },
+        validate : validateMedicineNameComponent,
+        validateOnChange : false,
+        validateOnBlur : false,
+        validateOnChange : false,
+        onSubmit : ( values, { resetForm } ) => {
+
+            addMedicine( values )
+            resetForm()
+
+        }
+
+    })
+
+}
+
+export const useAddMedicine = () => {
+
+    let { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+
+    return async ( data ) => {
+
+        let loading = toast.loading('Adding medicine', { style : toastStyle })
+        try {
+
+            const { homeId, nickName, medicine, disease, quantity, expiryDate } = data
+            const response = await axiosInstance.post('home/addMedicine', data)
+            const { message } = response?.data
+
+            homesData = homesData?.map( home => {
+                
+                if( home._id === homeId ) {
+                    
+                    return {
+                        
+                        ...home,
+                        availableMedicines : [
+
+                            ...( home.availableMedicines || [] ),
+                            { medicine, disease, quantity, expiryDate }
+
+                        ]
+                        
+                    }
+                    
+                }
+                return home
+                
+            } )
+
+            dispatch( setHomes( homesData ) )
+            toast.success( message + nickName, { style : toastStyle } )
+
+        } catch ( error ) { console.log( error ) 
+            toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
 
     }
 

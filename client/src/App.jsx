@@ -21,8 +21,6 @@ const AddMedicine = lazy( () => import('./Pages/Add medicine/AddMedicine') )
 function App() {
 
     const { userData } = useSelector( state => state.authentication )
-    // const { homesData } = useSelector( state => state.homes )
-    // console.log( homesData )
     const getUserData = useGetUserData() // Hook use to get user data on data loss
 
     useEffect( () => {
