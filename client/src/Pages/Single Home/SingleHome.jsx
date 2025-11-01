@@ -5,10 +5,10 @@ import { useParams } from 'react-router-dom'
 import { useGetParticularHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
-import './SingleHome.css'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
+import './SingleHome.css'
 
 function SingleHome() {
 
@@ -78,7 +78,53 @@ function SingleHome() {
                             </section>
 
                         </section>
-                        <section id="home-left-bottom"></section>
+                        <section id="home-left-bottom">
+
+                            {/* Listing medicines */}
+                            <section id="headings">
+
+                                <div>Medicine</div>
+                                <div>Disease</div>
+                                <div>Quantity</div>
+                                <div>Expiry date</div>
+                                <div>Total : { homeData?.availableMedicines.length }</div>
+
+                            </section>
+                            <section id="medicine-list">
+
+                                {
+
+                                    homeData?.availableMedicines && homeData?.availableMedicines.map( ( med, index ) => (
+
+                                        <motion.div 
+                                        
+                                            className="medicine" 
+                                            key={ index }
+                                            whileHover={{ scale : 1.06 }}
+                                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                            
+                                        >
+
+                                            <section><p>{ med?.medicine }</p></section>
+                                            <section><p>{ med?.disease }</p></section>
+                                            <section><p>{ med?.quantity }</p></section>
+                                            <section><p>{ med?.expiryDate }</p></section>
+                                            <section>
+
+                                                <p>Edit</p>
+                                                <p>Delete</p>
+
+                                            </section>
+
+                                        </motion.div>
+
+                                    ) )
+
+                                }
+
+                            </section>
+
+                        </section>
 
                     </section>
 

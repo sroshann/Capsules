@@ -91,6 +91,7 @@ export const getCHController = async ( request, response ) => {
                 ]
 
             }).select('-__v -updatedAt')
+
             if( homes && homes.length > 0 ) {
 
                 // Setting admin details for each homes
@@ -124,20 +125,45 @@ export const getPHController = async ( request, response ) => {
     try {
 
         const { homeId } = request.params
-        let homeData = await HomeModel.findById( homeId ).select('-__v -updatedAt')
+        const { _id } = request.user // From auth.middleware
 
-        if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
-        else {
+        let redisHomes = JSON.parse( await redisClient.get('Homes') )
+        if( redisHomes && redisHomes.length > 0 ) {
+
+            // Fetching home data from redis
+            // The admin and accessed user constraints are already valiated before data added to redis
+            const homeData = redisHomes.filter( home => home._id === homeId )
+            return response.status( 200 ).json({ home : homeData[0] })
+
+        } else {
+
+            // Fetching home data from database when redis data become empty
+            let homeData = await HomeModel.findOne({
     
-            // Getting the admin details and setting to the home data
-            homeData = {
-
-                ...homeData.toObject(),
-                admin : await getAdminDeatils( homeData.admin )
-
+                _id: homeId,
+                $or: [
+    
+                    { admin: _id },
+                    { accessedUsers: _id }
+    
+                ]
+    
+            }).select('-__v -updatedAt')
+    
+            if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
+            else {
+        
+                // Getting the admin details and setting to the home data
+                homeData = {
+    
+                    ...homeData.toObject(),
+                    admin : await getAdminDeatils( homeData.admin )
+    
+                }
+                return response.status( 200 ).json({ home : homeData })
+        
             }
-            return response.status( 200 ).json({ home : homeData })
-    
+
         }
          
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error on getting home data' }) }
@@ -156,7 +182,7 @@ export const addMedController = async ( request, response ) => {
             homeId, 
             { $push : { availableMedicines : { medicine, disease, quantity, expiryDate } } },
             { new : true }
-        
+            
         )
 
         if ( !update ) return response.status( 401 ).json({ error : "Could'nt add medicine" })
@@ -164,7 +190,7 @@ export const addMedController = async ( request, response ) => {
     
             // If updation is successfull then also update in redis
             let homesInRedis = JSON.parse( await redisClient.get('Homes') )
-            if ( homesInRedis.length > 0 ) {
+            if ( homesInRedis && homesInRedis.length > 0 ) {
 
                 homesInRedis = homesInRedis.map( home => {
 
@@ -188,9 +214,10 @@ export const addMedController = async ( request, response ) => {
 
                 } )
 
+                await redisClient.setEx('Homes', 6400, JSON.stringify( homesInRedis ))
+
             }
 
-            await redisClient.setEx('Homes', 6400, JSON.stringify( homesInRedis ))
             return response.status( 200 ).json({ message : 'Medicine added to ' })
     
         }     

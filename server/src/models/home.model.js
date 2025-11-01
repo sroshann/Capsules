@@ -15,7 +15,7 @@ const homeSchema = new mongoose.Schema(
         },
         accessedUsers : { type : 'Array' },
         admin : { type : 'String', required : true },
-        availableMedicines : { type : 'Array' },
+        availableMedicines : { type : 'Object' },
         country : { type : 'String', required : true },
         state : { type : 'String', required : true },
         district : { type : 'String', required : true },

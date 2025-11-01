@@ -226,7 +226,7 @@ export const useAddMedicine = () => {
                         ...home,
                         availableMedicines : [
 
-                            ...( home.availableMedicines || [] ),
+                            ...home.availableMedicines,
                             { medicine, disease, quantity, expiryDate }
 
                         ]
@@ -241,8 +241,7 @@ export const useAddMedicine = () => {
             dispatch( setHomes( homesData ) )
             toast.success( message + nickName, { style : toastStyle } )
 
-        } catch ( error ) { console.log( error ) 
-            toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
         finally { toast.remove( loading ) }
 
     }
