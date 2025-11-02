@@ -89,8 +89,9 @@ export const useGetHomes = () => {
 
             }
 
-        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
-        toast.remove( loading )
+        } 
+        catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
 
     }
 
@@ -213,9 +214,9 @@ export const useAddMedicine = () => {
         let loading = toast.loading('Adding medicine', { style : toastStyle })
         try {
 
-            const { homeId, nickName, medicine, disease, quantity, expiryDate } = data
+            const { homeId, nickName } = data
             const response = await axiosInstance.post('home/addMedicine', data)
-            const { message } = response?.data
+            const { message, addedMed } = response?.data
 
             homesData = homesData?.map( home => {
                 
@@ -224,12 +225,7 @@ export const useAddMedicine = () => {
                     return {
                         
                         ...home,
-                        availableMedicines : [
-
-                            ...home.availableMedicines,
-                            { medicine, disease, quantity, expiryDate }
-
-                        ]
+                        availableMedicines : [ ...home.availableMedicines, addedMed ]
                         
                     }
                     

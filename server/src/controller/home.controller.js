@@ -1,5 +1,6 @@
 import { getAdminDeatils } from "../helper/database.helper.js"
 import { redisClient } from "../lib/redis.connection.js"
+import AddedMedModel from "../models/addedMed.model.js"
 import HomeModel from "../models/home.model.js"
 import UserModel from "../models/user.model.js"
 
@@ -90,7 +91,9 @@ export const getCHController = async ( request, response ) => {
 
                 ]
 
-            }).select('-__v -updatedAt')
+            })
+            .populate("availableMedicines")
+            .select('-__v -updatedAt')
 
             if( homes && homes.length > 0 ) {
 
@@ -131,7 +134,7 @@ export const getPHController = async ( request, response ) => {
         if( redisHomes && redisHomes.length > 0 ) {
 
             // Fetching home data from redis
-            // The admin and accessed user constraints are already valiated before data added to redis
+            // The admin and accessed user constraints are already validated before data added to redis
             const homeData = redisHomes.filter( home => home._id === homeId )
             return response.status( 200 ).json({ home : homeData[0] })
 
@@ -148,7 +151,9 @@ export const getPHController = async ( request, response ) => {
     
                 ]
     
-            }).select('-__v -updatedAt')
+            })
+            .populate('availableMedicines')
+            .select('-__v -updatedAt')
     
             if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
             else {
@@ -175,12 +180,16 @@ export const addMedController = async ( request, response ) => {
 
     try {
 
-        const { homeId, medicine, disease, quantity, expiryDate } = request?.body
+        const { homeId } = request?.body
 
+        // Saving the newly added medicine to added med collection
+        const addedMed = await AddedMedModel.create( request?.body )
+        const { __v, ...rest } = addedMed.toObject()
+        // And the new medicine Id is added to available medicine 
         const update = await HomeModel.findByIdAndUpdate( 
             
             homeId, 
-            { $push : { availableMedicines : { medicine, disease, quantity, expiryDate } } },
+            { $push : { availableMedicines : rest?._id } },
             { new : true }
             
         )
@@ -199,12 +208,7 @@ export const addMedController = async ( request, response ) => {
                         return {
 
                             ...home,
-                            availableMedicines : [
-
-                                ...home.availableMedicines,
-                                { medicine, disease, quantity, expiryDate }
-
-                            ]
+                            availableMedicines : [ ...home.availableMedicines, rest ]
 
                         }
 
@@ -218,7 +222,7 @@ export const addMedController = async ( request, response ) => {
 
             }
 
-            return response.status( 200 ).json({ message : 'Medicine added to ' })
+            return response.status( 200 ).json({ message : 'Medicine added to ', addedMed : rest })
     
         }     
 

@@ -111,7 +111,7 @@ function SingleHome() {
                                             <section><p>{ med?.expiryDate }</p></section>
                                             <section>
 
-                                                <p>Edit</p>
+                                                <p>Use</p>
                                                 <p>Delete</p>
 
                                             </section>
