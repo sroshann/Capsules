@@ -229,3 +229,98 @@ export const addMedController = async ( request, response ) => {
     } catch ( error ) { response.status( 500 ).json({ error : 'Error occured on adding medicine' }) }
 
 }
+
+// Consume medicine
+export const consumeMedController = async ( request, response ) => {
+
+    try {
+
+        const { medicineId, homeId } = request?.body
+        const medicine = await AddedMedModel.findById( medicineId )
+
+        // Updates the cached Redis "Homes" data after a medicine is modified or removed.
+        // If the medicine quantity becomes zero, it is removed from the home's availableMedicines list.
+        // Otherwise, the quantity is decremented while keeping all other cached data intact.
+        // Ensures proper ObjectId comparison, immutability, and persists the updated list back to Redis.
+        let redisHomes = JSON.parse( await redisClient.get('Homes') )
+        if( redisHomes && redisHomes.length > 0 ) {
+
+            redisHomes = redisHomes.map( home => {
+
+                if( home._id === homeId ) {
+
+                    if( medicine?.quantity === 1 ) {
+
+                        // Delete specefic medicine data from available medicine of REDIS
+                        return {
+    
+                            ...home,
+                            availableMedicines : home.availableMedicines.filter( med => med._id != medicineId )
+    
+                        }
+
+                    } else {
+
+                        // Just decrement the quantity of sepecefic medicine from available medicine of REDIS
+                        return {
+
+                            ...home,
+                            availableMedicines : home.availableMedicines.map( med => 
+                                
+                                med?._id === medicineId ? { ...med, quantity : med.quantity - 1 } : med
+
+                            )
+
+                        }
+
+                    }
+
+
+                }
+
+                return home
+
+            } )
+
+            await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
+
+        }
+        
+        if( medicine.quantity === 1 ) {
+
+            await AddedMedModel.findByIdAndDelete( medicineId ) // Delete from addmed model
+            await HomeModel.findByIdAndUpdate( // Also remove the particular id from available medicines of home data
+
+                homeId,
+                { $pull : { availableMedicines : medicineId } }
+
+            )
+
+            return response.status( 200 ).json({ 
+                
+                message : `All medicines for ${medicine?.disease} have been taken`, 
+                medUpdationQty : medicine?.quantity 
+            
+            })
+
+        } else {
+
+            await AddedMedModel.findByIdAndUpdate( // If current count is greater than 1 then just decrement the count
+
+                medicineId,
+                { $inc : { 'quantity' : -1 } }
+
+            )
+
+            return response.status( 200 ).json({ 
+                
+                message : 'Quantity updated, get well soon!',
+                medUpdationQty : medicine?.quantity 
+            
+            })
+
+        }
+
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating medicine quantity' }) }
+
+}

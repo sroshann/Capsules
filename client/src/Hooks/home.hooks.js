@@ -3,7 +3,6 @@ import { validateCreateHome, validateMedicineNameComponent } from "../lib/valida
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
-import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { setHomes } from "../Store/Reducers/home.reducer"
 import { changeDateFormat } from "../lib/utils"
@@ -204,6 +203,7 @@ export const useAddMedFormik = () => {
 
 }
 
+// Add medicines to home
 export const useAddMedicine = () => {
 
     let { homesData } = useSelector( state => state.homes )
@@ -238,6 +238,73 @@ export const useAddMedicine = () => {
             toast.success( message + nickName, { style : toastStyle } )
 
         } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
+
+    }
+
+}
+
+// Consume medicines
+export const useConsumeMedicine = () => {
+
+    let { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+
+    return async ( medicineId, homeId, setHomeData ) => {
+
+        const loading = toast.loading('Updating medicine count', { style : toastStyle })
+        try {
+
+            const response = await axiosInstance.put('home/updateMedCount', { medicineId, homeId })
+            const { message, medUpdationQty } = response?.data
+
+            // Updates the Redux "homesData" data after a medicine is modified or removed in backend.
+            // If the medicine quantity becomes zero, it is removed from the redux availableMedicines list.
+            // Otherwise, the quantity is decremented while keeping all other data intact.
+            // Ensures proper ObjectId comparison, immutability, and persists the updated list back to Redux.
+            homesData = homesData?.map( home => {
+
+                if( home._id === homeId ) {
+
+                    if( medUpdationQty === 1 ) {
+
+                        // Delete specefic medicine data from available medicine
+                        return {
+
+                            ...home,
+                            availableMedicines : home.availableMedicines.filter( med => med._id != medicineId )
+
+                        }
+
+                    } else {
+
+                        // Just decrement the quantity of sepecefic medicine from available medicine
+                        return {
+
+                            ...home,
+                            availableMedicines : home.availableMedicines.map( med =>  
+
+                                med._id === medicineId ? { ...med, quantity : med.quantity - 1 } : med
+
+                            )
+
+                        }
+
+                    }
+                    
+                }
+                
+                return home
+                
+            } )
+
+            // Also updating the single home state
+            setHomeData( homesData.filter( home => home._id === homeId )[0] )
+            dispatch( setHomes( homesData ) )
+            toast.success( message, { style : toastStyle } )
+
+        } 
+        catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
         finally { toast.remove( loading ) }
 
     }

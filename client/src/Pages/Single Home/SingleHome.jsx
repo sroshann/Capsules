@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-import { useGetParticularHome } from '../../Hooks/home.hooks'
+import { useConsumeMedicine, useGetParticularHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
@@ -16,6 +16,7 @@ function SingleHome() {
 
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
+    const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
     const navigate = useNavigateTo()
 
     const { userData } = useSelector(state => state.authentication)
@@ -111,7 +112,7 @@ function SingleHome() {
                                             <section><p>{ med?.expiryDate }</p></section>
                                             <section>
 
-                                                <p>Use</p>
+                                                <p onClick={ () => consumeMedicine( med?._id, med?.homeId, setHomeData ) } >Use</p>
                                                 <p>Delete</p>
 
                                             </section>
