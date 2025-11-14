@@ -13,18 +13,71 @@ import './SingleHome.css'
 function SingleHome() {
 
     const [homeData, setHomeData] = useState(null) // Used to store home data
+    const [ searchedMed, setSearchedMed ] = useState([])
+    const [ search, setSearch ] = useState('')
 
+    const { userData } = useSelector(state => state.authentication)
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
     const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
     const navigate = useNavigateTo()
 
-    const { userData } = useSelector(state => state.authentication)
-
     useEffect(() => { getParticularHome(homeId, setHomeData) }, [])
 
     const HSref = useRef()
     useGSAP( () => { animateProfile( HSref ) }, [] )
+
+    // Update medicine count
+    const consume = ( medId, homeId ) => {
+
+        // Updating this seperate array and filtering out if any medicine quantity becomes 0
+        let updated = searchedMed
+        .map( medicine => {
+            
+            if( medicine._id === medId ) {
+                
+                return {
+                        
+                    ...medicine,
+                    quantity : medicine.quantity - 1
+                        
+                }
+                
+            }
+            return medicine
+            
+        } )
+        .filter( medicine => medicine.quantity > 0 )
+        setSearchedMed( updated )
+        consumeMedicine( medId, homeId, setHomeData ) 
+        
+    }
+
+    useEffect( () => {
+
+        // Filtered data is only provided on initial rendering and clearing search
+        if( homeData?.availableMedicines && searchedMed.length === 0 ) setSearchedMed( homeData?.availableMedicines )
+
+    }, [ homeData?.availableMedicines ] )
+
+    const searchMedicines = ( event ) => {
+
+        event.preventDefault()
+        const filtered = homeData?.availableMedicines.filter( object => 
+            
+            object.medicine.toLowerCase().includes( search.toLowerCase() ) 
+        
+        )
+        setSearchedMed( filtered )
+
+    }
+
+    const clearSearch = () => {
+
+        setSearch('')
+        setSearchedMed( homeData?.availableMedicines )
+
+    }
 
     return (
 
@@ -43,7 +96,7 @@ function SingleHome() {
                             {/* Search and create */}
                             <section id="home-left-search-and-create">
 
-                                <form>
+                                <form onSubmit={ e => searchMedicines(e) }>
 
                                     <div id='home-left-search'>
 
@@ -52,9 +105,11 @@ function SingleHome() {
 
                                             type="text"
                                             placeholder='Search your medicines'
+                                            value={ search }
+                                            onChange={ e => setSearch( e.target.value ) }
 
                                         />
-                                        <i className='bx  bx-x' />
+                                        <i className='bx  bx-x' onClick={ clearSearch } />
 
                                     </div>
 
@@ -95,7 +150,7 @@ function SingleHome() {
 
                                 {
 
-                                    homeData?.availableMedicines && homeData?.availableMedicines.map( ( med, index ) => (
+                                    searchedMed && searchedMed.map( ( med, index ) => (
 
                                         <motion.div 
                                         
@@ -112,7 +167,7 @@ function SingleHome() {
                                             <section><p>{ med?.expiryDate }</p></section>
                                             <section>
 
-                                                <p onClick={ () => consumeMedicine( med?._id, med?.homeId, setHomeData ) } >Use</p>
+                                                <p onClick={ () => consume( med?._id, med?.homeId ) } >Use</p>
                                                 <p>Delete</p>
 
                                             </section>
