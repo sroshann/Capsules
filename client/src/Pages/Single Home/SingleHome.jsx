@@ -15,6 +15,7 @@ function SingleHome() {
     const [homeData, setHomeData] = useState(null) // Used to store home data
     const [ searchedMed, setSearchedMed ] = useState([])
     const [ search, setSearch ] = useState('')
+    const [ currentPage, setCurrentPage ] = useState( 0 )
 
     const { userData } = useSelector(state => state.authentication)
     const { homeId } = useParams() // Getting home Id from url
@@ -78,6 +79,14 @@ function SingleHome() {
         setSearchedMed( homeData?.availableMedicines )
 
     }
+
+    const PAGE_SIZE = 8
+    const pageNumber = Math.ceil( searchedMed.length / PAGE_SIZE )
+    const starting = currentPage * PAGE_SIZE
+    const ending = starting + PAGE_SIZE
+
+    const incrementPage = () => setCurrentPage( previous => previous + 1 )
+    const decrementPage = () => setCurrentPage( previous => previous - 1 )
 
     return (
 
@@ -150,7 +159,7 @@ function SingleHome() {
 
                                 {
 
-                                    searchedMed && searchedMed.map( ( med, index ) => (
+                                    searchedMed && searchedMed.slice( starting, ending ).map( ( med, index ) => (
 
                                         <motion.div 
                                         
@@ -179,6 +188,44 @@ function SingleHome() {
                                 }
 
                             </section>
+
+                            { pageNumber > 1 && <section id="medicine-pagination">
+
+                                <button 
+                                    
+                                    className='current-page page-arrow' 
+                                    onClick={ decrementPage }
+                                    disabled = { currentPage === 0 }
+                                    
+                                ><i className='bx  bx-caret-left'></i></button>
+                                <section>
+
+                                    {
+
+                                        [ ...Array( pageNumber ).keys() ].map( number => (
+
+                                            <div 
+                                            
+                                                key={ number }  
+                                                onClick={ () => setCurrentPage( number ) } 
+                                                className={ currentPage === number ? "current-page" : "" }
+                                                
+                                            ><p>{ number + 1 }</p></div>
+
+                                        ) )
+
+                                    }
+                                    
+                                </section>
+                                <button 
+                                
+                                    className='current-page page-arrow' 
+                                    onClick={ incrementPage }
+                                    disabled = { currentPage + 1 === pageNumber }
+                                    
+                                ><i className='bx  bx-caret-right'></i></button>
+
+                            </section> }
 
                         </section>
 
