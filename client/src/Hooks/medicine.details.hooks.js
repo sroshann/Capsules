@@ -3,8 +3,9 @@ import { validateMedicineName } from "../lib/validations"
 import axios from "axios"
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setSearchedMed } from "../Store/Reducers/medicine.reducer"
+import { setMedicineNames } from "../Store/Reducers/medName.reducer"
 
 // Search medicine formik
 export const useMedicineFormik = () => {
@@ -60,20 +61,28 @@ export const useGetMedDetails = () => {
 // Get medicine names on on adding medicine to home
 export const useGetMedicineNames = () => {
 
+    const { medicineNames } = useSelector( state => state.medNames )
+    const dispatch = useDispatch()
+
     return async () => {
 
         const loading = toast.loading('Fetching medicines', { style : toastStyle })
         try {
 
-            const response = await axios.get
-                (`https://api.fda.gov/drug/label.json?search=openfda.brand_name:%20*&limit=100`)
+            if( medicineNames.length === 0 ) {
 
-            let { results } = response?.data
-            results = results
-                ?.map( medicines => medicines?.openfda?.brand_name )
-                .filter( Boolean )
-                .flat()
-            return (results || null)
+                const response = await axios.get
+                    (`https://api.fda.gov/drug/label.json?search=openfda.brand_name:%20*&limit=100`)
+    
+                let { results } = response?.data
+                results = results
+                    ?.map( medicines => medicines?.openfda?.brand_name )
+                    .filter( Boolean )
+                    .flat()
+                dispatch( setMedicineNames( results || null ) )
+                return (results || null)
+
+            } else return medicineNames
 
         } catch (error) { console.log(error) }
         finally { toast.remove( loading ) }

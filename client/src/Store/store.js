@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './Reducers/auth.reducer'
 import homeReducer from './Reducers/home.reducer'
 import medicineReducer from './Reducers/medicine.reducer'
+import medNamesReducer from './Reducers/medName.reducer'
 
 export default configureStore({
 
@@ -9,7 +10,8 @@ export default configureStore({
 
         authentication : authReducer,
         homes : homeReducer,
-        medicine : medicineReducer
+        medicine : medicineReducer,
+        medNames : medNamesReducer
 
     }
 
