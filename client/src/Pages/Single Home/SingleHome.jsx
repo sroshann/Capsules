@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
+import ConfirmPopUp from '../../Components/Confirm popup/ConfirmPopUp'
 import './SingleHome.css'
 
 function SingleHome() {
@@ -16,6 +17,9 @@ function SingleHome() {
     const [ searchedMed, setSearchedMed ] = useState([])
     const [ search, setSearch ] = useState('')
     const [ currentPage, setCurrentPage ] = useState( 0 )
+    const [ showPopUp, setShowPopUp ] = useState( false ) // Boolean state used to show pop up message
+    // Hook used to store the parameters which should be passed to function after confirming the pop up
+    const [ executionParams, setExecutionParams ] = useState({}) 
 
     const { userData } = useSelector(state => state.authentication)
     const { homeId } = useParams() // Getting home Id from url
@@ -29,24 +33,25 @@ function SingleHome() {
     useGSAP( () => { animateProfile( HSref ) }, [] )
 
     // Update medicine count
-    const consume = ( medId, homeId ) => {
+    const consume = ({ medId, homeId }) => {
 
+        // This function will only execute after confirming the pop up box
         // Updating this seperate array and filtering out if any medicine quantity becomes 0
         let updated = searchedMed
         .map( medicine => {
-            
-            if( medicine._id === medId ) {
                 
+            if( medicine._id === medId ) {
+                    
                 return {
-                        
+                            
                     ...medicine,
                     quantity : medicine.quantity - 1
-                        
+                            
                 }
-                
+                    
             }
             return medicine
-            
+                
         } )
         .filter( medicine => medicine.quantity > 0 )
         setSearchedMed( updated )
@@ -93,6 +98,18 @@ function SingleHome() {
         <>
 
             <Navbar />
+            { showPopUp && 
+            
+                <ConfirmPopUp 
+                
+                    description={'Do you really used the medicine ?'} 
+                    execution = { consume }
+                    params = { executionParams }
+                    final = { setShowPopUp }
+                    
+                /> 
+                
+            }
             <section id='homeDetails-root' ref={ HSref }>
 
                 <section id='homeDetails'>
@@ -176,7 +193,18 @@ function SingleHome() {
                                             <section><p>{ med?.expiryDate }</p></section>
                                             <section>
 
-                                                <p onClick={ () => consume( med?._id, med?.homeId ) } >Use</p>
+                                                <p 
+                                                
+                                                    onClick={ () => {
+
+                                                        setShowPopUp( true ) // Showing the pop up
+                                                        // Setting the parameters for 'consume' function
+                                                        // after executing pop up
+                                                        setExecutionParams({ medId : med?._id, homeId : med?.homeId })
+
+                                                    } }
+                                                    
+                                                >Use</p>
                                                 <p>Delete</p>
 
                                             </section>
