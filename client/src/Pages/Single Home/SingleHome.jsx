@@ -4,7 +4,7 @@ import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
 import { useConsumeMedicine, useGetParticularHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
@@ -98,18 +98,20 @@ function SingleHome() {
         <>
 
             <Navbar />
-            { showPopUp && 
-            
-                <ConfirmPopUp 
-                
+            <AnimatePresence>
+
+                { showPopUp && <ConfirmPopUp 
+                    
                     description={'Do you really used the medicine ?'} 
                     execution = { consume }
                     params = { executionParams }
                     final = { setShowPopUp }
+                        
+                    />
                     
-                /> 
-                
-            }
+                }
+
+            </AnimatePresence>
             <section id='homeDetails-root' ref={ HSref }>
 
                 <section id='homeDetails'>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import './ConfirmPopUp.css'
 
 function ConfirmPopUp({ description, execution, params, final }) {
@@ -21,7 +22,15 @@ function ConfirmPopUp({ description, execution, params, final }) {
 
         <section id='confirm-popup-root'>
             
-            <div id="pop-up">
+            <motion.div 
+            
+                id="pop-up"
+                initial={{ y : -50, opacity : 0 }}
+                animate={{ y : 0, opacity : 1 }}
+                exit={{ y : -50, opacity : 0 }}
+                transition={{ duration : 0.4 }}
+                
+            >
 
                 <p id='pop-desc'>{ description }</p>
                 <div>
@@ -31,7 +40,7 @@ function ConfirmPopUp({ description, execution, params, final }) {
 
                 </div>
 
-            </div>
+            </motion.div>
 
         </section>
 
