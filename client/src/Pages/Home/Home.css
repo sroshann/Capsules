@@ -181,6 +181,7 @@
             justify-content: space-between;
             font-size: 0.8rem;
 
+            & p:nth-child( 1 ) { color: #016BF8; }
             & p:nth-child( 2 ) { 
                 
                 span { color: gray; }

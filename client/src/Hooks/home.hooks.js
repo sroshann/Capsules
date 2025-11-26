@@ -310,3 +310,48 @@ export const useConsumeMedicine = () => {
     }
 
 }
+
+// Delete medicine
+export const useDeleteMedicine = () => {
+
+    let { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+
+    return async ( params, setHomeData ) => {
+
+        const loading = toast.loading('Deleting medicine', { style : toastStyle })
+        try {
+
+            const { medId, homeId } = params
+            const response = await axiosInstance.put('home/deleteMedicine', params)
+            const { message } = response?.data
+
+            // Update the redux object after deletion
+            homesData = homesData.map( home => {
+
+                if( home?._id == homeId ) {
+
+                    return {
+
+                        ...home,
+                        availableMedicines : home.availableMedicines.filter( med => med?._id != medId )
+
+                    }
+                    
+                }
+
+                return home
+
+            } )
+
+            // Also update in single home state
+            setHomeData( homesData.filter( home => home?._id === homeId )[0] )
+            dispatch( setHomes( homesData ) )
+            toast.success( message, { style : toastStyle } )
+
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
+
+    }
+
+}

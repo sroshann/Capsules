@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-import { useConsumeMedicine, useGetParticularHome } from '../../Hooks/home.hooks'
+import { useConsumeMedicine, useDeleteMedicine, useGetParticularHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
@@ -17,7 +17,8 @@ function SingleHome() {
     const [ searchedMed, setSearchedMed ] = useState([])
     const [ search, setSearch ] = useState('')
     const [ currentPage, setCurrentPage ] = useState( 0 )
-    const [ showPopUp, setShowPopUp ] = useState( false ) // Boolean state used to show pop up message
+    const [ editPopUp, setEditPopUp ] = useState( false ) // Boolean state used to show pop up for consume medicine
+    const [ deletePopUp, setDeletePopUp ] = useState( false ) // Boolean state used to show pop up for deleting medicine 
     // Hook used to store the parameters which should be passed to function after confirming the pop up
     const [ executionParams, setExecutionParams ] = useState({}) 
 
@@ -25,6 +26,7 @@ function SingleHome() {
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
     const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
+    const deleteMedicine = useDeleteMedicine() // Hook used to delete medicine
     const navigate = useNavigateTo()
 
     useEffect(() => { getParticularHome(homeId, setHomeData) }, [])
@@ -57,6 +59,17 @@ function SingleHome() {
         setSearchedMed( updated )
         consumeMedicine( medId, homeId, setHomeData ) 
         
+    }
+
+    // Delete medicine
+    const deleteMed = ( parameters ) => {
+
+        // This function will only execute after confirming the pop up box
+        // Updating this seperate array and delting the medicine
+        let updated = searchedMed.filter( medicine => medicine?._id != parameters?.medId )
+        setSearchedMed( updated )
+        deleteMedicine( parameters, setHomeData )
+
     }
 
     useEffect( () => {
@@ -100,16 +113,28 @@ function SingleHome() {
             <Navbar />
             <AnimatePresence>
 
-                { showPopUp && <ConfirmPopUp 
+                {/* Medicine using pop up */}
+                { editPopUp && <ConfirmPopUp 
                     
                     description={'Do you really used the medicine ?'} 
                     execution = { consume }
                     params = { executionParams }
-                    final = { setShowPopUp }
+                    final = { setEditPopUp }
                         
-                    />
+                />}
+
+            </AnimatePresence>
+            <AnimatePresence>
+
+                {/* Medicine deleting pop up */}
+                { deletePopUp && <ConfirmPopUp 
                     
-                }
+                    description={'Do you really want to delete the medicine ?'} 
+                    execution = { deleteMed }
+                    params = { executionParams }
+                    final = { setDeletePopUp }
+                        
+                />}
 
             </AnimatePresence>
             <section id='homeDetails-root' ref={ HSref }>
@@ -195,19 +220,20 @@ function SingleHome() {
                                             <section><p>{ med?.expiryDate }</p></section>
                                             <section>
 
-                                                <p 
-                                                
-                                                    onClick={ () => {
+                                                <p onClick={ () => {
 
-                                                        setShowPopUp( true ) // Showing the pop up
-                                                        // Setting the parameters for 'consume' function
-                                                        // after executing pop up
-                                                        setExecutionParams({ medId : med?._id, homeId : med?.homeId })
+                                                    setEditPopUp(true) // Showing the pop up
+                                                    // Setting the parameters for 'consume' function
+                                                    // after executing pop up
+                                                    setExecutionParams({ medId: med?._id, homeId: med?.homeId })
 
-                                                    } }
-                                                    
-                                                >Use</p>
-                                                <p>Delete</p>
+                                                }}>Use</p>
+                                                <p onClick={ () => {
+
+                                                    setDeletePopUp( true )
+                                                    setExecutionParams({ medId: med?._id, homeId : med?.homeId })
+
+                                                } }>Delete</p>
 
                                             </section>
 

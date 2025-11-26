@@ -324,3 +324,48 @@ export const consumeMedController = async ( request, response ) => {
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating medicine quantity' }) }
 
 }
+
+// Delete medicine
+export const deleteMedController = async ( request, response ) => {
+
+    try {
+
+        const { medId, homeId } = request?.body
+        await AddedMedModel.findByIdAndDelete( medId ) // Delete from added medicine database
+        await HomeModel.findByIdAndUpdate( // Update the available medicine list of corresponding home
+
+            homeId,
+            { $pull : { availableMedicines : medId } }
+
+        )
+
+        // Also delete the medicine from redis data
+        let redisHomes = JSON.parse( await redisClient.get('Homes') )
+        if( redisHomes && redisHomes.length > 0 ) {
+
+            redisHomes = redisHomes.map( home => {
+
+                if( home?._id === homeId ) {
+
+                    return {
+
+                        ...home,
+                        availableMedicines : home.availableMedicines.filter( med => med?._id != medId )
+
+                    }
+
+                }
+
+                return home
+
+            } )
+
+            await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
+
+        }
+
+        return response.status( 200 ).json({ message : 'Medicine deleted successfully' })
+
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on deleting medicine' }) }
+
+}

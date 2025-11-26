@@ -1,7 +1,11 @@
 import express from 'express'
 import { protectUserRoutes } from '../middleware/auth.middleware.js'
-import { addMedController, consumeMedController, createHomeController, getCHController, getPHController } 
-    from '../controller/home.controller.js'
+import { 
+    
+    addMedController, consumeMedController, createHomeController, 
+    deleteMedController, getCHController, getPHController 
+    
+} from '../controller/home.controller.js'
 const router = express()
 
 // Create new home
@@ -18,5 +22,8 @@ router.post('/addMedicine', protectUserRoutes, addMedController)
 
 // Consume medicine
 router.put('/updateMedCount', protectUserRoutes, consumeMedController)
+
+// Delete medicine
+router.put('/deleteMedicine', protectUserRoutes, deleteMedController)
 
 export default router
