@@ -1,4 +1,3 @@
-import { getAdminDeatils } from "../helper/database.helper.js"
 import { redisClient } from "../lib/redis.connection.js"
 import AddedMedModel from "../models/addedMed.model.js"
 import HomeModel from "../models/home.model.js"
@@ -92,24 +91,15 @@ export const getCHController = async ( request, response ) => {
                 ]
 
             })
-            .populate("availableMedicines")
+            .populate([
+
+                { path : 'admin', select : 'profilePicture fullName email userName' },
+                { path : 'availableMedicines' }
+
+            ])
             .select('-__v -updatedAt')
 
             if( homes && homes.length > 0 ) {
-
-                // Setting admin details for each homes
-                // We use await in 'getAdminDetails' function, but map doesnt wait for it
-                // so we need to put it in 'Promise.all' inorder to wait for each home execution
-                homes = await Promise.all(
-
-                    homes.map( async object => ({
-                    
-                        ...object.toObject(),
-                        admin : await getAdminDeatils( object.admin )
-
-                    }))
-
-                )
 
                 await redisClient.setEx('Homes', 6400, JSON.stringify( homes ))
                 return response.status( 200 ).json({ homes })
@@ -152,22 +142,16 @@ export const getPHController = async ( request, response ) => {
                 ]
     
             })
-            .populate('availableMedicines')
+            .populate([
+
+                { path : 'admin', select : 'profilePicture fullName userName email' },
+                { path : 'availableMedicines' }
+
+            ])
             .select('-__v -updatedAt')
     
             if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
-            else {
-        
-                // Getting the admin details and setting to the home data
-                homeData = {
-    
-                    ...homeData.toObject(),
-                    admin : await getAdminDeatils( homeData.admin )
-    
-                }
-                return response.status( 200 ).json({ home : homeData })
-        
-            }
+            else return response.status( 200 ).json({ home : homeData })
 
         }
          
