@@ -90,15 +90,40 @@ export const getCHController = async ( request, response ) => {
 
                 ]
 
-            })
-            .populate([
+            }).select('-__v -updatedAt')
+
+            // First check the dates of medicines stored with the corresponding medicine Id
+            // and update it with 'e' if expired
+            const today = new Date()
+            for( const home of homes ) {
+
+                const medicines = await AddedMedModel.find({ homeId : home._id })
+                for( const med of medicines ) {
+
+                    const medDate = new Date( med?.expiryDate )
+                    if ( today >= medDate ) {
+
+                        await AddedMedModel.findByIdAndUpdate(
+
+                            med._id,
+                            { $set : { expiryDate : "e" } }
+
+                        )
+
+                    }
+
+                }
+
+            }
+
+            // Then populate the data
+            homes = await HomeModel.populate( homes, [
 
                 { path : 'admin', select : 'profilePicture fullName email userName' },
                 { path : 'availableMedicines' }
 
             ])
-            .select('-__v -updatedAt')
-
+            
             if( homes && homes.length > 0 ) {
 
                 await redisClient.setEx('Homes', 6400, JSON.stringify( homes ))
@@ -142,7 +167,29 @@ export const getPHController = async ( request, response ) => {
                 ]
     
             })
-            .populate([
+
+            // First check the dates of medicines stored with the corresponding medicine Id
+            // and update it with 'e' if expired
+            const today = new Date()
+            const medicines = await AddedMedModel.find({ homeId : homeData?._id })
+            for( const med of medicines ) {
+
+                const medDate = new Date( med?.expiryDate )
+                if( today >= medDate ) {
+
+                    await AddedMedModel.findByIdAndUpdate(
+
+                        med?._id,
+                        { $set : { expiryDate : 'e' } }
+
+                    )
+
+                }
+
+            }
+
+            // Then populate the data
+            homeData = await HomeModel.populate( homeData, [
 
                 { path : 'admin', select : 'profilePicture fullName userName email' },
                 { path : 'availableMedicines' }

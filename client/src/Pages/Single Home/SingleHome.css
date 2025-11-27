@@ -221,13 +221,9 @@
                         display: flex;
                         justify-content: center;
                         column-gap: 6px;
-                        p { 
-                            
-                            cursor: pointer; 
-                            &:nth-child( 1 ) { color: #016BF8; }
-                            &:nth-child( 2 ) { color: red; }
-                        
-                        }
+                        p { cursor: pointer; }
+                        .use-medicine { color: #016BF8; }
+                        .delete-medicine { color: red; }
 
                     }
 

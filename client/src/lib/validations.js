@@ -212,7 +212,15 @@ export const validateMedicineNameComponent = ({ medicine, disease, quantity, exp
     if( !quantity ) error.quantity = "Invalid quantity"
 
     if( !expiryDate ) error.expiryDate = "Invalid expiry date"
+    else if ( expiryDate ) {
 
+        const today = new Date()
+        const entered = new Date( expiryDate )
+        // If entered date is past or today then throw error
+        if ( entered <= today ) error.expiryDate = "Provide valid expiry date"
+
+    }
+    
     return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
 
 }

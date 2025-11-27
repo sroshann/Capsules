@@ -217,23 +217,38 @@ function SingleHome() {
                                             <section><p>{ med?.medicine }</p></section>
                                             <section><p>{ med?.disease }</p></section>
                                             <section><p>{ med?.quantity }</p></section>
-                                            <section><p>{ med?.expiryDate }</p></section>
+                                            <section><p>{ med?.expiryDate === 'e' ? 'Expired' : med?.expiryDate }</p></section>
                                             <section>
 
-                                                <p onClick={ () => {
+                                                {/* The 'use' option is enabled only if it not expired */}
+                                                { med?.expiryDate != 'e' && 
+                                                
+                                                    <p 
+                                                    
+                                                        className='use-medicine'
+                                                        onClick={ () => {
 
-                                                    setEditPopUp(true) // Showing the pop up
-                                                    // Setting the parameters for 'consume' function
-                                                    // after executing pop up
-                                                    setExecutionParams({ medId: med?._id, homeId: med?.homeId })
+                                                            setEditPopUp(true) // Showing the pop up
+                                                            // Setting the parameters for 'consume'
+                                                            // function after executing pop up
+                                                            setExecutionParams({ medId: med?._id, homeId: med?.homeId })
 
-                                                }}>Use</p>
-                                                <p onClick={ () => {
+                                                        }}
+                                                    
+                                                    >Use</p> 
+                                                
+                                                }
+                                                <p 
+                                                
+                                                    className='delete-medicine'
+                                                    onClick={ () => {
 
-                                                    setDeletePopUp( true )
-                                                    setExecutionParams({ medId: med?._id, homeId : med?.homeId })
+                                                        setDeletePopUp( true )
+                                                        setExecutionParams({ medId: med?._id, homeId : med?.homeId })
 
-                                                } }>Delete</p>
+                                                    } }
+
+                                                >Delete</p>
 
                                             </section>
 
