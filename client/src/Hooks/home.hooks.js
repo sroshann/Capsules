@@ -1,5 +1,5 @@
 import { useFormik } from "formik"
-import { validateCreateHome, validateMedicineNameComponent } from "../lib/validations"
+import { validateCreateHome, validateMedicineNameComponent, validateUpdateHome } from "../lib/validations"
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
@@ -356,7 +356,8 @@ export const useDeleteMedicine = () => {
 
 }
 
-export const useUpdateHMData = () => {
+// Update basic home details
+export const useUpdateBSCHMData = () => {
 
     let { homesData } = useSelector( state => state.homes )
     const dispatch = useDispatch()
@@ -366,14 +367,29 @@ export const useUpdateHMData = () => {
         const loading = toast.loading('Saving changes', { style : toastStyle })
         try {
 
-            const response = await axiosInstance.put('home/updateDescOrAddress', { option, homeId, data })
+            let response
+            if( option === 'description' ) {
 
-            // Updating the changes in redux
-            homesData = homesData.map( home => 
+                response = await axiosInstance.put('home/updateHomeDesc', { homeId, data })
+                // Updating the changes in redux
+                homesData = homesData.map( home => 
+                    
+                    home?._id === homeId ? { ...home, description : data  } : home  
                 
-                home?._id === homeId ? { ...home, [ option ] : data  } : home  
-            
-            )
+                )
+
+            } else {
+
+                const { country, state, district, pincode } = data
+                response = await axiosInstance.put('home/updateAddress', { homeId, data })
+                // Updating changes in redux
+                homesData = homesData.map( 
+                    
+                    home => home?._id === homeId ? { ...home, country, state, district, pincode } : home 
+                
+                )
+
+            }
             dispatch( setHomes( homesData ) )
             setHomeData( homesData.filter( home => home?._id === homeId )[0] ) // Setting the updated home into single home state
             setCloseEdit( previous => !previous ) // Closing the edit options
@@ -387,5 +403,30 @@ export const useUpdateHMData = () => {
         finally { toast.remove( loading ) }
 
     }
+
+}
+
+// Address formik
+export const useAddressFormik = ( homeData, setHomeData, setCloseEdit ) => {
+
+    const update = useUpdateBSCHMData()
+    return useFormik({
+
+        initialValues : {
+
+            country : homeData?.country || '',
+            state : homeData?.state || '',
+            district : homeData?.district || '',
+            pincode : homeData?.pincode || ''
+
+        },
+        enableReinitialize : true,
+        validateOnBlur : false,
+        validateOnChange : false,
+        validateOnMount : false,
+        validate : validateUpdateHome,
+        onSubmit : ( values ) => { update( 'address', homeData?._id, values, setHomeData, setCloseEdit ) }
+
+    })
 
 }

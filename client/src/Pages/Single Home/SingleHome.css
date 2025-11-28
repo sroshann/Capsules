@@ -387,18 +387,6 @@
             display: grid;
             row-gap: 8px;
 
-            button {
-
-                font-size: 12.5px;
-                border: 0;
-                padding: 5px 0px;
-                border-radius: 4px;
-                color: white;
-                background: #016BF8;
-                cursor: pointer;
-
-            }
-
             textarea {
 
                 padding: 3px 6px 3px 6px;
@@ -409,6 +397,24 @@
                 field-sizing: content;
                 min-height: 4rem;
                 color: rgba(0, 0, 0, 0.70);
+                
+            }
+            
+        }
+        
+        #home-address {
+            
+            display: grid;
+            row-gap: 8px;
+            
+            input {
+                
+                outline: none;
+                color: rgba(0, 0, 0, 0.70);
+                padding: 4px 6px;
+                /* border: 0; */
+                border: solid 1px gray;
+                border-radius: 3px;
 
             }
 
@@ -418,6 +424,18 @@
 
             display: grid;
             row-gap: 5.5px;
+
+        }
+
+        .save-changes-button {
+
+            font-size: 12.5px;
+            border: 0;
+            padding: 5px 0px;
+            border-radius: 4px;
+            color: white;
+            background: #016BF8;
+            cursor: pointer;
 
         }
 

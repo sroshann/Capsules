@@ -48,6 +48,27 @@ const validatePassword = (parameters, isConfirm = false) => {
 
 }
 
+const validateAddress = ( parameters ) => {
+
+    const { country, state, district, pincode } = parameters
+    let error = {}
+
+    // Country
+    if( !country ) error.country = 'Country cannot be empty'
+
+    // State
+    if( !state ) error.state = 'State cannot be empty'
+
+    // District
+    if( !district ) error.district = 'District cannot be empty'
+
+    // Pincode
+    if( !pincode ) error.pincode = 'Pincode cannot be empty'
+
+    return Object.keys( error ).length ? error : null
+
+}
+
 export const validateSignup = values => {
 
     let error = {}
@@ -170,17 +191,16 @@ export const validateCreateHome = values => {
     else if (homeName.split(" ").join("") != homeName) error.homeName = 'Home name should not contain spaces'
     else if (homeName.length <= 3) error.homeName = 'Create a longer homeName'
 
-    // Country
-    if( !country ) error.country = 'Country cannot be empty'
+    let addressError = validateAddress({ country, state, district, pincode })
+    if( addressError ) {
 
-    // State
-    if( !state ) error.state = 'State cannot be empty'
+        const { country, state, district, pincode } = addressError
+        if( country ) error.country = country
+        else if( state ) error.state = state
+        else if( district ) error.district = district
+        else if( pincode ) error.pincode = pincode
 
-    // District
-    if( !district ) error.district = 'District cannot be empty'
-
-    // Pincode
-    if( !pincode ) error.pincode = 'Pincode cannot be empty'
+    }
 
     return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
 
@@ -222,5 +242,23 @@ export const validateMedicineNameComponent = ({ medicine, disease, quantity, exp
     }
     
     return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
+
+}
+
+export const validateUpdateHome = values => {
+
+    let error = {}
+    let addressError = validateAddress( values )
+    if( addressError ) {
+
+        const { country, state, district, pincode } = addressError
+        if( country ) error.country = country
+        else if( state ) error.state = state
+        else if( district ) error.district = district
+        else if( pincode ) error.pincode = pincode
+
+    }
+
+    return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
 
 }

@@ -403,16 +403,16 @@ export const deleteMedController = async ( request, response ) => {
 }
 
 // Update home description
-export const updateBSCHMDataCtrl = async ( request, response ) => {
+export const updateHomeDescCtrl = async ( request, response ) => {
 
     try {
 
-        const { option, homeId, data } = request?.body
+        const { homeId, data } = request?.body
 
         const update = await HomeModel.findByIdAndUpdate(
 
             homeId,
-            { $set : option === 'description' ? { description : data } : { address : data } },
+            { $set : { description : data } },
             { new : true }
 
         )
@@ -426,21 +426,56 @@ export const updateBSCHMDataCtrl = async ( request, response ) => {
 
                 redisData = redisData.map( home => 
                     
-                    home._id === homeId ? { ...home, [ option ] : data } : home 
+                    home._id === homeId ? { ...home, description : data } : home 
                 
                 )
                 await redisClient.setEx('Homes', 6400, JSON.stringify( redisData ))
 
             }
 
-            return response.status( 200 ).json({ 
-                
-                message : `${ option === 'description' ? 'Description' : 'Address' } updated successfully` 
-            
-            })
+            return response.status( 200 ).json({ message : "Description updated successfully" })
 
         }
 
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating description' }) }
+
+}
+
+// Updating address
+export const updateAddressCtrl = async ( request, response ) => {
+
+    try {
+
+        const { homeId, data } = request?.body
+        const { country, state, district, pincode } = data
+        const updated = await HomeModel.findByIdAndUpdate(
+
+            homeId,
+            { $set : { country, state, district, pincode } },
+            { new : true }
+
+        )
+
+        if( !updated ) { return response.status( 500 ).json({ error : "Could'nt update address" }) }
+        else {
+
+            // Update the changes in redis
+            let redisData = JSON.parse( await redisClient.get('Homes') )
+            if ( redisData && redisData.length > 0 ) {
+
+                redisData = redisData.map( 
+                    
+                    home => home?._id === homeId ? { ...home, country, state, district, pincode } : home 
+                
+                )
+                await redisClient.setEx( 'Homes', 6400, JSON.stringify( redisData ) )
+
+            }
+
+            return response.status( 200 ).json({ message : 'Address updated successfully' })
+
+        }
+
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating address' }) }
 
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-import { useConsumeMedicine, useDeleteMedicine, useGetParticularHome, useUpdateHMData } from '../../Hooks/home.hooks'
+import { useAddressFormik, useConsumeMedicine, useDeleteMedicine, useGetParticularHome, useUpdateBSCHMData } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
@@ -26,13 +26,17 @@ function SingleHome() {
     const [ editDesc, setEditDesc ] = useState( false )
     const [ description, setDesription ] = useState('')
 
+    // Updating location
+    const [ editAddress, setEditAddress ] = useState( false )
+
     const { userData } = useSelector(state => state.authentication)
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
     const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
     const deleteMedicine = useDeleteMedicine() // Hook used to delete medicine
-    const updateHomeData = useUpdateHMData() // Hook used to update basic home data
+    const updateHomeData = useUpdateBSCHMData() // Hook used to update basic home data
     const navigate = useNavigateTo()
+    const formik = useAddressFormik( homeData, setHomeData, setEditAddress )
 
     useEffect(() => { getParticularHome(homeId, setHomeData) }, [])
 
@@ -204,6 +208,7 @@ function SingleHome() {
                                 <div>Total : { homeData?.availableMedicines.length }</div>
 
                             </section>
+
                             <section id="medicine-list">
 
                                 {
@@ -265,6 +270,7 @@ function SingleHome() {
 
                             </section>
 
+                            {/* Pagination */}
                             { pageNumber > 1 && <section id="medicine-pagination">
 
                                 <button 
@@ -336,7 +342,7 @@ function SingleHome() {
                             }
                             { editDesc && 
                             
-                                <button onClick = { () => 
+                                <button className='save-changes-button' onClick = { () => 
                                     
                                     updateHomeData('description', homeData?._id, description, setHomeData, setEditDesc) 
                                 
@@ -345,18 +351,67 @@ function SingleHome() {
                             }
 
                         </section>
-                        <section id="home-address">
+                        <section id="home-address" style={ !editAddress ? { rowGap : '3px' } : {} }>
 
                             <section className='home-right-heading-edit'>
 
                                 <p className='home-right-heading'>Address <i className='bx  bx-street-view' /></p>
-                                <p className='home-right-edit'>Edit ?</p>
+                                <p className='home-right-edit' onClick={ () => setEditAddress( previous => !previous ) }>Edit ?</p>
 
                             </section>
-                            <p>Country : {homeData?.country}</p>
-                            <p>State : {homeData?.state}</p>
-                            <p>District : {homeData?.district}</p>
-                            <p>Pincode : {homeData?.pincode}</p>
+                            <form onSubmit={ formik.handleSubmit } style={ editAddress ? { display : 'grid', rowGap : '5px' } : {} }>
+
+                                { 
+                                
+                                    editAddress ? <input 
+                                    
+                                        type="text" 
+                                        name = 'country'
+                                        { ...formik.getFieldProps('country') }
+                                        
+                                    /> : 
+                                    <p>Country : { homeData?.country }</p> 
+                                    
+                                }
+                                {
+
+                                    editAddress ? <input 
+                                    
+                                        type="text" 
+                                        name = 'state'
+                                        { ...formik.getFieldProps('state') }
+                                        
+                                    /> :
+                                    <p>State : {homeData?.state}</p>
+
+                                }
+                                {
+
+                                    editAddress ? <input 
+                                    
+                                        type="text" 
+                                        name = 'district'
+                                        { ...formik.getFieldProps('district') }
+                                        
+                                    /> :
+                                    <p>District : {homeData?.district}</p>
+
+                                }
+                                {
+
+                                    editAddress ? <input 
+                                    
+                                        type="number" 
+                                        name = 'pincode'
+                                        { ...formik.getFieldProps('pincode') }
+                                        
+                                    /> :
+                                    <p>Pincode : {homeData?.pincode}</p>
+
+                                }
+
+                            { editAddress && <button type='submit' className='save-changes-button'>Save changes</button> }
+                            </form>
 
                         </section>
                         <section id="home-members">

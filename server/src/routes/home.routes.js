@@ -4,7 +4,7 @@ import {
     
     addMedController, consumeMedController, createHomeController, 
     deleteMedController, getCHController, getPHController, 
-    updateBSCHMDataCtrl
+    updateAddressCtrl, updateHomeDescCtrl
     
 } from '../controller/home.controller.js'
 const router = express()
@@ -27,7 +27,10 @@ router.put('/updateMedCount', protectUserRoutes, consumeMedController)
 // Delete medicine
 router.put('/deleteMedicine', protectUserRoutes, deleteMedController)
 
-// Update description and address of a home
-router.put('/updateDescOrAddress', protectUserRoutes, updateBSCHMDataCtrl)
+// Update description of a home
+router.put('/updateHomeDesc', protectUserRoutes, updateHomeDescCtrl)
+
+// Update address of a home
+router.put('/updateAddress', protectUserRoutes, updateAddressCtrl)
 
 export default router
