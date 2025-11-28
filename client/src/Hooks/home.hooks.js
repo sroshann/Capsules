@@ -355,3 +355,37 @@ export const useDeleteMedicine = () => {
     }
 
 }
+
+export const useUpdateHMData = () => {
+
+    let { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+
+    return async ( option, homeId, data, setHomeData, setCloseEdit ) => {
+
+        const loading = toast.loading('Saving changes', { style : toastStyle })
+        try {
+
+            const response = await axiosInstance.put('home/updateDescOrAddress', { option, homeId, data })
+
+            // Updating the changes in redux
+            homesData = homesData.map( home => 
+                
+                home?._id === homeId ? { ...home, [ option ] : data  } : home  
+            
+            )
+            dispatch( setHomes( homesData ) )
+            setHomeData( homesData.filter( home => home?._id === homeId )[0] ) // Setting the updated home into single home state
+            setCloseEdit( previous => !previous ) // Closing the edit options
+
+            const { message } = response?.data
+            toast.success( message, { style : toastStyle } )
+
+        } catch( error ) { 
+            console.log( error )
+            toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
+
+    }
+
+}

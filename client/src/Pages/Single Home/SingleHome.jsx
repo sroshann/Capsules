@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-import { useConsumeMedicine, useDeleteMedicine, useGetParticularHome } from '../../Hooks/home.hooks'
+import { useConsumeMedicine, useDeleteMedicine, useGetParticularHome, useUpdateHMData } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
@@ -22,11 +22,16 @@ function SingleHome() {
     // Hook used to store the parameters which should be passed to function after confirming the pop up
     const [ executionParams, setExecutionParams ] = useState({}) 
 
+    // Updating description
+    const [ editDesc, setEditDesc ] = useState( false )
+    const [ description, setDesription ] = useState('')
+
     const { userData } = useSelector(state => state.authentication)
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
     const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
     const deleteMedicine = useDeleteMedicine() // Hook used to delete medicine
+    const updateHomeData = useUpdateHMData() // Hook used to update basic home data
     const navigate = useNavigateTo()
 
     useEffect(() => { getParticularHome(homeId, setHomeData) }, [])
@@ -305,15 +310,39 @@ function SingleHome() {
                     {/* Right section */}
                     <section id='homeDetails-right'>
 
-                        <section id="home-description">
+                        <section id="home-description" style={ !editDesc ? { rowGap : '3px' } : {} }>
 
                             <section className='home-right-heading-edit'>
 
                                 <p className='home-right-heading'>Description <i className='bx  bx-note' /></p>
-                                <p className='home-right-edit'>Edit ?</p>
+                                { userData?._id === homeData?.admin?._id && 
+                                
+                                    <p onClick={ () => setEditDesc( previous => !previous ) } className='home-right-edit'>Edit ?</p> 
+                                    
+                                }
 
                             </section>
-                            <p>{homeData?.description}</p>
+                            { editDesc ? 
+                            
+                                <textarea 
+                                
+                                    placeholder={ homeData?.description }
+                                    onChange={ ( e ) => setDesription( e.target.value ) }  
+                                    value={ description }
+                                    
+                                /> : 
+                                <p>{homeData?.description}</p> 
+                                
+                            }
+                            { editDesc && 
+                            
+                                <button onClick = { () => 
+                                    
+                                    updateHomeData('description', homeData?._id, description, setHomeData, setEditDesc) 
+                                
+                                }>Save changes</button> 
+                            
+                            }
 
                         </section>
                         <section id="home-address">

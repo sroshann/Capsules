@@ -3,7 +3,8 @@ import { protectUserRoutes } from '../middleware/auth.middleware.js'
 import { 
     
     addMedController, consumeMedController, createHomeController, 
-    deleteMedController, getCHController, getPHController 
+    deleteMedController, getCHController, getPHController, 
+    updateBSCHMDataCtrl
     
 } from '../controller/home.controller.js'
 const router = express()
@@ -25,5 +26,8 @@ router.put('/updateMedCount', protectUserRoutes, consumeMedController)
 
 // Delete medicine
 router.put('/deleteMedicine', protectUserRoutes, deleteMedController)
+
+// Update description and address of a home
+router.put('/updateDescOrAddress', protectUserRoutes, updateBSCHMDataCtrl)
 
 export default router

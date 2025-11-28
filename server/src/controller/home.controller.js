@@ -166,7 +166,7 @@ export const getPHController = async ( request, response ) => {
     
                 ]
     
-            })
+            }).select('-__v -updatedAt')
 
             // First check the dates of medicines stored with the corresponding medicine Id
             // and update it with 'e' if expired
@@ -195,14 +195,15 @@ export const getPHController = async ( request, response ) => {
                 { path : 'availableMedicines' }
 
             ])
-            .select('-__v -updatedAt')
     
             if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
             else return response.status( 200 ).json({ home : homeData })
 
         }
          
-    } catch ( error ) { return response.status( 500 ).json({ error : 'Error on getting home data' }) }
+    } catch ( error ) { 
+        console.log( error )
+        return response.status( 500 ).json({ error : 'Error on getting home data' }) }
 
 }
 
@@ -398,5 +399,48 @@ export const deleteMedController = async ( request, response ) => {
         return response.status( 200 ).json({ message : 'Medicine deleted successfully' })
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on deleting medicine' }) }
+
+}
+
+// Update home description
+export const updateBSCHMDataCtrl = async ( request, response ) => {
+
+    try {
+
+        const { option, homeId, data } = request?.body
+
+        const update = await HomeModel.findByIdAndUpdate(
+
+            homeId,
+            { $set : option === 'description' ? { description : data } : { address : data } },
+            { new : true }
+
+        )
+
+        if( !update ) return response.status( 500 ).json({ error : "Counld'nt update description" })
+        else {
+    
+            // Also made the changes in redis
+            let redisData = JSON.parse( await redisClient.get('Homes') )
+            if( redisData && redisData.length > 0 ) {
+
+                redisData = redisData.map( home => 
+                    
+                    home._id === homeId ? { ...home, [ option ] : data } : home 
+                
+                )
+                await redisClient.setEx('Homes', 6400, JSON.stringify( redisData ))
+
+            }
+
+            return response.status( 200 ).json({ 
+                
+                message : `${ option === 'description' ? 'Description' : 'Address' } updated successfully` 
+            
+            })
+
+        }
+
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating description' }) }
 
 }
