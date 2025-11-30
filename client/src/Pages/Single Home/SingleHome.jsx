@@ -2,7 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-import { useAddressFormik, useConsumeMedicine, useDeleteMedicine, useGetParticularHome, useUpdateBSCHMData } from '../../Hooks/home.hooks'
+import { 
+    
+    useAddressFormik, useConsumeMedicine, useDeleteMedicine, 
+    useGetParticularHome, useUpdateBSCHMData 
+
+} from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGSAP } from '@gsap/react'
@@ -153,47 +158,43 @@ function SingleHome() {
                     {/* Left section */}
                     <section id='homeDetails-left'>
 
-                        <section id="home-left-top">
+                        {/* Search and create */}
+                        <section id="home-left-search-and-create">
 
-                            {/* Search and create */}
-                            <section id="home-left-search-and-create">
+                            <form onSubmit={e => searchMedicines(e)} >
 
-                                <form onSubmit={ e => searchMedicines(e) }>
+                                <div id='home-left-search'>
 
-                                    <div id='home-left-search'>
+                                    <i className='bx  bx-search'  ></i>
+                                    <input
 
-                                        <i className='bx  bx-search'  ></i>
-                                        <input
+                                        type="text"
+                                        placeholder='Search your medicines'
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
 
-                                            type="text"
-                                            placeholder='Search your medicines'
-                                            value={ search }
-                                            onChange={ e => setSearch( e.target.value ) }
+                                    />
+                                    <i className='bx  bx-x' onClick={clearSearch} />
 
-                                        />
-                                        <i className='bx  bx-x' onClick={ clearSearch } />
+                                </div>
 
-                                    </div>
+                            </form>
+                            <button
 
-                                </form>
-                                <button 
-                                
-                                    id='home-left-create' 
-                                    onClick={ () => 
-                                        
-                                        navigate('addMedicine', { homeId : homeData?._id, nickName : homeData?.nickName }) 
-                                    
-                                    }
-                                    
-                                >
+                                id='home-left-create'
+                                onClick={() =>
 
-                                    <i className='bx  bx-plus'  ></i>
-                                    Add new medicine
+                                    navigate('addMedicine', { homeId: homeData?._id, nickName: homeData?.nickName })
 
-                                </button>
-                                <button id='home-left-request'>Requests</button>
+                                }
 
-                            </section>
+                            >
+
+                                <i className='bx  bx-plus'  ></i>
+                                Add new medicine
+
+                            </button>
+                            {homeData?.admin?._id === userData?._id && <button id='home-left-request'>Requests</button>}
 
                         </section>
                         <section id="home-left-bottom">

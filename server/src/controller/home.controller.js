@@ -100,16 +100,20 @@ export const getCHController = async ( request, response ) => {
                 const medicines = await AddedMedModel.find({ homeId : home._id })
                 for( const med of medicines ) {
 
-                    const medDate = new Date( med?.expiryDate )
-                    if ( today >= medDate ) {
+                    if (med?.expiryDate != "e") { 
 
-                        await AddedMedModel.findByIdAndUpdate(
+                        // There is no need to check already date confirmed medicines
+                        const medDate = new Date(med?.expiryDate)
+                        if ( today >= medDate ) {
 
-                            med._id,
-                            { $set : { expiryDate : "e" } }
+                            await AddedMedModel.findByIdAndUpdate(
 
-                        )
+                                med._id,
+                                { $set: { expiryDate: "e" } }
 
+                            )
+
+                        }
                     }
 
                 }
@@ -166,44 +170,21 @@ export const getPHController = async ( request, response ) => {
     
                 ]
     
-            }).select('-__v -updatedAt')
-
-            // First check the dates of medicines stored with the corresponding medicine Id
-            // and update it with 'e' if expired
-            const today = new Date()
-            const medicines = await AddedMedModel.find({ homeId : homeData?._id })
-            for( const med of medicines ) {
-
-                const medDate = new Date( med?.expiryDate )
-                if( today >= medDate ) {
-
-                    await AddedMedModel.findByIdAndUpdate(
-
-                        med?._id,
-                        { $set : { expiryDate : 'e' } }
-
-                    )
-
-                }
-
-            }
-
-            // Then populate the data
-            homeData = await HomeModel.populate( homeData, [
+            })
+            .populate([
 
                 { path : 'admin', select : 'profilePicture fullName userName email' },
                 { path : 'availableMedicines' }
 
             ])
+            .select('-__v -updatedAt')
     
             if( homeData === null ) return response.status( 404 ).json({ error : 'Home not found' })
             else return response.status( 200 ).json({ home : homeData })
 
         }
          
-    } catch ( error ) { 
-        console.log( error )
-        return response.status( 500 ).json({ error : 'Error on getting home data' }) }
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error on getting home data' }) }
 
 }
 

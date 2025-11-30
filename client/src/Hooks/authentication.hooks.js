@@ -222,16 +222,16 @@ export const useSendMail = () => {
     const dispatch = useDispatch()
     return async ( data ) => {
 
+        const loading = toast.loading('Mailing OTP', { style : toastStyle })
         try {
 
-            const loading = toast.loading('Mailing OTP', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/mailOTP', data)
             dispatch( setMailOTP() ) // To visible OTP entering section
             const { message } = response?.data
-            toast.remove( loading )
             toast.success( message, { style : toastStyle } ) 
-
+            
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } )}
+        finally { toast.remove( loading ) }
 
     }
     
@@ -277,13 +277,12 @@ export const useChangePassword = () => {
     const navigate = useNavigate()
     return async ( data ) => {
 
+        const loading = toast.loading('Changing password', { style : toastStyle })
         try {
 
-            const loading = toast.loading('Changing password', { style : toastStyle })
             const { password } = data
             const response = await axiosInstance.post('/authentication/changePassword', { password })
             const { message } = response?.data
-            toast.remove( loading )
             toast.success( message, { style : toastStyle } )
 
             navigate('/login')
@@ -292,6 +291,7 @@ export const useChangePassword = () => {
             dispatch( setChangePassword() )
 
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
 
     }
 
@@ -335,6 +335,7 @@ export const useProfileFormik = ( setEdit ) => {
 
 }
 
+// Update user data
 export const useUpdateProfile = () => {
 
     const { userData } = useSelector( state => state.authentication )
