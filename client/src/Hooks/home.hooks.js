@@ -1,5 +1,10 @@
 import { useFormik } from "formik"
-import { validateCreateHome, validateMedicineNameComponent, validateUpdateHome } from "../lib/validations"
+import { 
+    
+    validateCreateHome, validateHomeName, 
+    validateMedicineNameComponent, validateUpdateHome 
+
+} from "../lib/validations"
 import toast from "react-hot-toast"
 import { toastStyle } from "../constants/common.constant"
 import { axiosInstance } from "../lib/axios"
@@ -426,6 +431,22 @@ export const useAddressFormik = ( homeData, setHomeData, setCloseEdit ) => {
         validateOnMount : false,
         validate : validateUpdateHome,
         onSubmit : ( values ) => { update( 'address', homeData?._id, values, setHomeData, setCloseEdit ) }
+
+    })
+
+}
+
+// Home name formik for finding other homes
+export const useHomeNameFormik = () => {
+
+    return useFormik({
+
+        initialValues: { homeName: '' },
+        validate: validateHomeName,
+        validateOnBlur: false,
+        validateOnChange: false,
+        validateOnMount: false,
+        onSubmit: value => console.log( value )
 
     })
 

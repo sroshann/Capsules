@@ -262,3 +262,15 @@ export const validateUpdateHome = values => {
     return Object.keys( error ).length ? toast.error( Object.values( error )[0], { style : toastStyle } ) : null
 
 }
+
+export const validateHomeName = ({ homeName }) => {
+
+    let error = {}
+    
+    // Check whether the medicine name contains only numbers
+    if( ( /^\d+$/ ).test( homeName ) ) error.medicine = "Invalid home name"
+    else if( homeName.trim().length === 0 ) error.medicine = "Invalid home name"
+
+    return Object.keys(error).length ? toast.error(Object.values(error)[0], { style: toastStyle }) : null
+
+}

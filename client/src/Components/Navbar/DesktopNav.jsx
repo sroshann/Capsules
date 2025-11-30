@@ -34,7 +34,7 @@ function DesktopNav() {
                 <div>
 
                     <p onClick={ () => navigate('home') }>Home</p>
-                    <p>Find other homes</p>
+                    <p onClick={ () => navigate('findOtherHomes') }>Find other homes</p>
                     <p onClick={ () => navigate('medicines') }>Medicines</p>
                     <p onClick={ () => navigate('about') }>About</p>
                     <p>Notification <i className='bx bx-bell' /></p>
