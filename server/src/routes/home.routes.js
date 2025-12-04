@@ -3,7 +3,7 @@ import { protectUserRoutes } from '../middleware/auth.middleware.js'
 import { 
     
     addMedController, consumeMedController, createHomeController, 
-    deleteMedController, getCHController, getPHController, 
+    deleteMedController, getAllHomeCtrl, getCHController, getPHController, 
     updateAddressCtrl, updateHomeDescCtrl
     
 } from '../controller/home.controller.js'
@@ -32,5 +32,8 @@ router.put('/updateHomeDesc', protectUserRoutes, updateHomeDescCtrl)
 
 // Update address of a home
 router.put('/updateAddress', protectUserRoutes, updateAddressCtrl)
+
+// Get all homes for finding other homes
+router.get('/getAllHomes', protectUserRoutes, getAllHomeCtrl)
 
 export default router

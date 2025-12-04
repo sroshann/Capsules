@@ -14,6 +14,8 @@ import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
 import ConfirmPopUp from '../../Components/Confirm popup/ConfirmPopUp'
+import { toastStyle } from '../../constants/common.constant'
+import toast from 'react-hot-toast'
 import './SingleHome.css'
 
 function SingleHome() {
@@ -101,7 +103,9 @@ function SingleHome() {
             object.medicine.toLowerCase().includes( search.toLowerCase() ) 
         
         )
-        setSearchedMed( filtered )
+
+        if ( filtered.length === 0 ) toast.error('Medicine not found', { style : toastStyle })
+        else setSearchedMed( filtered )
 
     }
 

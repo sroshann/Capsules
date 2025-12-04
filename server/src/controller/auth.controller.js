@@ -97,6 +97,7 @@ export const logoutController = async ( request, response ) => {
 
         await redisClient.del('user') // Delete user data from redis
         await redisClient.del('Homes') // Delete home data from redis
+        await redisClient.del('AllHomes') // Delete homes details for finding other homes
         response.cookie('credential', '', { maxAge : 0 }) // Deleting cookie
         return response.status( 200 ).json({ message : 'Loged out successfully' })
 

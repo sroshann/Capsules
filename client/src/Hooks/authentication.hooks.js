@@ -9,6 +9,9 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { changeDateFormat } from "../lib/utils"
 import { isEqual } from 'lodash'
 import { setHomes } from "../Store/Reducers/home.reducer"
+import { setAllHomes } from "../Store/Reducers/allHomes.reducer"
+import { setSearchedMed } from "../Store/Reducers/medicine.reducer"
+import { setMedicineNames } from "../Store/Reducers/medName.reducer"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -56,18 +59,18 @@ export const useSignup = () => {
 
     return async (data) => {
 
+        const loading = toast.loading('Signing in', { style : toastStyle })
         try {
 
-            const loading = toast.loading('Signing in', { style : toastStyle })
             const response = await axiosInstance.post('/authentication/signup', data)
             const { message, user } = response?.data
             user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
             dispatch(setUserData(user)) // Setting user details to redux store
             dispatch(setIsAuthenticated())
-            toast.remove( loading )
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
+        finally{ toast.remove( loading ) }
 
     }
 
@@ -112,13 +115,15 @@ export const useLogin = () => {
 
             const response = await axiosInstance.post('/authentication/login', data)
             const { message, user } = response?.data
-            user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
+            // Changing Mongo DB default date format
+            // The second boolean parameter determines the date format whether in words or just numbers
+            user.createdAt = changeDateFormat( user?.createdAt, true )
             dispatch(setUserData(user))
             dispatch(setIsAuthenticated())
             toast.success(message, { style: toastStyle })
             
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
-        toast.remove( loading )
+        finally { toast.remove( loading ) }
 
     }
 
@@ -131,18 +136,23 @@ export const useLogout = () => {
 
     return async () => {
 
+        const loading = toast.loading('Logging out', { style : toastStyle })
         try {
 
-            const loading = toast.loading('Logging out', { style : toastStyle })
             const response = await axiosInstance.get('/authentication/logout')
             const { message } = response?.data
+
             dispatch(setUserData(null)) // Clearing user data
             dispatch(setIsAuthenticated())
             dispatch( setHomes( null ) )
-            toast.remove( loading )
+            dispatch( setAllHomes( null ) )
+            dispatch( setSearchedMed( null ) )
+            dispatch( setMedicineNames( null ) )
+
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
+        finally{ toast.remove( loading ) }
 
     }
 
@@ -164,7 +174,9 @@ export const useGetUserData = () => {
                 
                 const response = await axiosInstance.get('/authentication/getUserData')
                 const { user } = response?.data
-                user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
+                // Changing Mongo DB default date format
+                // The second boolean parameter determines the date format whether in words or just numbers
+                user.createdAt = changeDateFormat( user?.createdAt, true )
                 dispatch( setUserData( user ) )
                 dispatch( setIsAuthenticated() )
                 navigate( location?.pathname || '/', { replace : true } )
@@ -360,7 +372,9 @@ export const useUpdateProfile = () => {
 
             const response = await axiosInstance.put('/authentication/updateProfile', changedData)
             const { message, updatedUser } = response?.data
-            updatedUser.createdAt = changeDateFormat( updatedUser?.createdAt ) // Changing Mongo DB default date format
+            // Changing Mongo DB default date format
+            // The second boolean parameter determines the date format whether in words or just numbers
+            updatedUser.createdAt = changeDateFormat( updatedUser?.createdAt, true )
             dispatch(setUserData(updatedUser)) // Setting updated user data to redux store
             toast.success( message, { style : toastStyle } )
             

@@ -11,6 +11,7 @@ import { axiosInstance } from "../lib/axios"
 import { useDispatch, useSelector } from "react-redux"
 import { setHomes } from "../Store/Reducers/home.reducer"
 import { changeDateFormat } from "../lib/utils"
+import { setAllHomes } from "../Store/Reducers/allHomes.reducer"
 
 // Create home formik
 export const homeFormik = () => {
@@ -85,8 +86,9 @@ export const useGetHomes = () => {
                 homes = homes.map( ( value ) => ({
                     
                     // Changing the date format of each home
+                    // The second boolean parameter determines the date format whether in words or just numbers
                     ...value,
-                    createdAt : changeDateFormat( value?.createdAt )
+                    createdAt : changeDateFormat( value?.createdAt, true )
                     
                 }))
                 dispatch( setHomes( homes ) ) // Home data are store in 'redux'
@@ -156,8 +158,10 @@ export const useGetParticularHome = () => {
                 let { home } = response?.data
                 home = {
 
+                    // Changing Mongo DB default date format
+                    // The second boolean parameter determines the date format whether in words or just numbers
                     ...home,
-                    createdAt : changeDateFormat( home?.createdAt ) // Changing the data format
+                    createdAt : changeDateFormat( home?.createdAt, true )
 
                 }
                 setHomeData( home )
@@ -449,5 +453,39 @@ export const useHomeNameFormik = () => {
         onSubmit: value => console.log( value )
 
     })
+
+}
+
+// Get all homes for finding other homes
+export const useGetAllHomes = () => {
+
+    const { allHomesData } = useSelector( state => state.allHomes )
+    const dispatch = useDispatch()
+
+    return async () => {
+
+        const loading = toast.loading('Get homes data', { style : toastStyle })
+        try {
+
+            if ( allHomesData === null ) {
+
+                const response = await axiosInstance.get('home/getAllHomes')
+                let { homes } = response?.data
+                if( homes && homes.length > 0 ) {
+
+                    // Changing Mongo DB default date format
+                    // The second boolean parameter determines the date format whether in words or just numbers
+                    homes = homes.map( home => home?.createdAt ? 
+                        { ...home, createdAt : changeDateFormat( home?.createdAt, false ) } : home )
+
+                }
+                dispatch( setAllHomes( homes ) )
+
+            }
+
+        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally{ toast.remove( loading ) }
+
+    }
 
 }

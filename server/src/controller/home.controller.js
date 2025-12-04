@@ -460,3 +460,34 @@ export const updateAddressCtrl = async ( request, response ) => {
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating address' }) }
 
 }
+
+// Get all homes for finding other homes
+export const getAllHomeCtrl = async ( request, response ) => {
+
+    try {
+
+        const redisData = JSON.parse( await redisClient.get('AllHomes') )
+        if ( redisData && redisData.length > 0 ) 
+            
+            // Redis access
+            return response.status( 200 ).json({ homes : redisData })
+
+        else {
+
+            // Database access 
+            const homes = await HomeModel.find()
+            .populate([ { path : 'admin', select : 'profilePicture fullName email' } ])
+            .select('-__v -updatedAt -accessedUsers -availableMedicines -description')
+            if ( homes && homes.length > 0 ) {
+    
+                // Storing data into redis inorder for faster access
+                await redisClient.setEx('AllHomes', 6400, JSON.stringify( homes )) 
+                return response.status( 200 ).json({ homes })
+    
+            }
+
+        }
+
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting homes data' }) }
+
+}

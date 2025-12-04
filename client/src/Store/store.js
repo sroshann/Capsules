@@ -3,6 +3,7 @@ import authReducer from './Reducers/auth.reducer'
 import homeReducer from './Reducers/home.reducer'
 import medicineReducer from './Reducers/medicine.reducer'
 import medNamesReducer from './Reducers/medName.reducer'
+import allHomesReducer from './Reducers/allHomes.reducer'
 
 export default configureStore({
 
@@ -11,7 +12,8 @@ export default configureStore({
         authentication : authReducer,
         homes : homeReducer,
         medicine : medicineReducer,
-        medNames : medNamesReducer
+        medNames : medNamesReducer,
+        allHomes : allHomesReducer
 
     }
 
