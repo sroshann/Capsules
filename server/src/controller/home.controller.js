@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import { redisClient } from "../lib/redis.connection.js"
 import AddedMedModel from "../models/addedMed.model.js"
 import HomeModel from "../models/home.model.js"
@@ -81,6 +82,10 @@ export const getCHController = async ( request, response ) => {
             // Fetching the homes in which the accessed user is 'admin'
             // or the homes in which user have the access
             const { _id } = request.params
+
+            // In here the type of _id is string but the admin and the accessedUsers has object Ids
+            // But in this query, Mongo db automatically cast string into object Ids in the case of equality
+
             homes = await HomeModel.find({
 
                 $or : [
@@ -475,8 +480,14 @@ export const getAllHomeCtrl = async ( request, response ) => {
         else {
 
             // Database access 
-            const homes = await HomeModel.find()
-            .populate([ { path : 'admin', select : 'profilePicture fullName email' } ])
+            const { _id } = request?.user
+            const homes = await HomeModel.find({
+
+                admin : { $ne : _id },
+                accessedUsers : { $ne : _id }
+
+            })
+            .populate([ { path : 'admin', select : 'profilePicture fullName email _id' } ])
             .select('-__v -updatedAt -accessedUsers -availableMedicines -description')
             if ( homes && homes.length > 0 ) {
     
@@ -484,7 +495,7 @@ export const getAllHomeCtrl = async ( request, response ) => {
                 await redisClient.setEx('AllHomes', 6400, JSON.stringify( homes )) 
                 return response.status( 200 ).json({ homes })
     
-            }
+            } else return response?.status( 500 ).json({ error : 'No other homes were found' })
 
         }
 

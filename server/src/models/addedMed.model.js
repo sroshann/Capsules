@@ -4,7 +4,7 @@ const addedMedScehema = new mongoose.Schema(
 
     {
 
-        homeId : { type : mongoose.Schema.Types.ObjectId, ref : 'Home', required : true },
+        homeId : { type : mongoose.Schema.Types.ObjectId, required : true },
         medicine : { type : String, required : true },
         disease : { type : String, required : true },
         quantity : { type : Number, required : true },

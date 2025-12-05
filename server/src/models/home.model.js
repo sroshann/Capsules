@@ -25,6 +25,7 @@ const homeSchema = new mongoose.Schema(
         district : { type : String, required : true },
         pincode : { type : Number, required : true },
         description : { type : String },
+        accessRequset : [{ type : mongoose.Schema.Types.ObjectId, ref : 'Request' }]
 
     },
     { timestamps : true }
