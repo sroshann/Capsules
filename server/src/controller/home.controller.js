@@ -3,6 +3,7 @@ import { redisClient } from "../lib/redis.connection.js"
 import AddedMedModel from "../models/addedMed.model.js"
 import HomeModel from "../models/home.model.js"
 import UserModel from "../models/user.model.js"
+import RequestModel from "../models/request.model.js"
 
 // Creating new home
 export const createHomeController = async ( request, response ) => {
@@ -129,7 +130,11 @@ export const getCHController = async ( request, response ) => {
             homes = await HomeModel.populate( homes, [
 
                 { path : 'admin', select : 'profilePicture fullName email userName' },
-                { path : 'availableMedicines' }
+                { path : 'availableMedicines' },
+
+                // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS 
+                // ADMIN OF ANY HOME, THAT FEATURE MUST BE IMPLEMENTED
+                { path : 'accessRequest', select: '-updatedAt -__v' }
 
             ])
             
@@ -179,7 +184,8 @@ export const getPHController = async ( request, response ) => {
             .populate([
 
                 { path : 'admin', select : 'profilePicture fullName userName email' },
-                { path : 'availableMedicines' }
+                { path : 'availableMedicines' },
+                { path : 'accessRequest', select: '-updatedAt -__v' }
 
             ])
             .select('-__v -updatedAt')
@@ -500,5 +506,56 @@ export const getAllHomeCtrl = async ( request, response ) => {
         }
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting homes data' }) }
+
+}
+
+// Sending home access request
+export const sendRequestCtrl = async ( request, response ) => {
+
+    try {
+
+        const { homeId, admin } = request?.body
+        const { _id } = request?.user
+
+        // Saving new request 
+        const newRequset = await RequestModel.create({ requesterId : _id, homeId, homeAdmin : admin })
+        const { __v, ...rest } = newRequset.toObject()
+        // Updating the corresponding home
+        const update = await HomeModel.findByIdAndUpdate( 
+            
+            homeId,
+            { $push : { accessRequest : rest?._id } },
+            { new : true }
+        
+        )
+
+        if ( update ) {
+
+            // IAM NOT REALLY SURE ABOUT MAKING THE CHANGES ALSO ON REDIS
+            // BECAUSE THIS FEATURE IS LATER DONE BY ANOTHER USER ( HOME ADMIN )
+            // SO THE CURRENT USER NOT REQUIRED CURRENT DATA
+
+            // Update the change in redis
+            // let redisHome = JSON.parse( await redisClient.get('Homes') )
+            // if( redisHome && redisHome.length > 0 ) {
+
+            //     redisHome = redisHome.map( 
+                    
+            //         home => home?._id === homeId ? { ...home, accessRequest : [ ...home?.accessRequest, rest ] } : home 
+                
+            //     )
+            //     await redisClient.setEx('Homes', 6400, JSON.stringify( redisHome ))
+
+            // }
+            return response.status( 200 ).json({ message : 'Request sent successfully' })
+
+        } else {
+
+            await RequestModel.findByIdAndDelete( rest?._id )
+            return response?.status( 500 ).json({ error : "Could'nt send requests" })
+
+        }
+
+    } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured sending request' }) }
 
 }

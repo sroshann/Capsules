@@ -4,7 +4,7 @@ import {
     
     addMedController, consumeMedController, createHomeController, 
     deleteMedController, getAllHomeCtrl, getCHController, getPHController, 
-    updateAddressCtrl, updateHomeDescCtrl
+    sendRequestCtrl, updateAddressCtrl, updateHomeDescCtrl
     
 } from '../controller/home.controller.js'
 const router = express()
@@ -35,5 +35,8 @@ router.put('/updateAddress', protectUserRoutes, updateAddressCtrl)
 
 // Get all homes for finding other homes
 router.get('/getAllHomes', protectUserRoutes, getAllHomeCtrl)
+
+// Sending home access request
+router.post('/sendRequset', protectUserRoutes, sendRequestCtrl)
 
 export default router

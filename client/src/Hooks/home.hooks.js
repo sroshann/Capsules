@@ -489,3 +489,22 @@ export const useGetAllHomes = () => {
     }
 
 }
+
+// Send request to a home
+export const useSendRequest = () => {
+
+    return async ( homeId, admin ) => {
+
+        const loading = toast.loading('Sending request', { style : toastStyle })
+        try {
+
+            const response = await axiosInstance.post('/home/sendRequset', { homeId, admin })
+            const { message } = response?.data
+            toast.success( message, { style : toastStyle } )
+
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
+
+    }
+
+}

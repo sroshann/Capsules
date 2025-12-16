@@ -15,17 +15,13 @@ const homeSchema = new mongoose.Schema(
         },
         accessedUsers : { type : Array },
         admin : { type : mongoose.Schema.Types.ObjectId, ref : "User", required : true },
-        availableMedicines: [
-
-            { type: mongoose.Schema.Types.ObjectId, ref: "AddedMedicine" }
-            
-        ],
+        availableMedicines: [{ type: mongoose.Schema.Types.ObjectId, ref: "AddedMedicine" }],
         country : { type : String, required : true },
         state : { type : String, required : true },
         district : { type : String, required : true },
         pincode : { type : Number, required : true },
         description : { type : String },
-        accessRequset : [{ type : mongoose.Schema.Types.ObjectId, ref : 'Request' }]
+        accessRequest : [{ type : mongoose.Schema.Types.ObjectId, ref : 'Request' }]
 
     },
     { timestamps : true }

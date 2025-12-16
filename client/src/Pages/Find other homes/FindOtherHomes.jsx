@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import Footer from '../../Components/Footer/Footer'
-import { useGetAllHomes, useHomeNameFormik } from '../../Hooks/home.hooks'
+import { useGetAllHomes, useHomeNameFormik, useSendRequest } from '../../Hooks/home.hooks'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useGSAP } from '@gsap/react'
@@ -19,6 +19,7 @@ function FindOtherHomes() {
 
     const { allHomesData } = useSelector( state => state.allHomes )
     const getAllHomes = useGetAllHomes() // Hook used to get all homes data
+    const sendRequest = useSendRequest() // Hook used to send acces request to any home
 
     gsap.registerPlugin( ScrollTrigger )
     useGSAP( () => { animateProfile( otherHomeRef ) }, [] )
@@ -112,7 +113,7 @@ function FindOtherHomes() {
                                     </div>
 
                                 </div>
-                                <button>Send request</button>
+                                <button onClick={ () => sendRequest( home?._id, home?.admin?._id ) }>Send request</button>
 
                             </motion.div>
 

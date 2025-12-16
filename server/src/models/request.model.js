@@ -18,5 +18,5 @@ const requestSchema = new mongoose.Schema(
 
 )
 
-const RequestModel = mongoose.models.RequestModel || mongoose.models('Request', requestSchema)
+const RequestModel = mongoose.model.RequestModel || mongoose.model('Request', requestSchema)
 export default RequestModel
