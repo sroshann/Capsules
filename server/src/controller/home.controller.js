@@ -131,10 +131,22 @@ export const getCHController = async ( request, response ) => {
 
                 { path : 'admin', select : 'profilePicture fullName email userName' },
                 { path : 'availableMedicines' },
+                { 
 
-                // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS 
-                // ADMIN OF ANY HOME, THAT FEATURE MUST BE IMPLEMENTED
-                { path : 'accessRequest', select: '-updatedAt -__v' }
+                    // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
+                    path : 'accessRequest', 
+                    match : { homeAdmin : _id },
+                    select : '-updatedAt -__v',
+                    populate : {
+
+                        // In here the requester basic data are also needed, 
+                        // then its population can also done by nested population
+                        path : 'requester',
+                        select : 'profilePicture fullName userName'
+
+                    }
+                
+                }
 
             ])
             
@@ -185,7 +197,22 @@ export const getPHController = async ( request, response ) => {
 
                 { path : 'admin', select : 'profilePicture fullName userName email' },
                 { path : 'availableMedicines' },
-                { path : 'accessRequest', select: '-updatedAt -__v' }
+                { 
+                    
+                    // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
+                    path : 'accessRequest', 
+                    match : { homeAdmin : _id }, 
+                    select: '-updatedAt -__v',
+                    populate : {
+
+                        // In here the requester basic data are also needed, 
+                        // then its population can also done by nested population
+                        path : 'requester',
+                        select : 'profilePicture fullName userName'
+
+                    } 
+                
+                }
 
             ])
             .select('-__v -updatedAt')
@@ -518,7 +545,7 @@ export const sendRequestCtrl = async ( request, response ) => {
         const { _id } = request?.user
 
         // Saving new request 
-        const newRequset = await RequestModel.create({ requesterId : _id, homeId, homeAdmin : admin })
+        const newRequset = await RequestModel.create({ requester : _id, homeId, homeAdmin : admin })
         const { __v, ...rest } = newRequset.toObject()
         // Updating the corresponding home
         const update = await HomeModel.findByIdAndUpdate( 

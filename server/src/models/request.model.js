@@ -4,7 +4,7 @@ const requestSchema = new mongoose.Schema(
 
     {
 
-        requesterId : { type : mongoose.Schema.Types.ObjectId, required : true },
+        requester : { type : mongoose.Schema.Types.ObjectId, required : true, ref : 'User' },
         homeId : { type : mongoose.Schema.Types.ObjectId, required : true },
         homeAdmin : { type : mongoose.Schema.Types.ObjectId, required : true },
         status : { type : String, default : "p" }
