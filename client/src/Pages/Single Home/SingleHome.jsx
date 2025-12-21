@@ -28,6 +28,7 @@ function SingleHome() {
     const [ deletePopUp, setDeletePopUp ] = useState( false ) // Boolean state used to show pop up for deleting medicine 
     // Hook used to store the parameters which should be passed to function after confirming the pop up
     const [ executionParams, setExecutionParams ] = useState({}) 
+    const [ showRequests, setShowRequests ] = useState( false ) // Used to view and close request list
 
     // Updating description
     const [ editDesc, setEditDesc ] = useState( false )
@@ -198,7 +199,87 @@ function SingleHome() {
                                 Add new medicine
 
                             </button>
-                            {homeData?.admin?._id === userData?._id && <button id='home-left-request'>Requests</button>}
+                            {homeData?.admin?._id === userData?._id && <section>
+
+                                <button id='home-left-request' onClick={() => setShowRequests(true)}>Requests</button>
+                                <>
+
+                                    { homeData?.accessRequest?.length > 0 && <div id='home-request-count'>
+                                        
+                                        <p>{homeData?.accessRequest.length}</p>
+                                        
+                                    </div> }
+                                    <AnimatePresence>
+
+                                        {
+
+                                            showRequests && <motion.section
+
+                                                id="request-list"
+                                                initial={{ y: -5, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                exit={{ y: -5, opacity: 0 }}
+                                                transition={{ duration: 0.4 }}
+
+                                            >
+
+                                                { homeData?.accessRequest?.length > 0 ? 
+                                                
+                                                    <section id='list'>
+
+                                                        {
+
+                                                            homeData?.accessRequest.map(req => (
+
+                                                                <div key={req?._id} className='requests' >
+
+                                                                    <img src={req?.requester?.profilePicture} alt="" />
+                                                                    <section>
+
+                                                                        <div>
+
+                                                                            <p>{req?.requester?.userName}</p>
+                                                                            <p>{req?.createdAt}</p>
+
+                                                                        </div>
+                                                                        <div>
+
+                                                                            <button>Accept</button>
+                                                                            <button>Reject</button>
+
+                                                                        </div>
+
+                                                                    </section>
+
+                                                                </div>
+
+                                                            ))
+
+                                                        }
+
+                                                    </section> : <section id='empty-req-list'>
+
+                                                        <p>No access requests have been received yet.</p>
+
+                                                    </section> 
+                                                    
+                                                }
+
+                                                <button id='close-rq-list' onClick={() => setShowRequests(false)}>Close</button>
+
+                                            </motion.section>
+
+                                        }
+
+                                    </AnimatePresence>
+
+                                </>
+                                {/* {homeData?.accessRequest.length > 0 &&
+
+
+                                } */}
+
+                            </section>}
 
                         </section>
                         <section id="home-left-bottom">

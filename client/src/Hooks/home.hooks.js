@@ -88,7 +88,13 @@ export const useGetHomes = () => {
                     // Changing the date format of each home
                     // The second boolean parameter determines the date format whether in words or just numbers
                     ...value,
-                    createdAt : changeDateFormat( value?.createdAt, true )
+                    createdAt : changeDateFormat( value?.createdAt, true ),
+                    accessRequest : value?.accessRequest?.map( request => ({
+                        
+                        ...request,
+                        createdAt : changeDateFormat( request?.createdAt, true )
+                        
+                    }))
                     
                 }))
                 dispatch( setHomes( homes ) ) // Home data are store in 'redux'
@@ -161,7 +167,13 @@ export const useGetParticularHome = () => {
                     // Changing Mongo DB default date format
                     // The second boolean parameter determines the date format whether in words or just numbers
                     ...home,
-                    createdAt : changeDateFormat( home?.createdAt, true )
+                    createdAt : changeDateFormat( home?.createdAt, true ),
+                    accessRequest : home?.accessRequest?.map( request => ({
+
+                        ...request,
+                        createdAt : changeDateFormat( request?.createdAt, true )
+
+                    }) )
 
                 }
                 setHomeData( home )
