@@ -4,7 +4,8 @@ import {
     
     addMedController, consumeMedController, createHomeController, 
     deleteMedController, getAllHomeCtrl, getCHController, getPHController, 
-    sendRequestCtrl, updateAddressCtrl, updateHomeDescCtrl
+    sendRequestCtrl, updateAddressCtrl, updateHomeDescCtrl,
+    validateUsrAcsReCtrl
     
 } from '../controller/home.controller.js'
 const router = express()
@@ -38,5 +39,8 @@ router.get('/getAllHomes', protectUserRoutes, getAllHomeCtrl)
 
 // Sending home access request
 router.post('/sendRequset', protectUserRoutes, sendRequestCtrl)
+
+// Validating user access requests
+router.put('/validateAccessReqeust', protectUserRoutes, validateUsrAcsReCtrl)
 
 export default router

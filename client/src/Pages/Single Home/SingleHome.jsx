@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { 
     
     useAddressFormik, useConsumeMedicine, useDeleteMedicine, 
-    useGetParticularHome, useUpdateBSCHMData 
+    useGetParticularHome, useUpdateBSCHMData, useValidateAcsRqst
 
 } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
@@ -29,6 +29,8 @@ function SingleHome() {
     // Hook used to store the parameters which should be passed to function after confirming the pop up
     const [ executionParams, setExecutionParams ] = useState({}) 
     const [ showRequests, setShowRequests ] = useState( false ) // Used to view and close request list
+    const [ acceptPopUp, setAcceptPopup ] = useState( false )
+    const [ rejectPopUp, setRejectPopUp ] = useState( false )
 
     // Updating description
     const [ editDesc, setEditDesc ] = useState( false )
@@ -43,6 +45,7 @@ function SingleHome() {
     const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
     const deleteMedicine = useDeleteMedicine() // Hook used to delete medicine
     const updateHomeData = useUpdateBSCHMData() // Hook used to update basic home data
+    const validatUsrAcsRqst = useValidateAcsRqst() // Hook used to validate access requests
     const navigate = useNavigateTo()
     const formik = useAddressFormik( homeData, setHomeData, setEditAddress )
 
@@ -156,6 +159,33 @@ function SingleHome() {
                 />}
 
             </AnimatePresence>
+            <AnimatePresence>
+
+                {/* Accepting user access request */}
+                { acceptPopUp && <ConfirmPopUp 
+                
+                    description={'Do you really want to accept the request ?'} 
+                    execution = { validatUsrAcsRqst }
+                    params = { executionParams }
+                    final = { setAcceptPopup }
+                    
+                /> }
+
+            </AnimatePresence>
+            <AnimatePresence>
+
+                {/* Rejecting user access request */}
+                { rejectPopUp && <ConfirmPopUp 
+                
+                    description={'Do you really want to reject the request ?'} 
+                    execution = { validatUsrAcsRqst }
+                    params = { executionParams }
+                    final = { setRejectPopUp }
+                    
+                /> }
+
+            </AnimatePresence>
+
             <section id='homeDetails-root' ref={ HSref }>
 
                 <section id='homeDetails'>
@@ -244,8 +274,34 @@ function SingleHome() {
                                                                         </div>
                                                                         <div>
 
-                                                                            <button>Accept</button>
-                                                                            <button>Reject</button>
+                                                                            <button onClick={ () => {
+
+                                                                                setAcceptPopup( true )
+                                                                                setExecutionParams({
+
+                                                                                    homeId : homeData?._id,
+                                                                                    requestId : req?._id,
+                                                                                    requesterId : req?.requester?._id,
+                                                                                    option : "a",
+                                                                                    setHomeData
+
+                                                                                })
+
+                                                                            } } >Accept</button>
+                                                                            <button onClick={ () => {
+
+                                                                                setRejectPopUp( true )
+                                                                                setExecutionParams({
+
+                                                                                    homeId : homeData?._id,
+                                                                                    requestId : req?._id,
+                                                                                    requesterId : req?.requester?._id,
+                                                                                    option : "r",
+                                                                                    setHomeData
+
+                                                                                })
+
+                                                                            } }>Reject</button>
 
                                                                         </div>
 
@@ -274,10 +330,6 @@ function SingleHome() {
                                     </AnimatePresence>
 
                                 </>
-                                {/* {homeData?.accessRequest.length > 0 &&
-
-
-                                } */}
 
                             </section>}
 
@@ -442,7 +494,11 @@ function SingleHome() {
                             <section className='home-right-heading-edit'>
 
                                 <p className='home-right-heading'>Address <i className='bx  bx-street-view' /></p>
-                                <p className='home-right-edit' onClick={ () => setEditAddress( previous => !previous ) }>Edit ?</p>
+                                { userData?._id === homeData?.admin?._id &&
+
+                                    <p className='home-right-edit' onClick={ () => setEditAddress( previous => !previous ) }>Edit ?</p>
+
+                                }
 
                             </section>
                             <form onSubmit={ formik.handleSubmit } style={ editAddress ? { display : 'grid', rowGap : '5px' } : {} }>
@@ -505,8 +561,8 @@ function SingleHome() {
                             <section className='home-right-heading-edit'>
 
                                 <p className='home-right-heading'>Members <i className='bx  bx-group' /></p>
-                                <p className='home-right-edit'>Edit ?</p>
-
+                                { userData?._id === homeData?.admin?._id && <p className='home-right-edit'>Edit ?</p> }
+                                
                             </section>
 
                             {/* Admin section */}
@@ -561,6 +617,38 @@ function SingleHome() {
                                 }
 
                             </section>
+
+                            {/* Listing members */}
+                            {homeData?.accessedUsers.length > 0 &&
+
+                                homeData?.accessedUsers?.map(member => (
+
+                                    <section className='home-display-admin' key={member?._id}>
+
+                                        <motion.img
+
+                                            src={member?.profilePicture}
+                                            alt="Admin profile"
+                                            whileHover={{ scale: 1.4 }}
+                                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+
+                                        />
+                                        <section>
+
+                                            <section className='home-admin-name'>
+
+                                                <p className='home-you-text'>{member?.fullName}</p>
+
+                                            </section>
+                                            <p className='home-admin-email'>{member.email}</p>
+
+                                        </section>
+
+                                    </section>
+
+                                ))
+
+                            }
 
                         </section>
 

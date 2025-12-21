@@ -520,3 +520,48 @@ export const useSendRequest = () => {
     }
 
 }
+
+// Validate user access requests
+export const useValidateAcsRqst = () => {
+
+    let { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+    
+    return async ({ homeId, requestId, requesterId, option, setHomeData }) => {
+        
+        const loading = toast.loading('Validating request', { style : toastStyle })
+        try {
+
+            const response = await axiosInstance.put('/home/validateAccessReqeust', { homeId, requestId, requesterId, option })
+            const { message, user } = response?.data
+
+            if( option === "a" ) {
+
+                // Accepting the request
+                // Adding accepted user data into corresponding home of redux
+                // Also deleting the accepted from request from request list
+                homesData = homesData?.map( home => home?._id === homeId ? {
+
+                    ...home,
+                    accessedUsers : [ ...home.accessedUsers, user ],
+                    accessRequest : home?.accessRequest.filter( request => request?._id != requestId )
+
+                } : home )
+
+                setHomeData( homesData?.filter( home => home?._id === homeId )[0] )
+                dispatch( setHomes( homesData ) )
+
+                toast.success( message, { style : toastStyle } )
+
+            } else {
+
+                // Rejecting the request
+
+            }
+
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
+
+    }
+
+}

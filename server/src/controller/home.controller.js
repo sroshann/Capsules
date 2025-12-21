@@ -130,19 +130,20 @@ export const getCHController = async ( request, response ) => {
             homes = await HomeModel.populate( homes, [
 
                 { path : 'admin', select : 'profilePicture fullName email userName' },
+                { path : 'accessedUsers', select : 'profilePicture fullName email _id userName' },
                 { path : 'availableMedicines' },
                 { 
 
                     // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
                     path : 'accessRequest', 
                     match : { homeAdmin : _id },
-                    select : '-updatedAt -__v',
+                    select : '-updatedAt -__v -homeAdmin -homeId',
                     populate : {
 
                         // In here the requester basic data are also needed, 
                         // then its population can also done by nested population
                         path : 'requester',
-                        select : 'profilePicture fullName userName'
+                        select : 'profilePicture userName'
 
                     }
                 
@@ -196,19 +197,20 @@ export const getPHController = async ( request, response ) => {
             .populate([
 
                 { path : 'admin', select : 'profilePicture fullName userName email' },
+                { path : 'accessedUsers', select : 'profilePicture fullName userName email _id' },
                 { path : 'availableMedicines' },
                 { 
                     
                     // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
                     path : 'accessRequest', 
                     match : { homeAdmin : _id }, 
-                    select: '-updatedAt -__v',
+                    select: '-updatedAt -__v -homeAdmin -homeId',
                     populate : {
 
                         // In here the requester basic data are also needed, 
                         // then its population can also done by nested population
                         path : 'requester',
-                        select : 'profilePicture fullName userName'
+                        select : 'profilePicture userName'
 
                     } 
                 
@@ -584,5 +586,63 @@ export const sendRequestCtrl = async ( request, response ) => {
         }
 
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured sending request' }) }
+
+}
+
+// Validating user access reqeusts
+export const validateUsrAcsReCtrl = async ( request, response ) => {
+
+    try {
+
+        const { _id } = request?.user
+        const { homeId, requestId, requesterId, option } = request?.body
+
+        // This feature is only available for home admin, so we should restrict this for other users
+        const home = await HomeModel.findById( homeId ).select('admin')
+        if( home?.admin != _id ) return response.status( 500 ).json({ error : 'You have no permission to manage user access' })
+
+        if( option === "a" ) {
+
+            // Accepting user request
+            // Adding ID of requester into accessed users list of home
+            const update = await HomeModel.findByIdAndUpdate(
+
+                homeId,
+                { $push : { accessedUsers : requesterId } },
+                { new : true }
+
+            )
+
+            if( !update ) return response?.status( 500 ).json({ error : 'Error occured on accepting request' })
+            
+            // Adding the details of approved user into redis data of home
+            const addedUser = await UserModel.findById( requesterId ).select("_id fullName email profilePicture")
+            let redisHomes = JSON.parse( await redisClient.get('Homes') )
+            if( redisHomes && redisHomes.length > 0 ) {
+
+                redisHomes = redisHomes.map( home => home._id === homeId ? {
+
+                    ...home,
+                    accessedUsers : [ ...home.accessedUsers, addedUser ]
+
+                } : home )
+
+                await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
+
+            }
+
+            // Finally deleting the accepted reequest from request database
+            await RequestModel.findByIdAndDelete( requestId )
+
+            return response.status( 200 ).json({ message : `${ addedUser?.fullName } added to your members list`, user : addedUser })
+
+        } else {
+
+            // Rejecting user request
+
+        }
+        return response?.status( 200 ).json({ message : 'Successful' })
+
+    } catch ( error ) { return response?.status( 500 )?.json({ error : 'Error occured on validating reqeusts' }) }
 
 }

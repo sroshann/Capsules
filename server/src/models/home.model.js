@@ -13,7 +13,7 @@ const homeSchema = new mongoose.Schema(
             unique : true
 
         },
-        accessedUsers : { type : Array },
+        accessedUsers : [{ type : mongoose.Schema.Types.ObjectId, ref : "User" }],
         admin : { type : mongoose.Schema.Types.ObjectId, ref : "User", required : true },
         availableMedicines: [{ type: mongoose.Schema.Types.ObjectId, ref: "AddedMedicine" }],
         country : { type : String, required : true },

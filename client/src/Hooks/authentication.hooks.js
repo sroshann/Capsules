@@ -147,7 +147,7 @@ export const useLogout = () => {
             dispatch( setHomes( null ) )
             dispatch( setAllHomes( null ) )
             dispatch( setSearchedMed( null ) )
-            dispatch( setMedicineNames( null ) )
+            dispatch( setMedicineNames([]) )
 
             toast.success(message, { style: toastStyle })
 

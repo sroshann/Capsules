@@ -69,7 +69,7 @@ export const useGetMedicineNames = () => {
         const loading = toast.loading('Fetching medicines', { style : toastStyle })
         try {
 
-            if( medicineNames.length === 0 ) {
+            if( medicineNames && medicineNames.length === 0 ) {
 
                 const response = await axios.get
                     (`https://api.fda.gov/drug/label.json?search=openfda.brand_name:%20*&limit=100`)
@@ -84,7 +84,7 @@ export const useGetMedicineNames = () => {
 
             } else return medicineNames
 
-        } catch (error) { console.log(error) }
+        } catch (error) { toast.error('Error occured on gtting medicine names', { style : toastStyle }) }
         finally { toast.remove( loading ) }
 
     }
