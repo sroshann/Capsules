@@ -533,11 +533,10 @@ export const useValidateAcsRqst = () => {
         try {
 
             const response = await axiosInstance.put('/home/validateAccessReqeust', { homeId, requestId, requesterId, option })
-            const { message, user } = response?.data
+            const { message, user = null } = response?.data
 
-            if( option === "a" ) {
+            if( option === "a" ) { // Accepting user request
 
-                // Accepting the request
                 // Adding accepted user data into corresponding home of redux
                 // Also deleting the accepted from request from request list
                 homesData = homesData?.map( home => home?._id === homeId ? {
@@ -548,16 +547,37 @@ export const useValidateAcsRqst = () => {
 
                 } : home )
 
-                setHomeData( homesData?.filter( home => home?._id === homeId )[0] )
-                dispatch( setHomes( homesData ) )
+                
+            } else if ( option === "r" ) { // Rejecting user request
+                
+                // Setting rejected request status from 'a' to 'r' of redux data
+                homesData = homesData?.map( home => home?._id === homeId ? {
 
-                toast.success( message, { style : toastStyle } )
+                    ...home,
+                    accessRequest : home?.accessRequest?.map( request => request?._id === requestId ? {
 
-            } else {
+                        ...request,
+                        status : 'r'
 
-                // Rejecting the request
+                    } : request )
+
+                } : home )
+                
+            } else { // Deleting rejected request
+
+                // Removing the corresponding request from access request list of home in redux data
+                homesData = homesData?.map( home => home?._id === homeId ? {
+
+                    ...home,
+                    accessRequest : home?.accessRequest.filter( request => request?._id != requestId )
+
+                } : home )
 
             }
+
+            setHomeData( homesData?.filter( home => home?._id === homeId )[0] )
+            dispatch( setHomes( homesData ) )
+            toast.success( message, { style : toastStyle } )
 
         } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
         finally { toast.remove( loading ) }

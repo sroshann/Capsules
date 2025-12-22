@@ -31,6 +31,7 @@ function SingleHome() {
     const [ showRequests, setShowRequests ] = useState( false ) // Used to view and close request list
     const [ acceptPopUp, setAcceptPopup ] = useState( false )
     const [ rejectPopUp, setRejectPopUp ] = useState( false )
+    const [ dltRqstPopUp, setDltRqstPopUp ] = useState( false )
 
     // Updating description
     const [ editDesc, setEditDesc ] = useState( false )
@@ -185,6 +186,19 @@ function SingleHome() {
                 /> }
 
             </AnimatePresence>
+            <AnimatePresence>
+
+                {/* Deleting rejected user access request */}
+                { dltRqstPopUp && <ConfirmPopUp 
+                
+                    description={'Do you really want to delete the request ?'} 
+                    execution = { validatUsrAcsRqst }
+                    params = { executionParams }
+                    final = { setDltRqstPopUp }
+                    
+                /> }
+
+            </AnimatePresence>
 
             <section id='homeDetails-root' ref={ HSref }>
 
@@ -234,11 +248,11 @@ function SingleHome() {
                                 <button id='home-left-request' onClick={() => setShowRequests(true)}>Requests</button>
                                 <>
 
-                                    { homeData?.accessRequest?.length > 0 && <div id='home-request-count'>
-                                        
+                                    {homeData?.accessRequest?.length > 0 && <div id='home-request-count'>
+
                                         <p>{homeData?.accessRequest.length}</p>
-                                        
-                                    </div> }
+
+                                    </div>}
                                     <AnimatePresence>
 
                                         {
@@ -253,8 +267,8 @@ function SingleHome() {
 
                                             >
 
-                                                { homeData?.accessRequest?.length > 0 ? 
-                                                
+                                                {homeData?.accessRequest?.length > 0 ?
+
                                                     <section id='list'>
 
                                                         {
@@ -272,38 +286,55 @@ function SingleHome() {
                                                                             <p>{req?.createdAt}</p>
 
                                                                         </div>
-                                                                        <div>
+                                                                        {req?.status === "p" ? <div>
 
-                                                                            <button onClick={ () => {
+                                                                            <button onClick={() => {
 
-                                                                                setAcceptPopup( true )
+                                                                                setAcceptPopup(true)
                                                                                 setExecutionParams({
 
-                                                                                    homeId : homeData?._id,
-                                                                                    requestId : req?._id,
-                                                                                    requesterId : req?.requester?._id,
-                                                                                    option : "a",
+                                                                                    homeId: homeData?._id,
+                                                                                    requestId: req?._id,
+                                                                                    requesterId: req?.requester?._id,
+                                                                                    option: "a",
                                                                                     setHomeData
 
                                                                                 })
 
-                                                                            } } >Accept</button>
-                                                                            <button onClick={ () => {
+                                                                            }} >Accept</button>
+                                                                            <button onClick={() => {
 
-                                                                                setRejectPopUp( true )
+                                                                                setRejectPopUp(true)
                                                                                 setExecutionParams({
 
-                                                                                    homeId : homeData?._id,
-                                                                                    requestId : req?._id,
-                                                                                    requesterId : req?.requester?._id,
-                                                                                    option : "r",
+                                                                                    homeId: homeData?._id,
+                                                                                    requestId: req?._id,
+                                                                                    requesterId: req?.requester?._id,
+                                                                                    option: "r",
                                                                                     setHomeData
 
                                                                                 })
 
-                                                                            } }>Reject</button>
+                                                                            }}>Reject</button>
 
-                                                                        </div>
+                                                                        </div> : <div>
+
+                                                                            <button id='delete-rqst' onClick={() => {
+
+                                                                                setDltRqstPopUp(true)
+                                                                                setExecutionParams({
+
+                                                                                    homeId: homeData?._id,
+                                                                                    requestId: req?._id,
+                                                                                    requesterId: req?.requester?._id,
+                                                                                    option: "d",
+                                                                                    setHomeData
+
+                                                                                })
+
+                                                                            }} >Delete request</button>
+
+                                                                        </div>}
 
                                                                     </section>
 
@@ -317,8 +348,8 @@ function SingleHome() {
 
                                                         <p>No access requests have been received yet.</p>
 
-                                                    </section> 
-                                                    
+                                                    </section>
+
                                                 }
 
                                                 <button id='close-rq-list' onClick={() => setShowRequests(false)}>Close</button>
@@ -335,8 +366,7 @@ function SingleHome() {
 
                         </section>
                         <section id="home-left-bottom">
-
-                            {/* Listing medicines */}
+ 
                             <section id="headings">
 
                                 <div>Medicine</div>
@@ -347,6 +377,7 @@ function SingleHome() {
 
                             </section>
 
+                            {/* Listing medicines */}
                             <section id="medicine-list">
 
                                 {

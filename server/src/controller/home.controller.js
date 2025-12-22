@@ -601,14 +601,20 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
         const home = await HomeModel.findById( homeId ).select('admin')
         if( home?.admin != _id ) return response.status( 500 ).json({ error : 'You have no permission to manage user access' })
 
-        if( option === "a" ) {
+        const addedUser = await UserModel.findById( requesterId ).select("_id fullName userName email profilePicture")
+        if( option === "a" ) { // Accepting user request
 
-            // Accepting user request
             // Adding ID of requester into accessed users list of home
+            // Removing the reqeust ID from access request list
             const update = await HomeModel.findByIdAndUpdate(
 
                 homeId,
-                { $push : { accessedUsers : requesterId } },
+                { 
+                    
+                    $push : { accessedUsers : requesterId },
+                    $pull : { accessRequest : requestId }
+                
+                },
                 { new : true }
 
             )
@@ -616,32 +622,87 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
             if( !update ) return response?.status( 500 ).json({ error : 'Error occured on accepting request' })
             
             // Adding the details of approved user into redis data of home
-            const addedUser = await UserModel.findById( requesterId ).select("_id fullName email profilePicture")
+            // Removing the accepted request data from accessRequest list of redis
             let redisHomes = JSON.parse( await redisClient.get('Homes') )
             if( redisHomes && redisHomes.length > 0 ) {
 
                 redisHomes = redisHomes.map( home => home._id === homeId ? {
 
                     ...home,
-                    accessedUsers : [ ...home.accessedUsers, addedUser ]
+                    accessedUsers : [ ...home.accessedUsers, addedUser ],
+                    accessRequest : home?.accessRequest.filter( request => request?._id != requestId )
 
                 } : home )
-
                 await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
 
             }
+            
+            await RequestModel.findByIdAndDelete( requestId ) // Finally deleting the accepted reequest from request database
+            return response.status( 200 ).json({ message : `${ addedUser?.userName } added to your members list`, user : addedUser })
 
-            // Finally deleting the accepted reequest from request database
-            await RequestModel.findByIdAndDelete( requestId )
+        } else if ( option === "r" ) { // Rejecting user request
 
-            return response.status( 200 ).json({ message : `${ addedUser?.fullName } added to your members list`, user : addedUser })
+            // Setting the status of request from 'a' to 'r'
+            const update = await RequestModel.findByIdAndUpdate(  
 
-        } else {
+                requestId,
+                { $set : { status : 'r' } }
 
-            // Rejecting user request
+            )
+
+            if( !update ) return response.status( 500 ).json({ error : 'Error occured on rejecting the request' })
+            
+            // Also make the updation in redis data
+            let redisHomes = JSON.parse( await redisClient.get('Homes') )
+            if ( redisHomes && redisHomes.length > 0 ) {
+
+                redisHomes = redisHomes.map( home => home?._id === homeId ? {
+
+                    ...home,
+                    accessRequest : home?.accessRequest.map( request => request?._id === requestId ? {
+
+                        ...request,
+                        status : 'r'
+
+                    } : request )
+
+                } : homeId )
+                await redisClient.setEx( 'Homes', 6400, JSON.stringify( redisHomes ) )
+
+            }
+
+            return response?.status( 200 ).json({ message : `Rejected request from ${ addedUser?.userName }` })
+
+        } else { // Deleting rejected request
+
+            // Removing the request Id from access request list of home
+            const update = await HomeModel.findByIdAndUpdate(
+
+                homeId,
+                { $pull : { accessRequest : requestId } }
+
+            )
+
+            if( !update ) return response.status( 500 ).json({ error : 'Error occured on deleting the request' })
+
+            // Also remove request from access request list of redis data
+            let redisData = JSON.parse( await redisClient.get('Homes') )
+            if( redisData && redisData.length > 0 ) {
+
+                redisData = redisData.map( home => home?._id === homeId ? {
+
+                    ...home,
+                    accessRequest : home?.accessRequest.filter( request => request?._id != requestId )
+
+                } : home )
+                await redisClient.setEx( 'Homes', 6400, JSON.stringify( redisData ) )
+
+            }
+
+            await RequestModel.findByIdAndDelete( requestId ) // Finally delete the request from request collection
+            return response.status( 200 ).json({ message : `Deleted request from ${ addedUser?.userName }` })
 
         }
-        return response?.status( 200 ).json({ message : 'Successful' })
 
     } catch ( error ) { return response?.status( 500 )?.json({ error : 'Error occured on validating reqeusts' }) }
 

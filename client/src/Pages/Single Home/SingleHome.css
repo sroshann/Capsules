@@ -215,6 +215,7 @@
                         flex-grow: 1;
 
                     }
+                    #delete-rqst { background-color: red; }
                 
                 }
 
