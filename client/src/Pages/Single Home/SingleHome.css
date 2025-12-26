@@ -462,12 +462,13 @@
                 section {
 
                     display: grid;
+                    row-gap: 2px;
 
                     .home-admin-text {
 
                         font-size: 0.7rem;
                         color: red;
-                        margin: -4px 0px 0px 0px;
+                        margin: -6px 0px 0px 0px;
 
                     }
 
@@ -491,7 +492,6 @@
 
                     font-size: 0.7rem;
                     color: #00B818;
-                    margin: 2px 0px 0px 0px;
 
                 }
 
@@ -541,6 +541,18 @@
 
             display: grid;
             row-gap: 7px;
+
+            button {
+
+                color: white;
+                background-color: red;
+                border: 0;
+                font-size: 0.7rem;
+                border-radius: 3px;
+                cursor: pointer;
+                padding: 2px 0px;
+
+            }
 
         }
 

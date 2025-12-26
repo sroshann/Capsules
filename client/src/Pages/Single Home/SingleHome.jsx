@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { 
     
     useAddressFormik, useConsumeMedicine, useDeleteMedicine, 
-    useGetParticularHome, useUpdateBSCHMData, useValidateAcsRqst
+    useGetParticularHome, userRemoveMember, useUpdateBSCHMData, useValidateAcsRqst
 
 } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
@@ -32,6 +32,7 @@ function SingleHome() {
     const [ acceptPopUp, setAcceptPopup ] = useState( false )
     const [ rejectPopUp, setRejectPopUp ] = useState( false )
     const [ dltRqstPopUp, setDltRqstPopUp ] = useState( false )
+    const [ rmvMbrPopUp, setRmvMbrPopUp ] = useState( false )
 
     // Updating description
     const [ editDesc, setEditDesc ] = useState( false )
@@ -40,6 +41,9 @@ function SingleHome() {
     // Updating location
     const [ editAddress, setEditAddress ] = useState( false )
 
+    // Updating members
+    const [ editMembers, setEditMembers ] = useState( false )
+
     const { userData } = useSelector(state => state.authentication)
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
@@ -47,6 +51,7 @@ function SingleHome() {
     const deleteMedicine = useDeleteMedicine() // Hook used to delete medicine
     const updateHomeData = useUpdateBSCHMData() // Hook used to update basic home data
     const validatUsrAcsRqst = useValidateAcsRqst() // Hook used to validate access requests
+    const removeMember = userRemoveMember() // Hook used to remove member
     const navigate = useNavigateTo()
     const formik = useAddressFormik( homeData, setHomeData, setEditAddress )
 
@@ -195,6 +200,19 @@ function SingleHome() {
                     execution = { validatUsrAcsRqst }
                     params = { executionParams }
                     final = { setDltRqstPopUp }
+                    
+                /> }
+
+            </AnimatePresence>
+            <AnimatePresence>
+
+                {/* Removing member from home access */}
+                { rmvMbrPopUp && <ConfirmPopUp 
+                
+                    description={'Do you want to remove member from home ?'} 
+                    execution = { removeMember }
+                    params = { executionParams }
+                    final = { setRmvMbrPopUp }
                     
                 /> }
 
@@ -592,7 +610,11 @@ function SingleHome() {
                             <section className='home-right-heading-edit'>
 
                                 <p className='home-right-heading'>Members <i className='bx  bx-group' /></p>
-                                { userData?._id === homeData?.admin?._id && <p className='home-right-edit'>Edit ?</p> }
+                                { userData?._id === homeData?.admin?._id && <p className='home-right-edit' 
+                                
+                                    onClick={ () => setEditMembers( previous => !previous ) }>Edit ?</p> 
+                                    
+                                }
                                 
                             </section>
 
@@ -672,6 +694,19 @@ function SingleHome() {
 
                                             </section>
                                             <p className='home-admin-email'>{member.email}</p>
+                                            { userData?._id === homeData?.admin?._id && editMembers && <button onClick={ () => {
+
+                                                setRmvMbrPopUp( true )
+                                                setExecutionParams({ 
+                                                    
+                                                    homeId : homeData?._id, 
+                                                    memberId : member?._id,
+                                                    memberName : member?.userName,
+                                                    setHomeData
+                                                
+                                                })
+
+                                            } }>Remove member</button> }
 
                                         </section>
 

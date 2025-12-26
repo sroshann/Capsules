@@ -4,7 +4,7 @@ import {
     
     addMedController, consumeMedController, createHomeController, 
     deleteMedController, getAllHomeCtrl, getCHController, getPHController, 
-    sendRequestCtrl, updateAddressCtrl, updateHomeDescCtrl,
+    removeMemberCtrl, sendRequestCtrl, updateAddressCtrl, updateHomeDescCtrl,
     validateUsrAcsReCtrl
     
 } from '../controller/home.controller.js'
@@ -42,5 +42,8 @@ router.post('/sendRequset', protectUserRoutes, sendRequestCtrl)
 
 // Validating user access requests
 router.put('/validateAccessReqeust', protectUserRoutes, validateUsrAcsReCtrl)
+
+// Removing member of a home
+router.put('/removeMember', protectUserRoutes, removeMemberCtrl)
 
 export default router

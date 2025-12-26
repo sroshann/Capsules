@@ -597,3 +597,34 @@ export const useValidateAcsRqst = () => {
     }
 
 }
+
+// Remove member of a home
+export const userRemoveMember = () => {
+
+    let { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+
+    return async ({ homeId, memberId, memberName, setHomeData }) => {
+
+        const loading = toast.loading('Removing member', { style : toastStyle })
+        try {
+
+            const response = await axiosInstance.put('/home/removeMember', { homeId, memberId, memberName })
+            // Removing specified member from accessedUsers list
+            homesData = homesData?.map( home => home?._id === homeId ? {
+
+                ...home,
+                accessedUsers : home?.accessedUsers.filter( member => member?._id != memberId )
+
+            } : home )
+            dispatch( setHomes( homesData ) )
+            setHomeData( homesData.filter( home => home?._id === homeId )[0] )
+            const { message } = response?.data
+            toast.success( message, { style : toastStyle } )
+
+        } catch ( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
+        finally { toast.remove( loading ) }
+
+    }
+
+}

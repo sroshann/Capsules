@@ -632,3 +632,45 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
     } catch ( error ) { return response?.status( 500 )?.json({ error : 'Error occured on validating reqeusts' }) }
 
 }
+
+// Remove members from home
+export const removeMemberCtrl = async ( request, response ) => {
+
+    try {
+
+        const { homeId, memberId, memberName } = request?.body
+        const { _id } = request?.user
+
+        // Check whether current user is admin of the home
+        const home = await HomeModel.findById( homeId ).select('admin homeName')
+        if( home?.admin.toString() != _id.toString() ) 
+            return response.status( 500 ).json({ error : 'You have no permission to remove the member' })
+
+        // Removing specified member id from accessedUsers list of home
+        const update = await HomeModel.findByIdAndUpdate(
+
+            homeId,
+            { $pull : { accessedUsers : memberId } }
+
+        )
+        if( !update ) return response?.status( 500 ).json({ error : 'Error occured while removing member' })
+
+        // Also make the change in redis
+        let redisHome = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+        if( redisHome && Object.keys( redisHome ).length > 0 ) {
+
+            redisHome = {
+
+                ...redisHome,
+                accessedUsers : redisHome?.accessedUsers.filter( member => member?._id != memberId )
+
+            }
+            await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( redisHome ))
+
+        }
+
+        return response?.status( 200 ).json({ message : `${ memberName } removed from ${ home?.homeName }` })
+
+    } catch ( error ) { return response?.status( 500 ).json({ error : 'Error occured on removing user' }) }
+
+}
