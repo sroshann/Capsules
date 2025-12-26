@@ -10,7 +10,8 @@ export const createHomeController = async ( request, response ) => {
 
     try {
 
-        const { nickName, homeName, country, state, district, pincode, description, userId } = request.body
+        const { nickName, homeName, country, state, district, pincode, description } = request.body
+        const { _id } = request?.user
 
         // Checking whether home name is already exist or not
         const existingHome = await HomeModel.findOne({ homeName })
@@ -27,38 +28,25 @@ export const createHomeController = async ( request, response ) => {
             district, 
             pincode,
             description,
-            admin : request?.user._id
+            admin : _id
 
         })
 
         if( homeSchema ) {
 
             const createdHome = await homeSchema.save()
+            await createdHome.populate([{ path : 'admin', select : 'profilePicture fullName email userName' }])
             const { __v, updatedAt, ...rest } = createdHome.toObject()
 
-            // Newly created home is also added to already stored data in REDIS
-            let homesInRedis = JSON.parse( await redisClient.get('Homes') )
-            if( homesInRedis ) await redisClient.setEx('Homes', 6400, JSON.stringify( [ ...homesInRedis, rest ] ))
-            else {
-        
-                // If some times redis data becomes empty, so adding only newly created home into redis 
-                // is not a good idea, then we should fetch all the details from db and then add to redis
-                let dbHomes = await HomeModel.find({
+            let redisUser = JSON.parse( await redisClient.get(`user:${ _id }`) )
+            if( redisUser ) {
 
-                    // Fetching the homes in which the accessed user is 'admin'
-                    // or the homes in which user have the access
-                    $or : [
+                // Adding the _id of newly created home into its accessedHomes list of corresponding user
+                redisUser = { ...redisUser, accessedHomes : [ ...redisUser.accessedHomes, rest?._id ] }
+                await redisClient.setEx(`user:${ _id }`, 1800, JSON.stringify( redisUser ))
 
-                        { admin : userId },
-                        { accessedUsers : userId }
-
-                    ]
-
-                }).select('-__v -updatedAt')
-                await redisClient.setEx('Homes', 6400, JSON.stringify([ dbHomes ]))
-        
             }
-
+            await redisClient.setEx(`home:${ rest?._id }`, 1800, JSON.stringify( rest ))
             return response.status( 200 ).json({ message : 'Home created successfully', home : rest })
 
         }
@@ -68,99 +56,118 @@ export const createHomeController = async ( request, response ) => {
 }
 
 // Get created homes
-export const getCHController = async ( request, response ) => {
+export const getCHController = async (request, response) => {
 
     try {
 
         // Inorder to make the execution fast the data is fetched form 'redis'
         // If data is not present in 'redis', then it fetched from database
         // and then stored in 'redis'
-        
-        let homes = JSON.parse( await redisClient.get('Homes') )
-        if( homes && homes.length > 0 ) return response.status( 200 ).json({ homes })
-        else {
-        
-            // Fetching the homes in which the accessed user is 'admin'
-            // or the homes in which user have the access
-            const { _id } = request.params
+        const { _id } = request?.user
 
-            // In here the type of _id is string but the admin and the accessedUsers has object Ids
-            // But in this query, Mongo db automatically cast string into object Ids in the case of equality
+        const redisUser = JSON.parse(await redisClient.get(`user:${ _id }`))
+        if (redisUser && redisUser?.accessedHomes) {
 
-            homes = await HomeModel.find({
+            // Getting home names in which user has access 
+            // and then fetching each home data according to the homes from redis
+            const userHomes = redisUser?.accessedHomes.map(homeId => `home:${homeId}`)
+            const cachedHomes = await redisClient.mGet(userHomes)
+            const homes = cachedHomes.filter(Boolean).map(home => JSON.parse(home))
+            if (homes && homes.length > 0) return response.status(200).json({ homes })
 
-                $or : [
+        }
 
-                    { admin : _id },
-                    { accessedUsers : _id }
+        // Fetching the homes in which the accessed user is 'admin'
+        // or the homes in which user have the access
+        // In here the type of _id is string but the admin and the accessedUsers has object Ids
+        // But in this query, Mongo db automatically cast string into object Ids in the case of equality
 
-                ]
+        let homes = await HomeModel.find({
 
-            }).select('-__v -updatedAt')
+            $or: [
 
-            // First check the dates of medicines stored with the corresponding medicine Id
-            // and update it with 'e' if expired
-            const today = new Date()
-            for( const home of homes ) {
+                { admin: _id },
+                { accessedUsers: _id }
 
-                const medicines = await AddedMedModel.find({ homeId : home._id })
-                for( const med of medicines ) {
+            ]
 
-                    if (med?.expiryDate != "e") { 
+        }).select('-__v -updatedAt')
 
-                        // There is no need to check already date confirmed medicines
-                        const medDate = new Date(med?.expiryDate)
-                        if ( today >= medDate ) {
+        // First check the dates of medicines stored with the corresponding medicine Id
+        // and update it with 'e' if expired
+        const today = new Date()
+        for (const home of homes) {
 
-                            await AddedMedModel.findByIdAndUpdate(
+            const medicines = await AddedMedModel.find({ homeId: home._id })
+            for (const med of medicines) {
 
-                                med._id,
-                                { $set: { expiryDate: "e" } }
+                if (med?.expiryDate != "e") {
 
-                            )
+                    // There is no need to check already date confirmed medicines
+                    const medDate = new Date(med?.expiryDate)
+                    if (today >= medDate) {
 
-                        }
+                        await AddedMedModel.findByIdAndUpdate(
+
+                            med._id,
+                            { $set: { expiryDate: "e" } }
+
+                        )
+
                     }
+                }
+
+            }
+
+        }
+
+        // Then populate the data
+        homes = await HomeModel.populate(homes, [
+
+            { path: 'admin', select: 'profilePicture fullName email userName' },
+            { path: 'accessedUsers', select: 'profilePicture fullName email _id userName' },
+            { path: 'availableMedicines', select : '-__v' },
+            {
+
+                // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
+                path: 'accessRequest',
+                match: { homeAdmin: _id },
+                select: '-updatedAt -__v -homeAdmin -homeId',
+                populate: {
+
+                    // In here the requester basic data are also needed, 
+                    // then its population can also done by nested population
+                    path: 'requester',
+                    select: 'profilePicture userName'
 
                 }
 
             }
 
-            // Then populate the data
-            homes = await HomeModel.populate( homes, [
+        ])
 
-                { path : 'admin', select : 'profilePicture fullName email userName' },
-                { path : 'accessedUsers', select : 'profilePicture fullName email _id userName' },
-                { path : 'availableMedicines' },
-                { 
+        if (homes && homes.length > 0) {
 
-                    // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
-                    path : 'accessRequest', 
-                    match : { homeAdmin : _id },
-                    select : '-updatedAt -__v -homeAdmin -homeId',
-                    populate : {
+            // Stores each home with its own _id
+            await Promise.all(
 
-                        // In here the requester basic data are also needed, 
-                        // then its population can also done by nested population
-                        path : 'requester',
-                        select : 'profilePicture userName'
+                homes.map(home => redisClient.setEx( `home:${home._id}`, 1800, JSON.stringify(home)))
 
-                    }
-                
-                }
+            )
+            let user = JSON.parse(await redisClient.get(`user:${ _id }`))
+            if (user) {
 
-            ])
-            
-            if( homes && homes.length > 0 ) {
+                // The _id of each home is added to user data
+                // So later then we can fetch the home data of corresponding user
+                user.accessedHomes = homes.map(home => home?._id)
+                await redisClient.setEx(`user:${ _id }`, 1800, JSON.stringify(user))
 
-                await redisClient.setEx('Homes', 6400, JSON.stringify( homes ))
-                return response.status( 200 ).json({ homes })
+            }
+            return response.status(200).json({ homes })
 
-            } else return response.status( 401 ).json({ error : 'No homes were created' })
-    
-        }
+        } else return response.status(401).json({ error: 'No homes were created' })
 
-    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting homes' }) }
+    } catch (error) { return response.status(500).json({ error: 'Error occured on getting homes' }) }
 
 }
 
@@ -172,13 +179,12 @@ export const getPHController = async ( request, response ) => {
         const { homeId } = request.params
         const { _id } = request.user // From auth.middleware
 
-        let redisHomes = JSON.parse( await redisClient.get('Homes') )
-        if( redisHomes && redisHomes.length > 0 ) {
+        let redisHome = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+        if( redisHome && Object.keys( redisHome ).length > 0 ) {
 
             // Fetching home data from redis
             // The admin and accessed user constraints are already validated before data added to redis
-            const homeData = redisHomes.filter( home => home._id === homeId )
-            return response.status( 200 ).json({ home : homeData[0] })
+            return response.status( 200 ).json({ home : redisHome })
 
         } else {
 
@@ -198,7 +204,7 @@ export const getPHController = async ( request, response ) => {
 
                 { path : 'admin', select : 'profilePicture fullName userName email' },
                 { path : 'accessedUsers', select : 'profilePicture fullName userName email _id' },
-                { path : 'availableMedicines' },
+                { path : 'availableMedicines', select : '-__v' },
                 { 
                     
                     // REQUEST POOPULATION IS ONLY REQUIRE IF THE CURRENT USER IS ADMIN OF ANY HOME
@@ -251,27 +257,11 @@ export const addMedController = async ( request, response ) => {
         else {
     
             // If updation is successfull then also update in redis
-            let homesInRedis = JSON.parse( await redisClient.get('Homes') )
-            if ( homesInRedis && homesInRedis.length > 0 ) {
+            let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if ( home && Object.keys( home ).length > 0 ) {
 
-                homesInRedis = homesInRedis.map( home => {
-
-                    if( home._id === homeId ) {
-
-                        return {
-
-                            ...home,
-                            availableMedicines : [ ...home.availableMedicines, rest ]
-
-                        }
-
-                    }
-
-                    return home
-
-                } )
-
-                await redisClient.setEx('Homes', 6400, JSON.stringify( homesInRedis ))
+                home = { ...home, availableMedicines : [ ...home.availableMedicines, rest ] }
+                await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( home ))
 
             }
 
@@ -295,47 +285,37 @@ export const consumeMedController = async ( request, response ) => {
         // If the medicine quantity becomes zero, it is removed from the home's availableMedicines list.
         // Otherwise, the quantity is decremented while keeping all other cached data intact.
         // Ensures proper ObjectId comparison, immutability, and persists the updated list back to Redis.
-        let redisHomes = JSON.parse( await redisClient.get('Homes') )
-        if( redisHomes && redisHomes.length > 0 ) {
+        let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+        if( home && Object.keys( home ).length > 0 ) {
 
-            redisHomes = redisHomes.map( home => {
+            if ( medicine?.quantity === 1 ) {
 
-                if( home._id === homeId ) {
+                // Deleting specefic medicine data from available medicine of redis
+                home = {  
 
-                    if( medicine?.quantity === 1 ) {
-
-                        // Delete specefic medicine data from available medicine of REDIS
-                        return {
-    
-                            ...home,
-                            availableMedicines : home.availableMedicines.filter( med => med._id != medicineId )
-    
-                        }
-
-                    } else {
-
-                        // Just decrement the quantity of sepecefic medicine from available medicine of REDIS
-                        return {
-
-                            ...home,
-                            availableMedicines : home.availableMedicines.map( med => 
-                                
-                                med?._id === medicineId ? { ...med, quantity : med.quantity - 1 } : med
-
-                            )
-
-                        }
-
-                    }
-
+                    ...home,
+                    availableMedicines : home?.availableMedicines.filter( med => med?._id != medicineId )
 
                 }
 
-                return home
+            } else {
 
-            } )
+                // Just decrement the quantity of sepecefic medicine from available medicine of REDIS
+                home = {
 
-            await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
+                    ...home,
+                    availableMedicines : home?.availableMedicines.map( med => med?._id === medicineId ? {
+
+                        ...med,
+                        quantity : med?.quantity - 1
+
+                    } : med )
+
+                }
+
+            }
+
+            await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( home ))
 
         }
         
@@ -393,27 +373,11 @@ export const deleteMedController = async ( request, response ) => {
         )
 
         // Also delete the medicine from redis data
-        let redisHomes = JSON.parse( await redisClient.get('Homes') )
-        if( redisHomes && redisHomes.length > 0 ) {
+        let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+        if( home && Object.keys( home ).length > 0 ) {
 
-            redisHomes = redisHomes.map( home => {
-
-                if( home?._id === homeId ) {
-
-                    return {
-
-                        ...home,
-                        availableMedicines : home.availableMedicines.filter( med => med?._id != medId )
-
-                    }
-
-                }
-
-                return home
-
-            } )
-
-            await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
+            home = { ...home, availableMedicines : home?.availableMedicines.filter( med => med?._id != medId ) }
+            await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( home ))
 
         }
 
@@ -442,15 +406,11 @@ export const updateHomeDescCtrl = async ( request, response ) => {
         else {
     
             // Also made the changes in redis
-            let redisData = JSON.parse( await redisClient.get('Homes') )
-            if( redisData && redisData.length > 0 ) {
+            let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if( home && Object.keys( home ).length > 0 ) {
 
-                redisData = redisData.map( home => 
-                    
-                    home._id === homeId ? { ...home, description : data } : home 
-                
-                )
-                await redisClient.setEx('Homes', 6400, JSON.stringify( redisData ))
+                home = { ...home, description : data }
+                await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( home ))
 
             }
 
@@ -481,15 +441,11 @@ export const updateAddressCtrl = async ( request, response ) => {
         else {
 
             // Update the changes in redis
-            let redisData = JSON.parse( await redisClient.get('Homes') )
-            if ( redisData && redisData.length > 0 ) {
+            let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if ( home && Object.keys( home ).length > 0 ) {
 
-                redisData = redisData.map( 
-                    
-                    home => home?._id === homeId ? { ...home, country, state, district, pincode } : home 
-                
-                )
-                await redisClient.setEx( 'Homes', 6400, JSON.stringify( redisData ) )
+                home = { ...home, country, state, district, pincode }
+                await redisClient.setEx( `home:${ homeId }`, 1800, JSON.stringify( home ) )
 
             }
 
@@ -506,33 +462,19 @@ export const getAllHomeCtrl = async ( request, response ) => {
 
     try {
 
-        const redisData = JSON.parse( await redisClient.get('AllHomes') )
-        if ( redisData && redisData.length > 0 ) 
-            
-            // Redis access
-            return response.status( 200 ).json({ homes : redisData })
+        // Database access 
+        const { _id } = request?.user
+        const homes = await HomeModel.find({
 
-        else {
+            admin: { $ne: _id },
+            accessedUsers: { $ne: _id }
 
-            // Database access 
-            const { _id } = request?.user
-            const homes = await HomeModel.find({
+        })
+        .populate([{ path: 'admin', select: 'profilePicture fullName email _id' }])
+        .select('-__v -updatedAt -accessedUsers -availableMedicines -description -accessRequest')
 
-                admin : { $ne : _id },
-                accessedUsers : { $ne : _id }
-
-            })
-            .populate([ { path : 'admin', select : 'profilePicture fullName email _id' } ])
-            .select('-__v -updatedAt -accessedUsers -availableMedicines -description')
-            if ( homes && homes.length > 0 ) {
-    
-                // Storing data into redis inorder for faster access
-                await redisClient.setEx('AllHomes', 6400, JSON.stringify( homes )) 
-                return response.status( 200 ).json({ homes })
-    
-            } else return response?.status( 500 ).json({ error : 'No other homes were found' })
-
-        }
+        if (homes && homes.length > 0) return response.status(200).json({ homes })
+        else return response?.status(500).json({ error: 'No other homes were found' })
 
     } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on getting homes data' }) }
 
@@ -558,27 +500,8 @@ export const sendRequestCtrl = async ( request, response ) => {
         
         )
 
-        if ( update ) {
-
-            // IAM NOT REALLY SURE ABOUT MAKING THE CHANGES ALSO ON REDIS
-            // BECAUSE THIS FEATURE IS LATER DONE BY ANOTHER USER ( HOME ADMIN )
-            // SO THE CURRENT USER NOT REQUIRED CURRENT DATA
-
-            // Update the change in redis
-            // let redisHome = JSON.parse( await redisClient.get('Homes') )
-            // if( redisHome && redisHome.length > 0 ) {
-
-            //     redisHome = redisHome.map( 
-                    
-            //         home => home?._id === homeId ? { ...home, accessRequest : [ ...home?.accessRequest, rest ] } : home 
-                
-            //     )
-            //     await redisClient.setEx('Homes', 6400, JSON.stringify( redisHome ))
-
-            // }
-            return response.status( 200 ).json({ message : 'Request sent successfully' })
-
-        } else {
+        if ( update ) return response.status( 200 ).json({ message : 'Request sent successfully' }) 
+        else {
 
             await RequestModel.findByIdAndDelete( rest?._id )
             return response?.status( 500 ).json({ error : "Could'nt send requests" })
@@ -599,7 +522,9 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
 
         // This feature is only available for home admin, so we should restrict this for other users
         const home = await HomeModel.findById( homeId ).select('admin')
-        if( home?.admin != _id ) return response.status( 500 ).json({ error : 'You have no permission to manage user access' })
+        // admin will object id and _id may string or object id
+        if( home?.admin.toString() != _id.toString() ) 
+            return response.status( 500 ).json({ error : 'You have no permission to manage user access' })
 
         const addedUser = await UserModel.findById( requesterId ).select("_id fullName userName email profilePicture")
         if( option === "a" ) { // Accepting user request
@@ -623,17 +548,17 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
             
             // Adding the details of approved user into redis data of home
             // Removing the accepted request data from accessRequest list of redis
-            let redisHomes = JSON.parse( await redisClient.get('Homes') )
-            if( redisHomes && redisHomes.length > 0 ) {
+            let redisHome = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if( redisHome && Object.keys( redisHome ).length > 0 ) {
 
-                redisHomes = redisHomes.map( home => home._id === homeId ? {
+                redisHome = {
 
-                    ...home,
-                    accessedUsers : [ ...home.accessedUsers, addedUser ],
-                    accessRequest : home?.accessRequest.filter( request => request?._id != requestId )
+                    ...redisHome,
+                    accessedUsers : [ ...redisHome.accessedUsers, addedUser ],
+                    accessRequest : redisHome?.accessRequest.filter( request => request?._id != requestId )
 
-                } : home )
-                await redisClient.setEx('Homes', 6400, JSON.stringify( redisHomes ))
+                }
+                await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( redisHome ))
 
             }
             
@@ -653,21 +578,21 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
             if( !update ) return response.status( 500 ).json({ error : 'Error occured on rejecting the request' })
             
             // Also make the updation in redis data
-            let redisHomes = JSON.parse( await redisClient.get('Homes') )
-            if ( redisHomes && redisHomes.length > 0 ) {
+            let redisHome = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if ( redisHome && Object.keys( redisHome ).length > 0 ) {
 
-                redisHomes = redisHomes.map( home => home?._id === homeId ? {
+                redisHome = {  
 
-                    ...home,
-                    accessRequest : home?.accessRequest.map( request => request?._id === requestId ? {
+                    ...redisHome,
+                    accessRequest : redisHome?.accessRequest.map( request => request?._id === requestId ? {
 
                         ...request,
                         status : 'r'
 
                     } : request )
 
-                } : homeId )
-                await redisClient.setEx( 'Homes', 6400, JSON.stringify( redisHomes ) )
+                }
+                await redisClient.setEx( `home:${ homeId }`, 1800, JSON.stringify( redisHome ) )
 
             }
 
@@ -686,16 +611,16 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
             if( !update ) return response.status( 500 ).json({ error : 'Error occured on deleting the request' })
 
             // Also remove request from access request list of redis data
-            let redisData = JSON.parse( await redisClient.get('Homes') )
-            if( redisData && redisData.length > 0 ) {
+            let redisData = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if( redisData && Object.keys( redisData ).length > 0 ) {
+                
+                redisData = {
 
-                redisData = redisData.map( home => home?._id === homeId ? {
+                    ...redisData,
+                    accessRequest : redisData?.accessRequest.filter( request => request?._id != requestId )
 
-                    ...home,
-                    accessRequest : home?.accessRequest.filter( request => request?._id != requestId )
-
-                } : home )
-                await redisClient.setEx( 'Homes', 6400, JSON.stringify( redisData ) )
+                }
+                await redisClient.setEx( `home:${ homeId }`, 1800, JSON.stringify( redisData ) )
 
             }
 

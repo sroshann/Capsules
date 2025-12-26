@@ -56,12 +56,13 @@ export const useCreateHome = () => {
 
             data.userId = userData._id
             const response = await axiosInstance.post('/home/createHome', data)
-            const { message, home } = response?.data
+            let { message, home } = response?.data
+            home = { ...home, createdAt : changeDateFormat( home?.createdAt, true ) } // Changing the date format
             dispatch( setHomes( [ ...homesData, home ] )) // Adding newly created home to redux
             toast.success( message, { style : toastStyle } )
 
         } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
-        toast.remove( loading )
+        finally { toast.remove( loading ) }
 
     }
 
@@ -71,7 +72,6 @@ export const useCreateHome = () => {
 export const useGetHomes = () => {
 
     const dispatch = useDispatch()
-    const { userData } = useSelector( state => state.authentication )
     const { homesData } = useSelector( state => state.homes )
 
     return async () => {
@@ -81,7 +81,7 @@ export const useGetHomes = () => {
 
             if( homesData === null ) {
 
-                const response = await axiosInstance.get(`/home/getCreatedHomes/${ userData._id }`)
+                const response = await axiosInstance.get('/home/getCreatedHomes')
                 let { homes } = response?.data
                 homes = homes.map( ( value ) => ({
                     
@@ -89,6 +89,12 @@ export const useGetHomes = () => {
                     // The second boolean parameter determines the date format whether in words or just numbers
                     ...value,
                     createdAt : changeDateFormat( value?.createdAt, true ),
+                    availableMedicines : value?.availableMedicines.map( medicine => medicine?.expiryDate != 'e' ? {
+
+                        ...medicine,
+                        expiryDate : changeDateFormat( medicine?.expiryDate )
+
+                    } : medicine ),
                     accessRequest : value?.accessRequest?.map( request => ({
                         
                         ...request,
@@ -168,6 +174,12 @@ export const useGetParticularHome = () => {
                     // The second boolean parameter determines the date format whether in words or just numbers
                     ...home,
                     createdAt : changeDateFormat( home?.createdAt, true ),
+                    availableMedicines : home?.availableMedicines.map( medicine => medicine?.expiryDate != 'e' ? {
+
+                        ...medicine,
+                        expiryDate : changeDateFormat( medicine?.expiryDate )
+
+                    } : medicine ),
                     accessRequest : home?.accessRequest?.map( request => ({
 
                         ...request,

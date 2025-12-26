@@ -134,12 +134,12 @@ export const useLogout = () => {
 
     const dispatch = useDispatch()
 
-    return async () => {
+    return async ( userId ) => {
 
         const loading = toast.loading('Logging out', { style : toastStyle })
         try {
 
-            const response = await axiosInstance.get('/authentication/logout')
+            const response = await axiosInstance.get(`/authentication/logout/${ userId }`)
             const { message } = response?.data
 
             dispatch(setUserData(null)) // Clearing user data

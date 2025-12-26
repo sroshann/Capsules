@@ -49,9 +49,9 @@ export const signupController = async ( request, response ) => {
             
             generateToken( newUser._id, response )
             await newUser.save()
-            const { password, __v, ...rest } = newUser.toObject()
-            // Storing the user details in redis for 1 hour
-            await redisClient.setEx('user', 3600, JSON.stringify( rest ))
+            const { password, __v, updatedAt, ...rest } = newUser.toObject()
+            // Storing the user details in redis for 30 minute
+            await redisClient.setEx(`user:${ rest?._id }`, 1800, JSON.stringify( rest ))
             return response.status( 201 ).json({ message : 'User created successfully', user : rest })
 
         } else return response.status( 400 ).json({ error : 'Invalid userd data' })
@@ -75,18 +75,16 @@ export const loginController = async ( request, response ) => {
             if( compare ) {
 
                 generateToken( user._id, response )
-                const { password, __v, ...rest } = user.toObject()
-                // Storing the user details in redis for 1 hour
-                await redisClient.setEx('user', 3600, JSON.stringify( rest ))
+                const { password, __v, updatedAt, ...rest } = user.toObject()
+                // Storing the user details in redis for 30 minutes
+                await redisClient.setEx(`user:${ rest?._id }`, 1800, JSON.stringify( rest ))
                 return response.status( 200 ).json({ message : 'User authenticated', user : rest })
 
             } else return response.status( 400 ).json({ error : 'Invalid credentials' })
 
         } else return response.status( 400 ).json({ error : 'Invalid credentials' })
 
-    } catch( error ) { 
-        console.log( error )
-        return response.status( 500 ).json({ error : 'Error occured on loging in' }) }
+    } catch( error ) { return response.status( 500 ).json({ error : 'Error occured on loging in' }) }
 
 }
 
@@ -95,9 +93,8 @@ export const logoutController = async ( request, response ) => {
 
     try {
 
-        await redisClient.del('user') // Delete user data from redis
-        await redisClient.del('Homes') // Delete home data from redis
-        await redisClient.del('AllHomes') // Delete homes details for finding other homes
+        const { userId } = request?.params
+        const result = await redisClient.del(`user:${ userId }`) // Delete current user data from redis
         response.cookie('credential', '', { maxAge : 0 }) // Deleting cookie
         return response.status( 200 ).json({ message : 'Loged out successfully' })
 
@@ -116,7 +113,9 @@ export const getUserDataController = async ( request, response ) => {
             const decode = jwt.verify( token, process.env.JWTSECRET )
             if( decode ) {
 
-                const user = await UserModel.findById( decode.userId ).select('-password')
+                const { userId } = decode
+                let user = JSON.parse( await redisClient.get(`user:${ userId }`) )
+                if ( !user ) user = await UserModel.findById( userId ).select('-password -__v -updatedAt')
                 return response.status( 200 ).json({ user })
 
             }
@@ -252,7 +251,7 @@ export const updateProfileController = async ( request, response ) => {
         )
 
         const { updatedAt, __v, password, ...rest } = updatedUser.toObject()
-        await redisClient.setEx('user', 3600, JSON.stringify( rest )) // Also update in redis
+        await redisClient.setEx(`user:${ rest?._id }`, 1800, JSON.stringify( rest )) // Also update in redis
         return response.status( 200 ).json({ message : 'User data updated', updatedUser : rest })
 
     } catch ( error ) { return response.status( 500 ).json({ error : 'Error occured on updating profile' }) }

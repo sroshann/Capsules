@@ -17,9 +17,9 @@ function DesktopNav() {
     const navigate = useNavigateTo() // Hook used to navigate
     const logout = useLogout() // Hook used to logout
 
-    const handleLogout = () => {
+    const handleLogout = ( userId ) => {
 
-        logout()
+        logout( userId )
         navigate('landing')
 
     }
@@ -48,7 +48,7 @@ function DesktopNav() {
 
                     { 
                     
-                        userData ? <button onClick={ handleLogout }>Logout</button> : 
+                        userData ? <button onClick={ () => handleLogout( userData?._id ) }>Logout</button> : 
                         
                         <>
                         

@@ -30,9 +30,9 @@ function MobileNav() {
 
     }, [ openMenu ] )
 
-    const handleLogout = () => {
+    const handleLogout = ( userId ) => {
 
-        logout()
+        logout( userId )
         handleCloseDiv()
         navigate('login')
 
@@ -68,7 +68,7 @@ function MobileNav() {
                         <p onClick={ () => navigate('') }>Notification <i className='bx bx-bell' /></p>
                         {
 
-                            userData ? <p onClick={ handleLogout }>Logout</p> 
+                            userData ? <p onClick={ () => handleLogout( userData?._id ) }>Logout</p> 
                             : <>
                             
                                 <p onClick={ () => navigate('login') }>Login</p>

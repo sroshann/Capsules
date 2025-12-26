@@ -14,7 +14,7 @@ const router = express()
 router.post('/createHome', protectUserRoutes, createHomeController)
 
 // Get created homes
-router.get('/getCreatedHomes/:_id', protectUserRoutes, getCHController)
+router.get('/getCreatedHomes', protectUserRoutes, getCHController)
 
 // Get data of particular home
 router.get('/getParticularHome/:homeId', protectUserRoutes, getPHController)

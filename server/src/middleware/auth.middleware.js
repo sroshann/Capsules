@@ -13,14 +13,9 @@ export const protectUserRoutes = async ( request, response, next ) => {
             const decode = jwt.verify( token, process.env.JWTSECRET )
             if( decode ) {
 
-                let user = JSON.parse( await redisClient.get('user') )
-                if( !user ) {
-
-                    user = await UserModel.findById( decode.userId ).select('-password')
-                    await redisClient.setEx('user', 3600, JSON.stringify( user ))
-                    
-                }
-
+                const { userId } = decode
+                let user = JSON.parse( await redisClient.get(`user:${ userId }`) )
+                if( !user ) user = await UserModel.findById( userId ).select('-password -__v -updatedAt')
                 request.user = user
                 next()
 

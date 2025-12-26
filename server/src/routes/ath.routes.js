@@ -13,7 +13,7 @@ router.post('/signup', signupController)
 router.post('/login', loginController)
 
 // Logout
-router.get('/logout', logoutController)
+router.get('/logout/:userId', protectUserRoutes, logoutController)
 
 // Get user data on data loss
 router.get('/getUserData', getUserDataController)
