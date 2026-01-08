@@ -1,9 +1,9 @@
-import mongoose from "mongoose"
 import { redisClient } from "../lib/redis.connection.js"
 import AddedMedModel from "../models/addedMed.model.js"
 import HomeModel from "../models/home.model.js"
 import UserModel from "../models/user.model.js"
 import RequestModel from "../models/request.model.js"
+import { io } from "../lib/socket.js"
 
 // Creating new home
 export const createHomeController = async ( request, response ) => {
@@ -490,7 +490,7 @@ export const sendRequestCtrl = async ( request, response ) => {
 
         // Saving new request 
         const newRequset = await RequestModel.create({ requester : _id, homeId, homeAdmin : admin })
-        const { __v, ...rest } = newRequset.toObject()
+        const { __v, updatedAt, ...rest } = newRequset.toObject()
         // Updating the corresponding home
         const update = await HomeModel.findByIdAndUpdate( 
             
@@ -500,7 +500,42 @@ export const sendRequestCtrl = async ( request, response ) => {
         
         )
 
-        if ( update ) return response.status( 200 ).json({ message : 'Request sent successfully' }) 
+        if ( update ) {
+
+            const requestedUser = await UserModel.findById( _id ).select('profilePicture userName')
+            let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
+            if ( home ) {
+
+                home = {
+
+                    ...home,
+                    accessRequest : [ ...home?.accessRequest, {
+
+                        _id : rest?._id,
+                        status : rest?.status,
+                        createdAt : rest?.createdAt,
+                        requester : requestedUser
+
+                    } ]
+
+                }
+
+                await redisClient.setEx( `home:${ homeId }`, 1800, JSON.stringify( home ) )
+                
+            }
+
+            // Sending socket request to coresponding admin
+            io.to( admin ).emit('access_request',{
+
+                _id : rest?._id,
+                status : rest?.status,
+                createdAt : rest?.createdAt,
+                requester : requestedUser
+
+            })
+            return response.status( 200 ).json({ message : 'Request sent successfully' })
+
+        } 
         else {
 
             await RequestModel.findByIdAndDelete( rest?._id )

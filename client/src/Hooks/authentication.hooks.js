@@ -12,6 +12,7 @@ import { setHomes } from "../Store/Reducers/home.reducer"
 import { setAllHomes } from "../Store/Reducers/allHomes.reducer"
 import { setSearchedMed } from "../Store/Reducers/medicine.reducer"
 import { setMedicineNames } from "../Store/Reducers/medName.reducer"
+import { socket } from "../lib/socket"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -67,6 +68,15 @@ export const useSignup = () => {
             user.createdAt = changeDateFormat( user?.createdAt ) // Changing Mongo DB default date format
             dispatch(setUserData(user)) // Setting user details to redux store
             dispatch(setIsAuthenticated())
+
+            // Connecting socket if there is no any other connection
+            if ( !socket.connected ) {
+
+                socket.connect()
+                socket.emit('join', user?._id )
+
+            }
+
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
@@ -120,6 +130,15 @@ export const useLogin = () => {
             user.createdAt = changeDateFormat( user?.createdAt, true )
             dispatch(setUserData(user))
             dispatch(setIsAuthenticated())
+
+            // Connecting socket if there is no other connection
+            if( !socket?.connected ) {
+
+                socket.connect()
+                socket.emit('join', user?._id )
+
+            }
+
             toast.success(message, { style: toastStyle })
             
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
@@ -149,6 +168,8 @@ export const useLogout = () => {
             dispatch( setSearchedMed( null ) )
             dispatch( setMedicineNames([]) )
 
+            // Disconnecting socket
+            if( socket?.connected ) socket.disconnect()
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }

@@ -5,7 +5,8 @@ import { useParams } from 'react-router-dom'
 import { 
     
     useAddressFormik, useConsumeMedicine, useDeleteMedicine, 
-    useGetParticularHome, userRemoveMember, useUpdateBSCHMData, useValidateAcsRqst
+    useGetParticularHome, useRealTimeRequest, userRemoveMember, 
+    useUpdateBSCHMData, useValidateAcsRqst
 
 } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
@@ -45,6 +46,7 @@ function SingleHome() {
     const [ editMembers, setEditMembers ] = useState( false )
 
     const { userData } = useSelector(state => state.authentication)
+    const { homesData } = useSelector( state => state.homes )
     const { homeId } = useParams() // Getting home Id from url
     const getParticularHome = useGetParticularHome() // Hook used to get data of home
     const consumeMedicine = useConsumeMedicine() // Hooke used to change medicine count
@@ -133,6 +135,10 @@ function SingleHome() {
 
     const incrementPage = () => setCurrentPage( previous => previous + 1 )
     const decrementPage = () => setCurrentPage( previous => previous - 1 )
+    
+    const homeRef = useRef( homesData )
+    useEffect( () => { homeRef.current = homesData }, [ homesData ] )
+    useRealTimeRequest( homeData?._id, setHomeData, homeRef )
 
     return (
 
