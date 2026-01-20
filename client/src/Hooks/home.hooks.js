@@ -631,11 +631,10 @@ export const userRemoveMember = () => {
 
 }
 
-// Receving realtime requests, made as custom hooks
+// Receiving realtime requests, made as custom hooks
 export const useRealTimeRequest = (homeId, setHomeData, homeRef) => {
 
     const dispatch = useDispatch()
-
     useEffect(() => {
 
         // Receiving real time data from backend and adding it into front end data
@@ -647,8 +646,8 @@ export const useRealTimeRequest = (homeId, setHomeData, homeRef) => {
         // access always from the useRef, ( the useRef will always get updated when ther is any changes occured in redux )
         // which is always updated
 
-        // Auth change  → connect socket ONCE
-        // Page mount  → add listeners
+        // Auth change → connect socket ONCE
+        // Page mount → add listeners
         // Page unmount → remove listeners
         // Logout → disconnect socket
 
@@ -670,11 +669,38 @@ export const useRealTimeRequest = (homeId, setHomeData, homeRef) => {
 
             dispatch(setHomes(updated))
             setHomeData( updated?.find( home => home?._id === homeId ) )
+            
+        })
 
-            return () => { socket.off('access_request', handler) }
+        return () => { socket.off('access_request') }
+
+    }, [ homeId ])
+
+}
+
+// Accepting access request in real time
+export const useAccptRqstRealTime = ( homeRef ) => {
+
+    // const { homesData } = useSelector( state => state.homes )
+    const dispatch = useDispatch()
+    useEffect( () => {
+
+        socket.on('accept_request', data => {
+
+            data = {
+
+                ...data,
+                createdAt : changeDateFormat( data?.createdAt, true )
+
+            }
+
+            const updated = [ ...homeRef?.current, data ]
+            dispatch( setHomes( updated ) )
 
         })
 
-    }, [ homeId ])
+        return () => { socket.off('accept_request') }
+
+    }, [] )
 
 }

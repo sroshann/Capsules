@@ -4,7 +4,7 @@ import Footer from '../../Components/Footer/Footer'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
-import { useGetHomes, useSearchYourHome } from '../../Hooks/home.hooks'
+import { useAccptRqstRealTime, useGetHomes, useSearchYourHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import './Home.css'
@@ -32,12 +32,10 @@ function Home() {
     const handleSearch = ( event = null, searching = false ) => {
 
         // Function works both for searching and clearing search input
-
         if( searching ) { 
 
             // Passing the search string and result setting state into state function
             // if the value is found, then status retured as 'true' otherwise 'false'.
-            
             event.preventDefault()
             const status = searchHome( search, setFilteredHome )
             setSearchStatus( status )
@@ -48,7 +46,6 @@ function Home() {
             // But if data is not found the search state become false, and also we need to just
             // clear the search input no need to reassing the 'filtered' state, because the data
             // in the state is not changed
-
             setSearch('')
             if( searchStatus ) setFilteredHome( homesData )
 
@@ -56,14 +53,17 @@ function Home() {
 
     }
 
+    const homesDataRef = useRef( homesData )
     useEffect( () => { getHomes() }, [] )
     useEffect( () => { 
         
         // Setting the homes data in home store into filtered list
         // the filtered array is maped down ( displayed )
         setFilteredHome( homesData ) 
+        homesDataRef.current = homesData
     
     }, [ homesData ] )
+    useAccptRqstRealTime( homesDataRef )
 
     return (
 

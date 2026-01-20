@@ -583,8 +583,10 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
             
             // Adding the details of approved user into redis data of home
             // Removing the accepted request data from accessRequest list of redis
+            // Adding the home id into user's acced home list of redis
             let redisHome = JSON.parse( await redisClient.get(`home:${ homeId }`) )
-            if( redisHome && Object.keys( redisHome ).length > 0 ) {
+            let redisUser = JSON.parse( await redisClient.get(`user:${ requesterId }`) )
+            if( redisHome && redisUser ) {
 
                 redisHome = {
 
@@ -593,9 +595,22 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
                     accessRequest : redisHome?.accessRequest.filter( request => request?._id != requestId )
 
                 }
+                redisUser = {
+
+                    ...redisUser,
+                    accessedHomes : [ ...redisUser?.accessedHomes, homeId ]
+
+                }
+
+                await redisClient.setEx(`user:${ requesterId }`, 1800, JSON.stringify( redisUser ))
                 await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( redisHome ))
 
             }
+
+            // Sending real time home data to approved user
+            // The user will not be admin so they dont the use of access request
+            const { accessRequest, ...rest } = redisHome
+            io.to( requesterId ).emit('accept_request', rest )
             
             await RequestModel.findByIdAndDelete( requestId ) // Finally deleting the accepted reequest from request database
             return response.status( 200 ).json({ message : `${ addedUser?.userName } added to your members list`, user : addedUser })
@@ -692,7 +707,8 @@ export const removeMemberCtrl = async ( request, response ) => {
 
         // Also make the change in redis
         let redisHome = JSON.parse( await redisClient.get(`home:${ homeId }`) )
-        if( redisHome && Object.keys( redisHome ).length > 0 ) {
+        let redisUser = JSON.parse( await redisClient.get(`user:${ memberId }`) )
+        if( redisHome && redisUser ) {
 
             redisHome = {
 
@@ -700,6 +716,14 @@ export const removeMemberCtrl = async ( request, response ) => {
                 accessedUsers : redisHome?.accessedUsers.filter( member => member?._id != memberId )
 
             }
+            redisUser = {
+
+                ...redisUser,
+                accessedHomes : redisUser?.accessedHomes.filter( home => home != homeId )
+
+            }
+
+            await redisClient.setEx(`user:${ memberId }`, 1800, JSON.stringify( redisUser ))
             await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( redisHome ))
 
         }
