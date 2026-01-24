@@ -13,6 +13,7 @@ import { setAllHomes } from "../Store/Reducers/allHomes.reducer"
 import { setSearchedMed } from "../Store/Reducers/medicine.reducer"
 import { setMedicineNames } from "../Store/Reducers/medName.reducer"
 import { socket } from "../lib/socket"
+import { destroySocket } from "../Store/socketListener"
 
 // Signup formik
 export const useSignupFromik = () => {
@@ -70,13 +71,7 @@ export const useSignup = () => {
             dispatch(setIsAuthenticated())
 
             // Connecting socket if there is no any other connection
-            if ( !socket.connected ) {
-
-                socket.connect()
-                socket.emit('join', user?._id )
-
-            }
-
+            if ( !socket.connected ) socket.connect()
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
@@ -132,13 +127,7 @@ export const useLogin = () => {
             dispatch(setIsAuthenticated())
 
             // Connecting socket if there is no other connection
-            if( !socket?.connected ) {
-
-                socket.connect()
-                socket.emit('join', user?._id )
-
-            }
-
+            if( !socket?.connected ) socket.connect()
             toast.success(message, { style: toastStyle })
             
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }
@@ -169,7 +158,7 @@ export const useLogout = () => {
             dispatch( setMedicineNames([]) )
 
             // Disconnecting socket
-            if( socket?.connected ) socket.disconnect()
+            if( socket?.connected ) destroySocket()
             toast.success(message, { style: toastStyle })
 
         } catch (error) { toast.error(error?.response?.data?.error, { style: toastStyle }) }

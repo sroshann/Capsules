@@ -530,7 +530,8 @@ export const sendRequestCtrl = async ( request, response ) => {
                 _id : rest?._id,
                 status : rest?.status,
                 createdAt : rest?.createdAt,
-                requester : requestedUser
+                requester : requestedUser,
+                homeId
 
             })
             return response.status( 200 ).json({ message : 'Request sent successfully' })
@@ -728,6 +729,8 @@ export const removeMemberCtrl = async ( request, response ) => {
 
         }
 
+        // Sending real time message to corresponding user that he/she has been removed from home
+        io.to( memberId ).emit('removed_user', homeId)
         return response?.status( 200 ).json({ message : `${ memberName } removed from ${ home?.homeName }` })
 
     } catch ( error ) { return response?.status( 500 ).json({ error : 'Error occured on removing user' }) }

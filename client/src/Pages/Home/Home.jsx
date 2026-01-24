@@ -4,7 +4,7 @@ import Footer from '../../Components/Footer/Footer'
 import { useGSAP } from '@gsap/react'
 import { animateProfile } from '../../lib/gsap.animation'
 import { useNavigateTo } from '../../Hooks/navbar.hooks'
-import { useAccptRqstRealTime, useGetHomes, useSearchYourHome } from '../../Hooks/home.hooks'
+import { useGetHomes, useSearchYourHome } from '../../Hooks/home.hooks'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import './Home.css'
@@ -53,17 +53,14 @@ function Home() {
 
     }
 
-    const homesDataRef = useRef( homesData )
     useEffect( () => { getHomes() }, [] )
     useEffect( () => { 
         
         // Setting the homes data in home store into filtered list
         // the filtered array is maped down ( displayed )
         setFilteredHome( homesData ) 
-        homesDataRef.current = homesData
     
     }, [ homesData ] )
-    useAccptRqstRealTime( homesDataRef )
 
     return (
 

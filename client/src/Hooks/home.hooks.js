@@ -12,8 +12,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { setHomes } from "../Store/Reducers/home.reducer"
 import { changeDateFormat } from "../lib/utils"
 import { setAllHomes } from "../Store/Reducers/allHomes.reducer"
-import { useEffect } from "react"
-import { socket } from "../lib/socket"
 
 // Create home formik
 export const homeFormik = () => {
@@ -628,79 +626,5 @@ export const userRemoveMember = () => {
         finally { toast.remove( loading ) }
 
     }
-
-}
-
-// Receiving realtime requests, made as custom hooks
-export const useRealTimeRequest = (homeId, setHomeData, homeRef) => {
-
-    const dispatch = useDispatch()
-    useEffect(() => {
-
-        // Receiving real time data from backend and adding it into front end data
-        // useRef is used for solving staling problem of socket and redux
-
-        // Once a connection is made by the socket, the data created while creating the socket
-        // will remain same in all socket execution, ie if any other changes occured in global redux 
-        // it wont affect or update in socket conncetion data. Then storing data in useRef and socket will 
-        // access always from the useRef, ( the useRef will always get updated when ther is any changes occured in redux )
-        // which is always updated
-
-        // Auth change → connect socket ONCE
-        // Page mount → add listeners
-        // Page unmount → remove listeners
-        // Logout → disconnect socket
-
-        socket.on('access_request', data => {
-
-            data = {
-
-                ...data,
-                createdAt: changeDateFormat(data?.createdAt, true)
-
-            }
-
-            const updated = homeRef?.current?.map(home => home?._id === homeId ? {
-
-                ...home,
-                accessRequest: [...home?.accessRequest, data]
-
-            } : home)
-
-            dispatch(setHomes(updated))
-            setHomeData( updated?.find( home => home?._id === homeId ) )
-            
-        })
-
-        return () => { socket.off('access_request') }
-
-    }, [ homeId ])
-
-}
-
-// Accepting access request in real time
-export const useAccptRqstRealTime = ( homeRef ) => {
-
-    // const { homesData } = useSelector( state => state.homes )
-    const dispatch = useDispatch()
-    useEffect( () => {
-
-        socket.on('accept_request', data => {
-
-            data = {
-
-                ...data,
-                createdAt : changeDateFormat( data?.createdAt, true )
-
-            }
-
-            const updated = [ ...homeRef?.current, data ]
-            dispatch( setHomes( updated ) )
-
-        })
-
-        return () => { socket.off('accept_request') }
-
-    }, [] )
 
 }
