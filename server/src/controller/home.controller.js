@@ -4,6 +4,7 @@ import HomeModel from "../models/home.model.js"
 import UserModel from "../models/user.model.js"
 import RequestModel from "../models/request.model.js"
 import { io } from "../lib/socket.js"
+import { sendMailTo } from "../lib/email.lib.js"
 
 // Creating new home
 export const createHomeController = async ( request, response ) => {
@@ -298,6 +299,19 @@ export const consumeMedController = async ( request, response ) => {
 
                 }
 
+                // Sending email to home users indicating the medication course for the disease is completed
+                // Collecting emails of each accessed users
+                let userMails = home?.accessedUsers?.map( users => users?.email )?.filter( Boolean )
+                userMails = [ ...userMails, home?.admin?.email ]
+                const mailSubject = "Medicine course completion"
+                const description = `
+                
+                    You have completed the prescribed course of ${medicine?.medicine} for ${medicine?.disease}. 
+                    We sincerely hope that the treatment has been effective and that you are in good health.
+                    
+                `
+                sendMailTo( userMails, mailSubject, description )
+
             } else {
 
                 // Just decrement the quantity of sepecefic medicine from available medicine of REDIS
@@ -375,6 +389,19 @@ export const deleteMedController = async ( request, response ) => {
         // Also delete the medicine from redis data
         let home = JSON.parse( await redisClient.get(`home:${ homeId }`) )
         if( home && Object.keys( home ).length > 0 ) {
+
+            const { medicine, disease } = home?.availableMedicines?.filter( med => med?._id === medId )[0]
+            // Sending email to home users indicating the medication course for the disease is completed
+            // Collecting emails of each accessed users
+            let userMails = home?.accessedUsers?.map(users => users?.email)?.filter(Boolean)
+            userMails = [...userMails, home?.admin?.email]
+            const mailSubject = "Medicine delted"
+            const description = `
+                
+                The medication ${medicine} prescribed for ${disease} has been successfully deleted from ${ home?.nickName }.
+                    
+            `
+            sendMailTo(userMails, mailSubject, description)
 
             home = { ...home, availableMedicines : home?.availableMedicines.filter( med => med?._id != medId ) }
             await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( home ))
