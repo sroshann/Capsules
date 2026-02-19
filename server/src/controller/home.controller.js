@@ -513,7 +513,7 @@ export const sendRequestCtrl = async ( request, response ) => {
     try {
 
         const { homeId, admin } = request?.body
-        const { _id } = request?.user
+        const { _id, fullName } = request?.user
 
         // Saving new request 
         const newRequset = await RequestModel.create({ requester : _id, homeId, homeAdmin : admin })
@@ -548,6 +548,11 @@ export const sendRequestCtrl = async ( request, response ) => {
                 }
 
                 await redisClient.setEx( `home:${ homeId }`, 1800, JSON.stringify( home ) )
+
+                // Mailing access requests
+                const mailSubject = "Home access request"
+                const description = `A join request has been received from ${fullName} for ${home?.nickName}.`
+                sendMailTo( home?.admin?.email , mailSubject, description)
                 
             }
 
@@ -639,6 +644,11 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
             // The user will not be admin so they dont the use of access request
             const { accessRequest, ...rest } = redisHome
             io.to( requesterId ).emit('accept_request', rest )
+
+            // Sending email to requester notifying accepted your request
+            const emailSubject = 'Home access request approval'
+            const description = `${ redisUser?.fullName } has accepted your join request for ${ redisHome?.nickName }`
+            sendMailTo( addedUser?.email, emailSubject, description )
             
             await RequestModel.findByIdAndDelete( requestId ) // Finally deleting the accepted reequest from request database
             return response.status( 200 ).json({ message : `${ addedUser?.userName } added to your members list`, user : addedUser })
