@@ -38,8 +38,16 @@
 
         }
 
-        .bx-search { color: #016BF8; }
-        .bx-x { color: red; cursor: pointer; transition: 0.2s ease-in-out; }
+        .bx-search {
+            color: #016BF8;
+        }
+
+        .bx-x {
+            color: red;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+        }
+
         .bx-x:hover {
 
             background-color: rgba(255, 0, 0, 0.13);
@@ -55,7 +63,11 @@
         text-align: center;
         font-size: 12.5px;
         line-height: 1.3;
-        span { color: red; }
+
+        span {
+            color: red;
+        }
+
         opacity: 0.7;
 
     }
@@ -68,21 +80,21 @@
     height: fit-content;
     display: flex;
     justify-content: center;
-    
+
     section {
-        
+
         width: 83%;
         height: fit-content;
         display: flex;
         flex-wrap: wrap;
         gap: 9px 10px;
         /* justify-content: center; */
-        
-        
+
+
     }
-    
+
     .other-homes {
-        
+
         /* flex-grow: 1; */
         row-gap: 10px;
         display: grid;
@@ -95,8 +107,18 @@
         border-radius: 10px;
         margin: 0px 0px 0px 0px;
 
-        p { width: fit-content; line-height: 1; color: gray; }
-        div { display: flex; align-items: baseline; height: fit-content; }
+        p {
+            width: fit-content;
+            line-height: 1;
+            color: gray;
+        }
+
+        div {
+            display: flex;
+            align-items: baseline;
+            height: fit-content;
+        }
+
         img {
 
             width: 30px;
@@ -109,18 +131,32 @@
 
             align-items: center;
             column-gap: 8px;
+
             #oth-hm-ad-name {
 
                 display: grid;
                 row-gap: 2px;
+
                 div {
 
                     column-gap: 5px;
-                    & p:nth-child( 1 ) { font-size: 0.8rem; color: black; }
-                    & p:nth-child( 2 ) { font-size: 0.68rem; color: red; }
+
+                    & p:nth-child(1) {
+                        font-size: 0.8rem;
+                        color: black;
+                    }
+
+                    & p:nth-child(2) {
+                        font-size: 0.68rem;
+                        color: red;
+                    }
 
                 }
-                #email { font-size: 0.7rem; color: #00B818; }
+
+                #email {
+                    font-size: 0.7rem;
+                    color: #00B818;
+                }
 
             }
 
@@ -129,19 +165,36 @@
         .other-home-names {
 
             column-gap: 8px;
-            & p:nth-child(1) { color: rgba(3, 34, 33, 0.8); }
-            & p:nth-child(2) { font-size: 0.85rem; }
+
+            & p:nth-child(1) {
+                color: rgba(3, 34, 33, 0.8);
+            }
+
+            & p:nth-child(2) {
+                font-size: 0.85rem;
+            }
 
         }
 
-        .other-home-address{
+        .other-home-address {
 
             font-size: 0.75rem;
             column-gap: 10px;
             margin: -6px 0px 0px 0px;
-            span { color: red; font-size: 0.7rem; }
-            i { color: rgba(3, 34, 33, 0.8); font-size: 0.9rem; }
-            div { column-gap: 4px; }
+
+            span {
+                color: red;
+                font-size: 0.7rem;
+            }
+
+            i {
+                color: rgba(3, 34, 33, 0.8);
+                font-size: 0.9rem;
+            }
+
+            div {
+                column-gap: 4px;
+            }
 
         }
 
@@ -159,4 +212,87 @@
 
     }
 
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+
+    #find-search-area #home-search,
+    #find-search-area #home-search-label {
+        width: 65%;
+    }
+
+    #listing-other-homes section {
+        width: 90%;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    #listing-other-homes .other-homes {
+        width: calc(43% - 8px);
+        padding: 15px 15px 58px 15px;
+        position: relative;
+    }
+
+    #listing-other-homes .other-homes .other-home-address>div:first-child {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+
+    #listing-other-homes .other-homes .other-home-address>p {
+        position: absolute;
+        bottom: 22px;
+        left: 15px;
+    }
+
+    #listing-other-homes .other-homes .other-home-admin {
+        margin-top: -10px;
+    }
+
+    #listing-other-homes .other-homes button {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        width: calc(100% - 155px);
+        padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    #find-search-area {
+        padding-top: 80px;
+    }
+
+    #find-search-area #home-search,
+    #find-search-area #home-search-label {
+        width: 75%;
+    }
+
+    #listing-other-homes section {
+        width: 95%;
+    }
+
+    #listing-other-homes {
+        & .other-homes {
+            .other-home-names {
+                column-gap: 3px;
+            }
+        }
+    }
+}
+
+@media (max-width: 650px) {
+    #find-search-area {
+        padding-top: 60px;
+    }
+
+    #find-search-area #home-search,
+    #find-search-area #home-search-label {
+        width: 90%;
+    }
+
+    #listing-other-homes .other-homes {
+        width: 92%;
+    }
 }

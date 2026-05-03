@@ -1,7 +1,7 @@
-#home-root { 
-    
+#home-root {
+
     height: fit-content;
-    min-height: 100dvh; 
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     row-gap: 50px;
@@ -16,7 +16,9 @@
     margin: 100px 0px 0px 0px;
     column-gap: 13px;
 
-    form { width: 50%; }
+    form {
+        width: 50%;
+    }
 
     #search {
 
@@ -36,8 +38,16 @@
 
         }
 
-        .bx-search { color: #016BF8; }
-        .bx-x { color: red; cursor: pointer; transition: 0.2s ease-in-out; }
+        .bx-search {
+            color: #016BF8;
+        }
+
+        .bx-x {
+            color: red;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+        }
+
         .bx-x:hover {
 
             background-color: rgba(255, 0, 0, 0.13);
@@ -99,13 +109,25 @@
                 align-items: baseline;
                 column-gap: 10px;
 
-                .home-nickname { font-size: 1.1rem; color: #032221cc; }
-                .home-homename { font-size: 0.9rem; opacity: 0.5; }
+                .home-nickname {
+                    font-size: 1.1rem;
+                    color: #032221cc;
+                }
+
+                .home-homename {
+                    font-size: 0.9rem;
+                    opacity: 0.5;
+                }
 
             }
-            
-            .medicine-number { font-size: 0.9rem; }
-            .no-medicine { color: #016BF8; }
+
+            .medicine-number {
+                font-size: 0.9rem;
+            }
+
+            .no-medicine {
+                color: #016BF8;
+            }
 
             .home-member-section {
 
@@ -114,9 +136,11 @@
                 width: fit-content;
                 min-width: 188px;
 
-                .home-member-headline { color: #032221cc; }
+                .home-member-headline {
+                    color: #032221cc;
+                }
 
-                .home-admin {  
+                .home-admin {
 
                     .home-you {
 
@@ -124,50 +148,54 @@
                         align-items: baseline;
                         column-gap: 5px;
 
-                        .home-you-text { font-size: 0.8rem; color: #016BF8; }
+                        .home-you-text {
+                            font-size: 0.8rem;
+                            color: #016BF8;
+                        }
 
                     }
-    
+
                     .home-admin-text {
-    
+
                         font-size: 0.7rem;
                         color: red;
-    
+
                     }
-    
+
                     .home-display-admin {
-    
-                        display: flex;    
-                        column-gap: 10px; 
+
+                        display: flex;
+                        column-gap: 10px;
                         align-items: center;
-                        
-                        img { 
-                            
-                            border-radius: 50%; 
-                            height: 30px; 
+
+                        img {
+
+                            border-radius: 50%;
+                            height: 30px;
                             width: 30px;
                             object-fit: cover;
-                        
+
                         }
-                        .home-admin-name { 
-                            
-                            display: flex; 
-                            align-items: baseline; 
-                            column-gap: 5px; 
+
+                        .home-admin-name {
+
+                            display: flex;
+                            align-items: baseline;
+                            column-gap: 5px;
                             font-size: 0.8rem;
-                        
+
                         }
-    
+
                         .home-admin-email {
-    
+
                             font-size: 0.7rem;
                             color: #00B818;
                             margin: -5px 0px 0px 0px;
-    
+
                         }
-    
+
                     }
-    
+
                 }
 
             }
@@ -181,12 +209,18 @@
             justify-content: space-between;
             font-size: 0.8rem;
 
-            & p:nth-child( 1 ) { color: #016BF8; }
-            & p:nth-child( 2 ) { 
-                
-                span { color: gray; }
-                color: red; 
-            
+            & p:nth-child(1) {
+                color: #016BF8;
+            }
+
+            & p:nth-child(2) {
+
+                span {
+                    color: gray;
+                }
+
+                color: red;
+
             }
 
         }
@@ -195,4 +229,59 @@
 
 }
 
-img { width: 35px; }
+img {
+    width: 35px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    #search-and-create form {
+        width: 65%;
+    }
+
+    #listing-homes .home {
+        width: 80%;
+    }
+
+    #listing-homes .home .home-upper-section {
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    #search-and-create {
+        flex-direction: column;
+        row-gap: 10px;
+    }
+
+    #search-and-create form {
+        width: 85%;
+    }
+
+    #search-and-create #create {
+        width: 85%;
+        justify-content: center;
+    }
+
+    #listing-homes .home {
+        width: 92%;
+        padding: 12px 15px;
+    }
+
+    #listing-homes .home .home-upper-section {
+        flex-direction: column;
+        row-gap: 10px;
+    }
+
+    #listing-homes .home .home-upper-section .home-names {
+        flex-wrap: wrap;
+    }
+
+    #listing-homes .home .home-lower-section {
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        margin-top: 10px;
+    }
+}

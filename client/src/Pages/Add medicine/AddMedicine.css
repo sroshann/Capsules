@@ -116,100 +116,54 @@
 }
 
 /* RESPONSIVE */
-@media ( max-width : 767px ) {
+@media ( max-width : 1024px ) {
 
-    #add-medicine-root {
-
+    #add-medicine-root { 
+        
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        row-gap: 20px;
+        row-gap: 10px;
         padding: unset;
-
+    
     }
-
     #add-med-left {
 
         width: unset;
         justify-content: center;
 
         section {
-
-            & p:nth-child(1) { font-size: 2.45rem; }
-            & p:nth-child(2) { font-size: 12.5px; margin: -6px 0px 0px 0px; line-height: 1.1; }
-
+            & p:nth-child(1) { font-size: 2.2rem; }
+            & p:nth-child(2) { margin: -2px 0px 0px 0px; padding: 0px 10px; max-width: 300px; line-height: 1.1; }
         }
 
     }
-
     #add-med-right {
 
         width: unset;
         height: fit-content;
+        margin-top: 15px;
+        
+        form { 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
 
-        form {
+            div { max-width: 85vw; width: 22.8rem; }
 
-            div { width: 20rem; row-gap: 10px; }
-
-            section { 
+            section {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                width: 22.8rem;
+                max-width: 85vw;
+                gap: 11px;
                 
-                display: grid;
-                justify-content: unset;
-                row-gap: 10px;
-                div { width: 100%; }
-                
+                div { width: calc(50% - 6px); max-width: unset; }
             }
-
-        }
-
-    }
-
-}
-
-@media ( min-width : 768px ) and ( max-width : 1024px ) {
-
-    #add-medicine-root {
-
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        row-gap: 20px;
-        padding: unset;
-
-    }
-
-    #add-med-left {
-
-        width: unset;
-        justify-content: center;
-
-        section {
-
-            & p:nth-child(1) { font-size: 2.5rem; }
-            & p:nth-child(2) { font-size: 13px; margin: -6px 0px 0px 0px; line-height: 1.1; }
-
-        }
-
-    }
-
-    #add-med-right {
-
-        width: unset;
-        height: fit-content;
-
-        form {
-
-            div { width: 20rem; row-gap: 10px; }
-
-            section { 
-                
-                display: grid;
-                justify-content: unset;
-                row-gap: 10px;
-                div { width: 100%; }
-                
-            }
-
+            
+            button { max-width: 85vw; width: 22.8rem; }
         }
 
     }
