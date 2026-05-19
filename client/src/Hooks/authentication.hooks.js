@@ -189,11 +189,15 @@ export const useGetUserData = () => {
                 user.createdAt = changeDateFormat( user?.createdAt, true )
                 dispatch( setUserData( user ) )
                 dispatch( setIsAuthenticated() )
+                
+                // Connecting socket if there is no other connection
+                if( !socket?.connected ) socket.connect()
+
                 navigate( location?.pathname || '/', { replace : true } )
                 
             } else return
 
-        } catch( error ) { toast.error( error?.response?.data?.erro, { style : toastStyle } ) }
+        } catch( error ) { toast.error( error?.response?.data?.error, { style : toastStyle } ) }
 
     }
 
