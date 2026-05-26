@@ -597,6 +597,9 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
         const addedUser = await UserModel.findById( requesterId ).select("_id fullName userName email profilePicture")
         if( option === "a" ) { // Accepting user request
 
+            const alreadyAccptd = await HomeModel.findOne({ _id: homeId, accessedUsers : requesterId })
+            if( alreadyAccptd ) return response.status( 500 ).json({ error : 'Request already accepted' })
+
             // Adding ID of requester into accessed users list of home
             // Removing the reqeust ID from access request list
             const update = await HomeModel.findByIdAndUpdate(
@@ -624,26 +627,26 @@ export const validateUsrAcsReCtrl = async ( request, response ) => {
                 redisHome = {
 
                     ...redisHome,
-                    accessedUsers : [ ...redisHome.accessedUsers, addedUser ],
-                    accessRequest : redisHome?.accessRequest.filter( request => request?._id != requestId )
+                    accessedUsers : [ ...( redisHome.accessedUsers || [] ), addedUser ],
+                    accessRequest : ( redisHome?.accessRequest || [] ).filter( request => request?._id != requestId )
 
                 }
                 redisUser = {
 
                     ...redisUser,
-                    accessedHomes : [ ...redisUser?.accessedHomes, homeId ]
+                    accessedHomes : [ ...( redisUser?.accessedHomes || [] ), homeId ]
 
                 }
 
                 await redisClient.setEx(`user:${ requesterId }`, 1800, JSON.stringify( redisUser ))
                 await redisClient.setEx(`home:${ homeId }`, 1800, JSON.stringify( redisHome ))
 
-            }
+                // Sending real time home data to approved user
+                // The user will not be admin so they dont the use of access request
+                const { accessRequest, ...rest } = redisHome
+                io.to( requesterId ).emit('accept_request', rest )
 
-            // Sending real time home data to approved user
-            // The user will not be admin so they dont the use of access request
-            const { accessRequest, ...rest } = redisHome
-            io.to( requesterId ).emit('accept_request', rest )
+            }
 
             // Sending email to requester notifying accepted your request
             const emailSubject = 'Home access request approval'
