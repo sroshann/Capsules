@@ -9,8 +9,8 @@ export const connectRedis = async () => {
 
         redisClient = createClient({
 
-            username : 'default',
-            password : process.env.REDIS_PASSWORD,
+            // username : 'Capsules',
+            // password : process.env.REDIS_PASSWORD,
             socket : {
 
                 host : process.env.REDIS_URL,
